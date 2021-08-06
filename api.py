@@ -1,6 +1,7 @@
 import requests
 import csv
 from prettytable import PrettyTable
+import numpy as np
 
 def api(url):
     """docstring for api."""
@@ -12,14 +13,17 @@ def api(url):
 
         cr = csv.reader(decoded_content.splitlines(), delimiter=',')
         data_list = list(cr)
+        arr = np.array(data_list)
+        arr = arr.transpose()
+        data_list = arr.tolist()
         text = "```\n"
-        t = PrettyTable(data_list[0])
-        t.add_row(data_list[1])
-        # for row in data_list:
-        #     for data in row:
-        #         text += str(data+"\t")
-        #     text += "\n"
-        text += str(t)
+        # t = PrettyTable(data_list[0])
+        # t.add_row(data_list[1])
+        for row in data_list:
+            for data in row:
+                text += str(data+"　")
+            text += "\n"
+        #text += str(t)
         text += "```"
         # return str(f"總確診數：{data_list[1][0]}")
         print(text)
