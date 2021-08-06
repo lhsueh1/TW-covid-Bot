@@ -1,7 +1,5 @@
 import requests
 import csv
-from prettytable import PrettyTable
-import numpy as np
 
 def api(url):
     """docstring for api."""
@@ -13,9 +11,7 @@ def api(url):
 
         cr = csv.reader(decoded_content.splitlines(), delimiter=',')
         data_list = list(cr)
-        arr = np.array(data_list)
-        arr = arr.transpose()
-        data_list = arr.tolist()
+        data_list = list(map(list, zip(*data_list)))
         text = "```\n"
         # t = PrettyTable(data_list[0])
         # t.add_row(data_list[1])
