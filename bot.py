@@ -72,10 +72,12 @@ def error(update, context):
 def test(update, context):
     api_url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
     text = api.api(api_url)
-    update.message.reply_text(text)
+    job = context.job
+    context.bot.sendMessage(job.context, text=text)
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")
+        '''context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")'''
+        pass
 
 
 
