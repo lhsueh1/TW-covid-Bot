@@ -4,6 +4,7 @@ import telegram
 import requests
 import re
 import random
+import api
 
 # Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -69,7 +70,9 @@ def error(update, context):
     update.message.reply_text("Error. Contact moderator.")
 
 def test(update, context):
-    update.message.reply_text("test")
+    api_url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
+    text = api.api(api_url)
+    update.message.reply_text(text)
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")

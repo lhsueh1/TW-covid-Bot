@@ -14,7 +14,7 @@ def api(url):
         for row in my_list:
             print(row)
 
-        print(f"確診數：{my_list[1][0]}")
+        return str(f"總確診數：{my_list[1][0]}")
 
 
 if __name__ == '__main__':
