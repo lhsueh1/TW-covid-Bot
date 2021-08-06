@@ -51,7 +51,6 @@ def start(update, context):
 
 def help(update, context):
     """Send a message when the command /help is issued."""
-    context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("src/instructions.png", "rb"), caption="instructions")
     update.message.reply_text("Type in question for more help.")
 
     userName = update.message.from_user.username
