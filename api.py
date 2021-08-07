@@ -2,7 +2,7 @@ import requests
 import csv
 from datetime import datetime
 import pytz
-from web_crawler import TodayConfirmed
+import web_crawler
 
 def get_taiwan_epidemic_status():
     url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
@@ -35,7 +35,7 @@ def get_taiwan_outbreak_information():
 
     epidemic = TaiwanEpidemic()
     global_stats = GlobalStats()
-    today = TodayConfirmed()
+    today = web_crawler.TodayConfirmed()
 
     total_tests_conducted = "4,070,641"
 

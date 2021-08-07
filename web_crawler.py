@@ -60,7 +60,28 @@ class TodayConfirmed(object):
             print("ERROR: TodayConfirmed init failed")
             print(e)
 
-
+# class TotalTestsConducted(object):
+#     total_tests_conducted = None
+#
+#     def __init__(self):
+#         self.web_crawler()
+#
+#     def web_crawler(self):
+#         # try:
+#
+#         h = {"User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0"}
+#         response = requests.get(
+#             "https://sites.google.com/cdc.gov.tw/2019ncov/total-tests-conducted-tw", headers=h)
+#         soup = BeautifulSoup(response.text, "html.parser")
+#
+#
+#
+#         self.total_tests_conducted = soup.find(id="num9").get_text().strip()
+#         print(self.total_tests_conducted)
+#         # except Exception as e:
+#         #     print("ERROR: TotalTestsConducted init failed")
+#         #     print(e)
 
 if __name__ == '__main__':
-    TodayConfirmed().web_crawler()
+    TodayConfirmed()
+    # TotalTestsConducted()
