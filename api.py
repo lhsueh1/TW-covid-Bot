@@ -37,6 +37,10 @@ def get_taiwan_outbreak_information():
     global_stats = GlobalStats()
     today = web_crawler.TodayConfirmed()
 
+    if not today.is_same_date:
+        # web_crawler.py d1
+        return False
+
     total_tests_conducted = "4,070,641"
 
     text = f"""《臺灣疫情資訊站{mmdd}資訊報》
