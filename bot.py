@@ -75,15 +75,18 @@ def test(update, context):
     text = api.api(api_url)
     update.message.reply_text(text, parse_mode='MarkdownV2')
     userName = update.message.from_user.username
-    if len(context.args) != 0:
-        if context.args[0] == "hi":
-            context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Hi")
-
     if update.message.chat.username != "E36_bb079f22":
         '''context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")'''
         pass
 
-
+def search(update, context):
+    if len(context.args) != 0:
+        if context.args[0] == "hi":
+            context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Hi there")
+        else:
+            context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(context.args[0]))
+    else:
+        context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Give me something to search for!")
 
 COUNT = 0
 def chat(update, context):
@@ -127,6 +130,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("test", test))
+    dp.add_handler(CommandHandler("search", search))
 
 
 
