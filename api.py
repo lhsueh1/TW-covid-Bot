@@ -46,7 +46,7 @@ def get_taiwan_outbreak_information():
     for t in texts:
         if "個案分布" in t:
             texts = t.split("個案分布")        
-    additional_text = "個案分佈"+texts[1]
+    additional_text = "個案分布"+texts[1]
     additional_text = additional_text.replace("；", "。\n")
 
     text = f"""《臺灣疫情資訊站{mmdd}資訊報》
