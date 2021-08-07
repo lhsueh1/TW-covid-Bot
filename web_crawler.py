@@ -25,12 +25,12 @@ class TodayConfirmed(object):
 
             target_title = target.get_text().strip()
             target_href = target.get("href")
-            print(target_title)
-            print(target_href)
+            #print(target_title)
+            #print(target_href)
 
             newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
             listOfNumbers = [int(i) for i in newstr.split()]
-            print(listOfNumbers)
+            #print(listOfNumbers)
             self.today_confirmed = listOfNumbers[0]
             self.today_imported = listOfNumbers[2]
             self.today_domestic = listOfNumbers[3]
@@ -42,8 +42,8 @@ class TodayConfirmed(object):
             article_content = article_soup.find("p", class_="con-word").get_text()
             article_date = article_soup.find("div", class_="date text-right").get_text().strip()[5:]
             dates = article_date.split("/")
-            print(article_content)
-            print(article_date)
+            #print(article_content)
+            #print(article_date)
 
             d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])+1).date()
             d2 = datetime.now(pytz.timezone('Asia/Taipei')).date()
@@ -51,8 +51,8 @@ class TodayConfirmed(object):
             # todo 如果發布日期不對會跳 error
             if d1 != d2:
                 print("日期錯誤")
-                print(d1)
-                print(d2)
+                # print(d1)
+                # print(d2)
                 self.is_same_date = False
             else:
                 self.is_same_date = True

@@ -2,6 +2,7 @@ import requests
 import csv
 from datetime import datetime
 import pytz
+from web_crawler import TodayConfirmed
 
 def get_taiwan_epidemic_status():
     url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
@@ -34,10 +35,8 @@ def get_taiwan_outbreak_information():
 
     epidemic = TaiwanEpidemic()
     global_stats = GlobalStats()
+    today = TodayConfirmed()
 
-    today_confirmed = 10
-    today_imported = 4
-    today_domestic = 6
     total_tests_conducted = "4,070,641"
 
     text = f"""《臺灣疫情資訊站{mmdd}資訊報》
@@ -47,7 +46,7 @@ def get_taiwan_outbreak_information():
 已排除：{epidemic.excluded}人
 已確診：{epidemic.confirmed}人
 已死亡：{epidemic.deaths}人
-今日新增：{today_confirmed}例({today_imported}境外,{today_domestic}本土)
+今日新增：{today.today_confirmed}例({today.today_imported}境外,{today.today_domestic}本土)
 國內檢驗總計：{total_tests_conducted}人
 ——————————————————————————
 【昨日更新】
