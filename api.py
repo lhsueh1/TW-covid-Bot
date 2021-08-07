@@ -40,6 +40,15 @@ def get_taiwan_outbreak_information():
 
     total_tests_conducted = "4,070,641"
 
+
+    texts = today.article.split()
+    
+    for t in texts:
+        if "個案分布" in t:
+            texts = t.split("個案分布")        
+    additional_text = "個案分佈"+texts[1]
+    additional_text = additional_text.replace("；", "。\n")
+
     text = f"""《臺灣疫情資訊站{mmdd}資訊報》
 
 【目前資訊】
@@ -54,6 +63,7 @@ def get_taiwan_outbreak_information():
 昨日送檢：{epidemic.yesterday_reported}件
 昨日排除：{epidemic.yesterday_excluded}件
 昨日確診：{epidemic.yesterday_confirmed}人
+{additional_text}
 ——————————————————————————
 【國際疫情狀況】
 全球確診數：{global_stats.confirmed}人
@@ -61,7 +71,7 @@ def get_taiwan_outbreak_information():
 全球致死率：{global_stats.cfr}
 已有確診病例國家：{global_stats.countries}國
 ——————————————————————————
-統計數字如果有誤，請於群組告知，我們會立刻更正，謝謝。
+統計數字如果有誤，請於[群組](https://t.me/joinchat/VXSevGfKN560hTWH)告知，我們會立刻更正，謝謝。
 ——————————————————————————
 本日資訊取用於：
 疾管署及政府資料開放平臺

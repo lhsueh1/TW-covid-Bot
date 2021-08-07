@@ -11,6 +11,7 @@ class TodayConfirmed(object):
     today_domestic = None
     is_same_date = False
     date = None
+    article = ""
 
     def __init__(self):
         self.web_crawler()
@@ -49,9 +50,9 @@ class TodayConfirmed(object):
             #d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])).date()
             d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])+1).date()
             d2 = datetime.now(pytz.timezone('Asia/Taipei')).date()
-
             self.date = d1
 
+            self.article = article_content
 
             # todo 如果發布日期不對會跳 error
             if d1 != d2:
