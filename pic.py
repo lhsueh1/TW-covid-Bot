@@ -23,7 +23,7 @@ def pic(date=None, today_confirmed=None, today_domestic=None, today_imported=Non
     if today_imported == None:
         today_imported = str(TodayConfirmed().today_imported)
     if today_death == None:
-        today_death = "10"
+        today_death = "?"
     if confirmed == None:
         confirmed = epidemic.confirmed 
     if deaths == None:  
