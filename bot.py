@@ -86,6 +86,9 @@ def test(update, context):
         if update.message.chat.username != "E36_bb079f22":
             '''context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")'''
             pass
+    else:
+        update.message.reply_text("Date error")
+
 
 def search(update, context):
     if len(context.args) != 0:
