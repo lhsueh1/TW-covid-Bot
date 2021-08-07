@@ -46,7 +46,7 @@ def get_taiwan_outbreak_information():
 已排除：{epidemic.excluded}人
 已確診：{epidemic.confirmed}人
 已死亡：{epidemic.deaths}人
-今日新增：{today.today_confirmed}例({today.today_imported}境外,{today.today_domestic}本土)
+今日新增：{today.today_confirmed}例（{today.today_imported}境外,{today.today_domestic}本土）
 國內檢驗總計：{total_tests_conducted}人
 ——————————————————————————
 【昨日更新】
