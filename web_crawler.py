@@ -10,6 +10,7 @@ class TodayConfirmed(object):
     today_imported = None
     today_domestic = None
     is_same_date = False
+    date = None
 
     def __init__(self):
         self.web_crawler()
@@ -46,6 +47,7 @@ class TodayConfirmed(object):
             #print(article_date)
 
             d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])).date()
+            self.date = d1
             #d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])+1).date()
             d2 = datetime.now(pytz.timezone('Asia/Taipei')).date()
 

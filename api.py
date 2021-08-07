@@ -29,17 +29,14 @@ def get_taiwan_epidemic_status():
     return False
 
 def get_taiwan_outbreak_information():
-    today = datetime.now(pytz.timezone('Asia/Taipei'))
-    mmdd = today.strftime("%m%d")
-    yyyymmdd = today.strftime("%Y/%m/%d")
+    # today = datetime.now(pytz.timezone('Asia/Taipei'))
 
     epidemic = TaiwanEpidemic()
     global_stats = GlobalStats()
     today = web_crawler.TodayConfirmed()
 
-    if not today.is_same_date:
-        # web_crawler.py d1
-        return False
+    mmdd = today.date.strftime("%m%d")
+    yyyymmdd = today.date.strftime("%Y/%m/%d")
 
     total_tests_conducted = "4,070,641"
 
@@ -74,7 +71,7 @@ Taiwan Outbreak Information
 
 {yyyymmdd}
 """
-    return text
+    return (text, today.is_same_date)
 
 def get_epidemic_status_by_country(country: str):
     return False
@@ -175,4 +172,4 @@ class GlobalStats(object):
 
 if __name__ == '__main__':
     text = get_taiwan_outbreak_information()
-    print(text)
+    print(text[0])
