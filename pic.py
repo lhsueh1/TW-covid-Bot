@@ -1,6 +1,7 @@
 from PIL import ImageFont, ImageDraw, Image
 import api
 import datetime
+from web_crawler import TodayConfirmed
 
 def center_text(img, font, text, background_w, background_h, color=(0,0,0)):
     draw = ImageDraw.Draw(img)
@@ -16,11 +17,11 @@ def pic(date=None, today_confirmed=None, today_domestic=None, today_imported=Non
     if date == None:
         date = str(datetime.datetime.now().strftime("%m")) + str(datetime.datetime.now().strftime("%d"))
     if today_confirmed == None:
-        today_confirmed = "10"
+        today_confirmed = str(TodayConfirmed().today_confirmed)
     if today_domestic == None:
-        today_domestic = "10"
+        today_domestic = str(TodayConfirmed().today_domestic)
     if today_imported == None:
-        today_imported = "10"
+        today_imported = str(TodayConfirmed().today_imported)
     if today_death == None:
         today_death = "10"
     if confirmed == None:
@@ -61,7 +62,7 @@ def pic(date=None, today_confirmed=None, today_domestic=None, today_imported=Non
     original.paste(today_confirmed_word, (60, 260), today_confirmed_word)
     original.paste(today_domestic_word, (60, 400), today_domestic_word)
     original.paste(today_imported_word, (180, 400), today_imported_word)
-    original.paste(today_death_word, (435, 300), today_death_word)
+    original.paste(today_death_word, (435, 310), today_death_word)
     original.paste(confirmed_word, (60, 750), confirmed_word)
     original.paste(deaths_word, (435, 750), deaths_word)
 
