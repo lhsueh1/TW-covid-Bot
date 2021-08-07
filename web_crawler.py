@@ -45,7 +45,7 @@ class TodayConfirmed(object):
             #print(article_content)
             #print(article_date)
 
-            d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])+1).date()
+            d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])).date()
             d2 = datetime.now(pytz.timezone('Asia/Taipei')).date()
 
             # todo 如果發布日期不對會跳 error
