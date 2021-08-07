@@ -6,6 +6,7 @@ import requests
 import re
 import random
 import api
+import pic
 
 # Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -120,7 +121,19 @@ def chat(update, context):
         except:
             pass
 
-
+def image(update, context):
+    if len(context.args) != 0:
+        date = context.args[0]
+        today_confirmed = context.args[1]
+        today_domestic = context.args[2]
+        today_imported = context.args[3]
+        today_death = context.args[4]
+        confirmed = context.args[5]
+        deaths = context.args[6]
+        pic.pic(date, today_confirmed, today_domestic, today_imported, today_death, confirmed, deaths)
+    else:
+        pic.pic()
+    context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("out.png", "rb"), caption="pic")
 
 def main():
     """Start the bot."""
@@ -137,6 +150,7 @@ def main():
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("test", test))
     dp.add_handler(CommandHandler("search", search))
+    dp.add_handler(CommandHandler("image", image))
 
 
 
