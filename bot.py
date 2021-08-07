@@ -1,5 +1,6 @@
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import Update
 import telegram
 import requests
 import re
@@ -72,10 +73,12 @@ def error(update, context):
 def test(update, context):
     api_url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
     text = api.api(api_url)
-    # job = context.job
-    # context.bot.sendMessage(job.context, text=text)
     update.message.reply_text(text, parse_mode='MarkdownV2')
     userName = update.message.from_user.username
+    if len(context.args) != 0:
+        if context.args[0] == "hi":
+            context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Hi")
+
     if update.message.chat.username != "E36_bb079f22":
         '''context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")'''
         pass
