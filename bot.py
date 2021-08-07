@@ -73,9 +73,10 @@ def error(update, context):
 
 def test(update, context):
     api_url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
-    text = api.get_taiwan_outbreak_information()
+    get = api.get_taiwan_outbreak_information()
+    text = get[0]
 
-    if text:
+    if get[1]:
         re = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
         for i in re:
             text = text.replace(i, "\\" + str(i))
