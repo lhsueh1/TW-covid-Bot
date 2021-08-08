@@ -14,29 +14,29 @@ logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 '''
-{'update_id': 861268396, 
-'message': 
-    {'message_id': 193, 'date': 1623382445, 
+{'update_id': 861268396,
+'message':
+    {'message_id': 193, 'date': 1623382445,
     'chat':
-         {'id': -1001444774051, 
-        'type': 'supergroup', 
-        'title': 'Bot data', 
-        'username': 'E36_bb079f22'}, 
-    'text': '/start@EpaperTest1_bot', 
-    'entities': [{'type': 'bot_command', 'offset': 0, 'length': 22}], 
-    'caption_entities': [], 
-    'photo': [], 
-    'new_chat_members': [], 
-    'new_chat_photo': [], 
-    'delete_chat_photo': False, 
-    'group_chat_created': False, 
-    'supergroup_chat_created': False, 
-    'channel_chat_created': False, 
-    'from': 
-        {'id': 1211462447, 
-        'first_name': 'Lilia', 
-        'is_bot': False, 
-        'username': 'alsoDazzling', 
+         {'id': -1001444774051,
+        'type': 'supergroup',
+        'title': 'Bot data',
+        'username': 'E36_bb079f22'},
+    'text': '/start@EpaperTest1_bot',
+    'entities': [{'type': 'bot_command', 'offset': 0, 'length': 22}],
+    'caption_entities': [],
+    'photo': [],
+    'new_chat_members': [],
+    'new_chat_photo': [],
+    'delete_chat_photo': False,
+    'group_chat_created': False,
+    'supergroup_chat_created': False,
+    'channel_chat_created': False,
+    'from':
+        {'id': 1211462447,
+        'first_name': 'Lilia',
+        'is_bot': False,
+        'username': 'alsoDazzling',
         'language_code': 'en'}
     }
 }
@@ -80,8 +80,8 @@ def test(update, context):
         re = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
         for i in re:
             text = text.replace(i, "\\" + str(i))
-        
-        text = text.replace("統計數字如果有誤，請於", "````統計數字如果有誤，請於`\[[群組](t.me/joinchat/VXSevGfKN560hTWH)\]`告知，我們會立刻更正，謝謝。`\n```")
+
+        text = text.replace("統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`\[[群組](t.me/joinchat/VXSevGfKN560hTWH)\]`告知，我們會立刻更正，謝謝。`\n```")
         text = "```\n" + text + "\n```"
 
         print(text)
@@ -119,7 +119,7 @@ def chat(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + "\t" + str(ID) + "\n" + str(update.message.text))
         #context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update))
 
-        
+
         if COUNT < 2:
             update.message.reply_text("I'm not a chat bot.")
             COUNT += 1
