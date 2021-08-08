@@ -36,8 +36,8 @@ class TodayConfirmed(object):
             listOfNumbers = [int(i) for i in newstr.split()]
             #print(listOfNumbers)
             self.today_confirmed = listOfNumbers[0]
-            self.today_imported = listOfNumbers[2]
-            self.today_domestic = listOfNumbers[3]
+            self.today_domestic = listOfNumbers[2]
+            self.today_imported = listOfNumbers[3]
 
             article_response = requests.get(
                 "https://www.cdc.gov.tw" + target_href)
