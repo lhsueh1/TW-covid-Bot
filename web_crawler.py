@@ -6,9 +6,16 @@ import pytz
 
 
 class TodayConfirmed(object):
+    """
+    透過爬蟲找尋衛福部的最新消息中，
+    第一篇標題含有"例COVID-19確定病例"的文章，
+    並透過該文章的內容取得以下變數之資訊。
+    """
     today_confirmed = None
     today_imported = None
     today_domestic = None
+    today_deaths = None
+    # To identify if today is the same day as this press release
     is_same_date = False
     date = None
     article = ""
@@ -19,6 +26,7 @@ class TodayConfirmed(object):
 
     def web_crawler(self):
         try:
+            # 衛福部最新消息
             response = requests.get(
                 "https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
             soup = BeautifulSoup(response.text, "html.parser")
@@ -26,7 +34,10 @@ class TodayConfirmed(object):
             titles = soup.find("tbody")
             target = titles.select('a[title*="例COVID-19確定病例"]')[0]
 
+            # 目標文章標題文字
             target_title = target.get_text().strip()
+
+            # 目標文章超連結
             target_href = target.get("href")
             #print(target_title)
             #print(target_href)
@@ -39,6 +50,7 @@ class TodayConfirmed(object):
             self.today_domestic = listOfNumbers[2]
             self.today_imported = listOfNumbers[3]
 
+            # 病例公布新聞稿
             article_response = requests.get(
                 "https://www.cdc.gov.tw" + target_href)
             article_soup = BeautifulSoup(article_response.text, "html.parser")
@@ -66,6 +78,15 @@ class TodayConfirmed(object):
 
             if self.additional_text is not None or self.additional_text != "":
                 self.additional_text = "\n" + self.additional_text
+
+            # 死亡分析
+            regex_death = re.compile(r"新增(\d+-*\d*)例死亡")
+            match_death = regex_death.search(article_content)
+            if match_death is not None:
+                self.deaths = match_death.group(1)
+
+            if re.search(r"無新增死亡", article_content):
+                self.deaths = 0
 
             # 無新增死亡
             # 新增3例死亡
