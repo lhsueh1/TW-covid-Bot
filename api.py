@@ -49,6 +49,7 @@ def get_taiwan_outbreak_information():
 已確診：{epidemic.confirmed}人
 已死亡：{epidemic.deaths}人
 今日新增：{today.today_confirmed}例（{today.today_imported}境外,{today.today_domestic}本土）
+今日死亡：{today.today_deaths}例
 ——————————————————————————
 【昨日更新】
 昨日送檢：{epidemic.yesterday_reported}件

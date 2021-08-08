@@ -83,10 +83,10 @@ class TodayConfirmed(object):
             regex_death = re.compile(r"新增(\d+-*\d*)例死亡")
             match_death = regex_death.search(article_content)
             if match_death is not None:
-                self.deaths = match_death.group(1)
+                self.today_deaths = match_death.group(1)
 
             if re.search(r"無新增死亡", article_content):
-                self.deaths = 0
+                self.today_deaths = 0
 
             # 無新增死亡
             # 新增3例死亡
