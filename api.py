@@ -62,7 +62,7 @@ def get_taiwan_outbreak_information():
 全球致死率：{global_stats.cfr}
 已有確診病例國家：{global_stats.countries}國
 ——————————————————————————
-統計數字如果有誤，請於[群組](https://t.me/joinchat/VXSevGfKN560hTWH)告知，我們會立刻更正，謝謝。
+統計數字如果有誤，請於告知，我們會立刻更正，謝謝。
 ——————————————————————————
 本日資訊取用於：
 疾管署及政府資料開放平臺
