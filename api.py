@@ -43,18 +43,20 @@ def get_taiwan_outbreak_information():
 
     text = f"""《臺灣疫情資訊站{mmdd}資訊報》
 
-【目前資訊】
-已送檢：{epidemic.reported}人
-已排除：{epidemic.excluded}人
-已確診：{epidemic.confirmed}人
-已死亡：{epidemic.deaths}人
-今日新增：{today.today_confirmed}例（{today.today_imported}境外,{today.today_domestic}本土）
-今日死亡：{today.today_deaths}例
+【今日新增】
+今日新增：{today.today_confirmed}例（{today.today_domestic}本土,{today.today_imported}境外）
+今日死亡：{today.today_deaths}例{today.additional_text}
 ——————————————————————————
 【昨日更新】
 昨日送檢：{epidemic.yesterday_reported}件
 昨日排除：{epidemic.yesterday_excluded}件
-昨日確診：{epidemic.yesterday_confirmed}人{today.additional_text}
+昨日確診：{epidemic.yesterday_confirmed}人
+——————————————————————————
+【累計統計】
+已送檢：{epidemic.reported}人
+已排除：{epidemic.excluded}人
+已確診：{epidemic.confirmed}人
+已死亡：{epidemic.deaths}人
 ——————————————————————————
 【國際疫情狀況】
 全球確診數：{global_stats.confirmed}人
