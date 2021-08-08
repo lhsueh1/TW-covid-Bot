@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 
 
@@ -61,10 +61,6 @@ class TodayConfirmed(object):
             #print(article_content)
             #print(article_date)
 
-            d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])).date()
-            #d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])+1).date()
-            d2 = datetime.now(pytz.timezone('Asia/Taipei')).date()
-            self.date = d1
 
             texts = article_content.split()
 
@@ -88,14 +84,14 @@ class TodayConfirmed(object):
             if re.search(r"無新增死亡", article_content):
                 self.today_deaths = 0
 
-            # 無新增死亡
-            # 新增3例死亡
-
-            # todo 如果發布日期不對會跳 error
-            if d1 != d2:
+            # todo 如果新聞稿發布日期<今日日期-12小時，會發出錯誤
+            d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2]))
+            #d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])+1)
+            d2 = datetime.now(pytz.timezone('Asia/Taipei')) - timedelta(hours=36)
+            d2 = d2.replace(tzinfo=None)
+            self.date = d1
+            if d1 < d2:
                 print("日期錯誤")
-                # print(d1)
-                # print(d2)
                 self.is_same_date = False
             else:
                 self.is_same_date = True
