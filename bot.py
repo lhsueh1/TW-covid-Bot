@@ -89,7 +89,7 @@ def test(update, context):
         #"統計數字如果有誤，請於[群組](https://t.me/joinchat/VXSevGfKN560hTWH)告知，我們會立刻更正，謝謝。\n——————————————————————————\n本日資訊取用於：\n疾管署及政府資料開放平臺\n——————————————————————————\n-臺灣疫情資訊站\nTaiwan Outbreak Information"
 
 
-        update.message.reply_text(text, parse_mode='MarkdownV2')
+        update.message.reply_text(text, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
 
         userName = update.message.from_user.username
