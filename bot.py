@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 def start(update, context):
     """Send a message when the command /start is issued."""
     user = update.effective_user
-    update.message.reply_text("start")
+    update.message.reply_text("統計數字如果有誤，請於[群組](https://t.me/joinchat/VXSevGfKN560hTWH)告知，我們會立刻更正，謝謝。",parse_mode='MarkdownV2')
 
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
