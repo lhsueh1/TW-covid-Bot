@@ -16,12 +16,13 @@ def pic(date=None, today_confirmed=None, today_domestic=None, today_imported=Non
     epidemic = api.TaiwanEpidemic()
     if date == None:
         date = str(datetime.datetime.now().strftime("%m")) + str(datetime.datetime.now().strftime("%d"))
+    today = TodayConfirmed()
     if today_confirmed == None:
-        today_confirmed = str(TodayConfirmed().today_confirmed)
+        today_confirmed = str(today.today_confirmed)
     if today_domestic == None:
-        today_domestic = str(TodayConfirmed().today_domestic)
+        today_domestic = str(today.today_domestic)
     if today_imported == None:
-        today_imported = str(TodayConfirmed().today_imported)
+        today_imported = str(today.today_imported)
     if today_death == None:
         today_death = "?"
     if confirmed == None:

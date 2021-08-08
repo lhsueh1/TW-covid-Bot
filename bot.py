@@ -14,42 +14,70 @@ logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 '''
-{'update_id': 861268396,
-'message':
-    {'message_id': 193, 'date': 1623382445,
-    'chat':
-         {'id': -1001444774051,
-        'type': 'supergroup',
-        'title': 'Bot data',
-        'username': 'E36_bb079f22'},
-    'text': '/start@EpaperTest1_bot',
-    'entities': [{'type': 'bot_command', 'offset': 0, 'length': 22}],
-    'caption_entities': [],
-    'photo': [],
-    'new_chat_members': [],
-    'new_chat_photo': [],
-    'delete_chat_photo': False,
-    'group_chat_created': False,
-    'supergroup_chat_created': False,
-    'channel_chat_created': False,
-    'from':
-        {'id': 1211462447,
-        'first_name': 'Lilia',
-        'is_bot': False,
-        'username': 'alsoDazzling',
-        'language_code': 'en'}
+    {'update_id': 861268396,
+    'message':
+        {'message_id': 193, 'date': 1623382445,
+        'chat':
+             {'id': -1001444774051,
+            'type': 'supergroup',
+            'title': 'Bot data',
+            'username': 'E36_bb079f22'},
+        'text': '/start@EpaperTest1_bot',
+        'entities': [{'type': 'bot_command', 'offset': 0, 'length': 22}],
+        'caption_entities': [],
+        'photo': [],
+        'new_chat_members': [],
+        'new_chat_photo': [],
+        'delete_chat_photo': False,
+        'group_chat_created': False,
+        'supergroup_chat_created': False,
+        'channel_chat_created': False,
+        'from':
+            {'id': 1211462447,
+            'first_name': 'Lilia',
+            'is_bot': False,
+            'username': 'alsoDazzling',
+            'language_code': 'en'}
+        }
     }
-}
+
+    {'update_id': 192957417, 
+    'message': 
+        {'message_id': 182, 'date': 1628439002, 
+        'chat': 
+            {'id': 1211462447, 
+            'type': 'private', 
+            'username': 'alsoDazzling', 
+            'first_name': 'Lilia'}, 
+        'text': '/start', 
+        'entities': [{'type': 'bot_command', 'offset': 0, 'length': 6}], 
+        'caption_entities': [], 
+        'photo': [], 
+        'new_chat_members': [], 
+        'new_chat_photo': [], 
+        'delete_chat_photo': False, 
+        'group_chat_created': False, 
+        'supergroup_chat_created': False, 
+        'channel_chat_created': False, 
+        'from': 
+            {'id': 1211462447, 
+            'first_name': 'Lilia', 
+            'is_bot': False, 
+            'username': 'alsoDazzling', 
+            'language_code': 'en'}
+        }
+    }
 '''
 
 def start(update, context):
     """Send a message when the command /start is issued."""
     user = update.effective_user
-    update.message.reply_text("統計數字如果有誤，請於[群組](https://t.me/joinchat/VXSevGfKN560hTWH)告知，我們會立刻更正，謝謝。",parse_mode='MarkdownV2')
+    update.message.reply_text("Start.開始")
+    print(update)
 
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": start")
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.username) + " : start")
 
 
 def help(update, context):
@@ -69,7 +97,7 @@ def error(update, context):
     logger.warning("Update '%s' caused error '%s'", update, context.error)
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + str(context.error))
-    update.message.reply_text("Error. Contact moderator.")
+    update.message.reply_text("Error. Contact moderator.錯誤")
 
 def test(update, context):
     api_url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
@@ -148,6 +176,11 @@ def image(update, context):
     else:
         pic.pic()
     context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("out.png", "rb"), caption="pic")
+
+    print()
+    userName = update.message.from_user.username
+    if update.message.chat.username != "E36_bb079f22":
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + " : " + str(update.message.text))
 
 def main():
     """Start the bot."""
