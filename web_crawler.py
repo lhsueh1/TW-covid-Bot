@@ -12,6 +12,7 @@ class TodayConfirmed(object):
     is_same_date = False
     date = None
     article = ""
+    additional_text = ""
 
     def __init__(self):
         self.web_crawler()
@@ -30,6 +31,7 @@ class TodayConfirmed(object):
             #print(target_title)
             #print(target_href)
 
+            # 文章標題的確診病例、本土、境外處理
             newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
             listOfNumbers = [int(i) for i in newstr.split()]
             #print(listOfNumbers)
@@ -47,12 +49,26 @@ class TodayConfirmed(object):
             #print(article_content)
             #print(article_date)
 
-            #d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])).date()
-            d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])+1).date()
+            d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])).date()
+            #d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])+1).date()
             d2 = datetime.now(pytz.timezone('Asia/Taipei')).date()
             self.date = d1
 
-            self.article = article_content
+            texts = article_content.split()
+
+            # Addidtional text 處理
+            # 個案分佈 及 疫調資訊
+            for t in texts:
+                if "個案分布" in t:
+                    texts = t.split("個案分布")
+            self.additional_text = "個案分布"+texts[1]
+            self.additional_text = self.additional_text.replace("；", "。\n")
+
+            if self.additional_text is not None or self.additional_text != "":
+                self.additional_text = "\n" + self.additional_text
+
+            # 無新增死亡
+            # 新增3例死亡
 
             # todo 如果發布日期不對會跳 error
             if d1 != d2:
