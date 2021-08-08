@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 def start(update, context):
     """Send a message when the command /start is issued."""
     user = update.effective_user
-    update.message.reply_text("start")
+    update.message.reply_text("統計數字如果有誤，請於[群組](https://t.me/joinchat/VXSevGfKN560hTWH)告知，我們會立刻更正，謝謝。",parse_mode='MarkdownV2')
 
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
@@ -80,9 +80,18 @@ def test(update, context):
         re = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
         for i in re:
             text = text.replace(i, "\\" + str(i))
+        
+        text = text.replace("統計數字如果有誤，請於", "````統計數字如果有誤，請於`\[[群組](t.me/joinchat/VXSevGfKN560hTWH)\]`告知，我們會立刻更正，謝謝。`\n```")
         text = "```\n" + text + "\n```"
 
-        update.message.reply_text(text, parse_mode='MarkdownV2')
+        print(text)
+
+        #"統計數字如果有誤，請於[群組](https://t.me/joinchat/VXSevGfKN560hTWH)告知，我們會立刻更正，謝謝。\n——————————————————————————\n本日資訊取用於：\n疾管署及政府資料開放平臺\n——————————————————————————\n-臺灣疫情資訊站\nTaiwan Outbreak Information"
+
+
+        update.message.reply_text(text, parse_mode='MarkdownV2', disable_web_page_preview=True)
+
+
         userName = update.message.from_user.username
         if update.message.chat.username != "E36_bb079f22":
             '''context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")'''
