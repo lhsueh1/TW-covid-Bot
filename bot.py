@@ -73,24 +73,18 @@ def start(update, context):
     """Send a message when the command /start is issued."""
     user = update.effective_user
     update.message.reply_text("Start.開始")
-    print(update)
 
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.username) + " : start")
-
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + " : start")
 
 def help(update, context):
     """Send a message when the command /help is issued."""
-    update.message.reply_text("Type in question for more help.")
+    update.message.reply_text("Type in question for more help.\n請輸入遇到的問題")
 
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": help")
-
-def echo(update, context):
-    """Echo the user message."""
-    update.message.reply_text(update.message.text)
 
 def error(update, context):
     """Log Errors caused by Updates."""
@@ -99,7 +93,7 @@ def error(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + str(context.error))
     update.message.reply_text("Error. Contact moderator.錯誤")
 
-def test(update, context):
+def today_info(update, context):
     api_url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
     get = api.get_taiwan_outbreak_information()
     text = get[0]
@@ -112,10 +106,6 @@ def test(update, context):
         text = text.replace("統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`\[[群組](t.me/joinchat/VXSevGfKN560hTWH)\]`告知，我們會立刻更正，謝謝。`\n```")
         text = "```\n" + text + "\n```"
 
-        print(text)
-
-        #"統計數字如果有誤，請於[群組](https://t.me/joinchat/VXSevGfKN560hTWH)告知，我們會立刻更正，謝謝。\n——————————————————————————\n本日資訊取用於：\n疾管署及政府資料開放平臺\n——————————————————————————\n-臺灣疫情資訊站\nTaiwan Outbreak Information"
-
 
         update.message.reply_text(text, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
@@ -126,7 +116,6 @@ def test(update, context):
             pass
     else:
         update.message.reply_text("Date error")
-
 
 def search(update, context):
     if len(context.args) != 0:
@@ -143,7 +132,7 @@ def chat(update, context):
     ID = update.message.chat.id
     global COUNT
     #record user
-    if update.message.chat.username != "E36_bb079f22":
+    if (update.message.chat.username != "E36_bb079f22") and (update.message.chat.type == "private"):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + "\t" + str(ID) + "\n" + str(update.message.text))
         #context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update))
 
@@ -182,6 +171,17 @@ def image(update, context):
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + " : " + str(update.message.text))
 
+def test(update, context):
+    update.message.reply_text("test")
+
+    userName = update.message.from_user.username
+    if update.message.chat.username != "E36_bb079f22":
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + " : test")
+
+def echo(update, context):
+    """Echo the user message."""
+    update.message.reply_text(update.message.text)
+
 def main():
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
@@ -195,11 +195,11 @@ def main():
     # on different commands - answer in Telegram
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
-    dp.add_handler(CommandHandler("test", test))
+    dp.add_handler(CommandHandler("today_info", today_info))
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(CommandHandler("image", image))
 
-
+    dp.add_handler(MessageHandler(Filters.text, chat))
 
     # log all errors
     dp.add_error_handler(error)
