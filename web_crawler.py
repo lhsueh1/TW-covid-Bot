@@ -54,6 +54,7 @@ class TodayConfirmed(object):
             article_response = requests.get(
                 "https://www.cdc.gov.tw" + target_href)
             article_soup = BeautifulSoup(article_response.text, "html.parser")
+            print(f"新聞稿連結: https://www.cdc.gov.tw{target_href}")
 
             article_content = article_soup.find("p", class_="con-word").get_text()
             article_date = article_soup.find("div", class_="date text-right").get_text().strip()[5:]
@@ -71,6 +72,8 @@ class TodayConfirmed(object):
                     texts = t.split("個案分布")
             self.additional_text = "個案分布"+texts[1]
             self.additional_text = self.additional_text.replace("；", "。\n")
+            self.additional_text = self.additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
+
 
             if self.additional_text is not None or self.additional_text != "":
                 self.additional_text = "\n" + self.additional_text
