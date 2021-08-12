@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from PIL import ImageFont, ImageDraw, Image
 import api
 import datetime
@@ -26,11 +29,11 @@ def pic(date=None, today_confirmed=None, today_domestic=None, today_imported=Non
     if today_death == None:
         today_death = str(today.today_deaths)
     if confirmed == None:
-        confirmed = epidemic.confirmed 
-    if deaths == None:  
-        deaths = epidemic.deaths 
+        confirmed = epidemic.confirmed
+    if deaths == None:
+        deaths = epidemic.deaths
 
-    
+
 
     background_w = 260
     background_h = 90
