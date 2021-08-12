@@ -41,29 +41,29 @@ logger = logging.getLogger(__name__)
         }
     }
 
-    {'update_id': 192957417, 
-    'message': 
-        {'message_id': 182, 'date': 1628439002, 
-        'chat': 
-            {'id': 1211462447, 
-            'type': 'private', 
-            'username': 'alsoDazzling', 
-            'first_name': 'Lilia'}, 
-        'text': '/start', 
-        'entities': [{'type': 'bot_command', 'offset': 0, 'length': 6}], 
-        'caption_entities': [], 
-        'photo': [], 
-        'new_chat_members': [], 
-        'new_chat_photo': [], 
-        'delete_chat_photo': False, 
-        'group_chat_created': False, 
-        'supergroup_chat_created': False, 
-        'channel_chat_created': False, 
-        'from': 
-            {'id': 1211462447, 
-            'first_name': 'Lilia', 
-            'is_bot': False, 
-            'username': 'alsoDazzling', 
+    {'update_id': 192957417,
+    'message':
+        {'message_id': 182, 'date': 1628439002,
+        'chat':
+            {'id': 1211462447,
+            'type': 'private',
+            'username': 'alsoDazzling',
+            'first_name': 'Lilia'},
+        'text': '/start',
+        'entities': [{'type': 'bot_command', 'offset': 0, 'length': 6}],
+        'caption_entities': [],
+        'photo': [],
+        'new_chat_members': [],
+        'new_chat_photo': [],
+        'delete_chat_photo': False,
+        'group_chat_created': False,
+        'supergroup_chat_created': False,
+        'channel_chat_created': False,
+        'from':
+            {'id': 1211462447,
+            'first_name': 'Lilia',
+            'is_bot': False,
+            'username': 'alsoDazzling',
             'language_code': 'en'}
         }
     }
@@ -103,7 +103,8 @@ def today_info(update, context):
         for i in re:
             text = text.replace(i, "\\" + str(i))
 
-        text = text.replace("統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`\[[群組](t.me/joinchat/VXSevGfKN560hTWH)\]`告知，我們會立刻更正，謝謝。`\n```")
+        text = text.replace("統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`[群組](t.me/joinchat/VXSevGfKN560hTWH)`告知，我們會立刻更正，謝謝。`\n```")
+        text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
 
@@ -115,7 +116,7 @@ def today_info(update, context):
             '''context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")'''
             pass
     else:
-        update.message.reply_text("Date error")
+        update.message.reply_text("日期錯誤。本日衛福部新聞稿尚未更新？")
 
 def search(update, context):
     if len(context.args) != 0:

@@ -20,6 +20,7 @@ class TodayConfirmed(object):
     date = None
     article = ""
     additional_text = ""
+    article_link = ""
 
     def __init__(self):
         self.web_crawler()
@@ -54,7 +55,8 @@ class TodayConfirmed(object):
             article_response = requests.get(
                 "https://www.cdc.gov.tw" + target_href)
             article_soup = BeautifulSoup(article_response.text, "html.parser")
-            print(f"新聞稿連結: https://www.cdc.gov.tw{target_href}")
+            self.article_link = f"https://www.cdc.gov.tw{target_href}"
+            print(f"新聞稿連結: {self.article_link}")
 
             article_content = article_soup.find("p", class_="con-word").get_text()
             article_date = article_soup.find("div", class_="date text-right").get_text().strip()[5:]

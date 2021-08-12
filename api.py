@@ -67,14 +67,14 @@ def get_taiwan_outbreak_information():
 統計數字如果有誤，請於群組告知，我們會立刻更正，謝謝。
 ——————————————————————————
 本日資訊取用於：
-疾管署及政府資料開放平臺
+疾管署新聞稿及政府資料開放平臺
 ——————————————————————————
 -臺灣疫情資訊站
 Taiwan Outbreak Information
 
 {yyyymmdd}
 """
-    return (text, today.is_same_date)
+    return (text, today.is_same_date, today.article_link)
 
 def get_epidemic_status_by_country(country: str):
     return False
