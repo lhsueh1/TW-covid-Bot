@@ -41,8 +41,8 @@ def get_taiwan_outbreak_information():
     mmdd = today.date.strftime("%m%d")
     yyyymmdd = today.date.strftime("%Y/%m/%d")
 
-    total_tests_conducted = "4,070,641"
-
+    death_rate = (int(epidemic.deaths.replace(",", "")) / int(epidemic.confirmed.replace(",", ""))) * 100
+    death_rate = "{:.2f}".format(death_rate)
 
     text = f"""《臺灣疫情資訊站{mmdd}資訊報》
 
@@ -60,6 +60,7 @@ def get_taiwan_outbreak_information():
 已排除：{epidemic.excluded}人
 已確診：{epidemic.confirmed}人
 已死亡：{epidemic.deaths}人
+死亡率：{death_rate}%
 ——————————————————————————
 【國際疫情狀況】
 全球確診數：{global_stats.confirmed}人
