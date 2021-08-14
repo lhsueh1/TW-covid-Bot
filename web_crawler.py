@@ -26,11 +26,12 @@ class TodayConfirmed(object):
     article = ""
     additional_text = ""
     article_link = ""
+    error = False
 
-    def __init__(self):
-        self.web_crawler()
+    def __init__(self, url):
+        self.web_crawler(url)
 
-    def web_crawler(self):
+    def web_crawler(self, url):
         try:
             session = requests.Session()
             retry = Retry(connect=3, backoff_factor=0.5)
@@ -39,8 +40,7 @@ class TodayConfirmed(object):
             session.mount('https://', adapter)
 
             # 衛福部最新消息
-            response = session.get(
-                "https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
+            response = session.get(url)
 
             if response.status_code != requests.codes.ok:
                 raise MyException("衛福部最新消息 Status code not OK")
@@ -122,9 +122,11 @@ class TodayConfirmed(object):
 
         except requests.exceptions.HTTPError as e:
             print("HTTPError: ", e.reason)
+            error = e
         except Exception as e:
             print("ERROR: TodayConfirmed init failed")
             print(e)
+            error = e
 
 # class TotalTestsConducted(object):
 #     total_tests_conducted = None

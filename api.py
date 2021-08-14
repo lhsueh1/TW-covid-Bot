@@ -7,11 +7,14 @@ import json
 from datetime import datetime
 import pytz
 import web_crawler
+from requests.packages import urllib3
 
-ERROR_INTERNET_CONNECTION = 1
-ERROR_OPEN_DATA_SERVICE = 2
-ERROR_CDC_WEBPAGE = 3
-ERROR_NOT_SAME_DATE = 4
+ERROR_INTERNET_CONNECTION = "ERROR_INTERNET_CONNECTION"
+ERROR_OPEN_DATA_SERVICE = "ERROR_OPEN_DATA_SERVICE "
+ERROR_CDC_WEBPAGE = "ERROR_CDC_WEBPAGE"
+ERROR_NOT_SAME_DATE = "ERROR_NOT_SAME_DATE"
+
+CDC_NEWS_URL = "https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A"
 
 def get_taiwan_epidemic_status():
     url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
@@ -54,7 +57,12 @@ def get_taiwan_outbreak_information():
 
     epidemic = TaiwanEpidemic()
     global_stats = GlobalStats()
-    today = web_crawler.TodayConfirmed()
+    today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
+
+    if today.error is not False:
+        text = f"無法連上CDC官網\n{today.error}"
+        status = ERROR_CDC_WEBPAGE
+        return (text, ERROR_CDC_WEBPAGE, "")
 
     if not today.is_same_date:
         text = "ERROR: 日期錯誤。本日衛福部新聞稿尚未更新？"
@@ -112,8 +120,6 @@ def get_API_status():
         api_status_dict = s.json()
         return api_status_dict["state"]
     return False
-
-
 
 class TaiwanEpidemic(object):
     """docstring for TaiwanEpidemic."""
