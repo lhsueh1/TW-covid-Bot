@@ -129,14 +129,16 @@ def search(update, context):
             context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Hi there")
         else:
             context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(context.args[0]))
+
+            get = api.get_epidemic_status_by_country(str(context.args[0]))
+            if get != None:
+                update.message.reply_text(get)
+            else:
+                update.message.reply_text("Where is "+str(context.args[0])+"?")
     else:
         context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Give me something to search for!")
 
-        get = api.get_epidemic_status_by_country(str(context.args[0]))
-        if get != None:
-            update.message.reply_text(get)
-        else:
-            update.message.reply_text("Where is "+str(context.args[0])+"?")
+
 COUNT = 0
 def chat(update, context):
     userName = update.message.from_user.username
