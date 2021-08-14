@@ -60,9 +60,9 @@ def get_taiwan_outbreak_information():
     today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
 
     if today.error is not False:
-        text = f"無法連上CDC官網\n{today.error}"
+        text = "無法連上CDC官網"
         status = ERROR_CDC_WEBPAGE
-        return (text, ERROR_CDC_WEBPAGE, "")
+        return (text, f"ERROR_CDC_WEBPAGE\n{today.error}", "")
 
     if not today.is_same_date:
         text = "ERROR: 日期錯誤。本日衛福部新聞稿尚未更新？"
