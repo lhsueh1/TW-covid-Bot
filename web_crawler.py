@@ -122,11 +122,11 @@ class TodayConfirmed(object):
 
         except requests.exceptions.HTTPError as e:
             print("HTTPError: ", e.reason)
-            error = e
+            self.error = e
         except Exception as e:
             print("ERROR: TodayConfirmed init failed")
             print(e)
-            error = e
+            self.error = e
 
 # class TotalTestsConducted(object):
 #     total_tests_conducted = None
