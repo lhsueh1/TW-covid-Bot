@@ -123,11 +123,13 @@ def get_epidemic_status_by_country(country: str):
             # Searched by Chinese
             if country == row[0]:
                  print(row)
+                 return row
             # Searched by English
             if country == row[1]:
                  print(row)
+                 return row
 
-    return row
+    return None
 
 def get_API_status():
     url = "https://od.cdc.gov.tw/"
