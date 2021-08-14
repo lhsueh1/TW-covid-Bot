@@ -98,7 +98,7 @@ def error(update, context):
     update.message.reply_text("Error. Contact moderator.錯誤")
 
 def today_info(update, context):
-    api_url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
+    update.message.reply_text("Processing...")
     get = api.get_taiwan_outbreak_information()
     text = get[0]
 
@@ -159,6 +159,7 @@ def chat(update, context):
             pass
 
 def image(update, context):
+    update.message.reply_text("Processing...")
     if len(context.args) != 0:
         date = context.args[0]
         today_confirmed = context.args[1]
