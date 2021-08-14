@@ -52,7 +52,7 @@ def get_taiwan_outbreak_information():
         status = 0
     else:
         text = "ERROR: 政府資料開放平台無法連接"
-        status = ERROR_OPEN_DATA_SERVICE + "status code = " + api_status
+        status = ERROR_OPEN_DATA_SERVICE + "\nstatus code = " + api_status
         return (text, status, "")
 
     epidemic = TaiwanEpidemic()
