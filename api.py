@@ -129,6 +129,15 @@ def get_epidemic_status_by_country(country: str):
                  print(row)
                  return row
 
+        # for fun
+        if country.lower() == "today_death_rate" or country == "todaydeathrate":
+            today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
+            return "{:.2f}%".format(float(int((today.today_deaths.replace(",", "")) / int(today.today_confirmed.replace(",", "")) * 100)))
+
+        if country.lower() == "rate_death_today" or country == "ratedeathtoday":
+            today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
+            return "{:.2f}%".format(float(int((today.today_confirmed.replace(",", "") / int(today.today_deaths.replace(",", "")) * 100))))
+
     return None
 
 def get_API_status():
