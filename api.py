@@ -127,7 +127,7 @@ def get_epidemic_status_by_country(country: str):
             if country == row[1]:
                  print(row)
 
-    return False
+    return row
 
 def get_API_status():
     url = "https://od.cdc.gov.tw/"
