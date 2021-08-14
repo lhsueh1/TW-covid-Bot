@@ -137,7 +137,7 @@ def get_epidemic_status_by_country(country: str):
 
         if country.lower() == "rate_death_today" or country.lower() == "ratedeathtoday":
             today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
-            return "{:.2f}%".format(float(int(str(today.today_confirmed).replace(",", "")) / int(str(today.today_deaths).replace(",", "")) * 100))
+            return "{:.2f}% lol".format(float(int(str(today.today_confirmed).replace(",", "")) / int(str(today.today_deaths).replace(",", "")) * 100))
 
     return None
 
