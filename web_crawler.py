@@ -41,9 +41,17 @@ class TodayConfirmed(object):
             # 衛福部最新消息
             response = session.get(
                 "https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
+
+            if response.status_code != requests.codes.ok:
+                raise MyException("衛福部最新消息 Status code not OK")
+
             soup = BeautifulSoup(response.text, "html.parser")
 
             titles = soup.find("tbody")
+
+            if titles is None:
+                raise MyException("Unable to find tbody. 爬蟲網址有誤或是「衛福部最新消息」壞了")
+
             target = titles.select('a[title*="例COVID-19確定病例"]')[0]
 
             # 目標文章標題文字
@@ -139,6 +147,9 @@ class TodayConfirmed(object):
 #         # except Exception as e:
 #         #     print("ERROR: TotalTestsConducted init failed")
 #         #     print(e)
+
+class MyException(Exception):
+    pass
 
 if __name__ == '__main__':
     TodayConfirmed()
