@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 import re
 from datetime import datetime, timedelta
@@ -30,8 +32,14 @@ class TodayConfirmed(object):
 
     def web_crawler(self):
         try:
+            session = requests.Session()
+            retry = Retry(connect=3, backoff_factor=0.5)
+            adapter = HTTPAdapter(max_retries=retry)
+            session.mount('http://', adapter)
+            session.mount('https://', adapter)
+
             # 衛福部最新消息
-            response = requests.get(
+            response = session.get(
                 "https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
             soup = BeautifulSoup(response.text, "html.parser")
 
@@ -103,6 +111,9 @@ class TodayConfirmed(object):
                 self.is_same_date = False
             else:
                 self.is_same_date = True
+
+        except requests.exceptions.HTTPError as e:
+            print("HTTPError: ", e.reason)
         except Exception as e:
             print("ERROR: TodayConfirmed init failed")
             print(e)

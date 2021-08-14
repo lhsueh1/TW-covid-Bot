@@ -3,9 +3,15 @@
 
 import requests
 import csv
+import json
 from datetime import datetime
 import pytz
 import web_crawler
+
+ERROR_INTERNET_CONNECTION = 1
+ERROR_OPEN_DATA_SERVICE = 2
+ERROR_CDC_WEBPAGE = 3
+ERROR_NOT_SAME_DATE = 4
 
 def get_taiwan_epidemic_status():
     url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
@@ -32,11 +38,28 @@ def get_taiwan_epidemic_status():
     return False
 
 def get_taiwan_outbreak_information():
-    # today = datetime.now(pytz.timezone('Asia/Taipei'))
+    api_status = get_API_status()
+
+    if not api_status:
+        text = "無法取得Taiwan CDC Open Data Service的狀態"
+        status = ERROR_INTERNET_CONNECTION
+        return (text, ERROR_INTERNET_CONNECTION, "")
+    elif api_status == "success":
+        print("Taiwan CDC Open Data Service, connection succeed.")
+        status = 0
+    else:
+        text = f"ERROR: Taiwan CDC Open Data Service 的狀態為 {api_status}"
+        status = ERROR_OPEN_DATA_SERVICE
+        return (text, ERROR_OPEN_DATA_SERVICE, "")
 
     epidemic = TaiwanEpidemic()
     global_stats = GlobalStats()
     today = web_crawler.TodayConfirmed()
+
+    if not today.is_same_date:
+        text = "ERROR: 日期錯誤。本日衛福部新聞稿尚未更新？"
+        status = ERROR_NOT_SAME_DATE
+        return (text, ERROR_NOT_SAME_DATE, "")
 
     mmdd = today.date.strftime("%m%d")
     yyyymmdd = today.date.strftime("%Y/%m/%d")
@@ -78,10 +101,19 @@ Taiwan Outbreak Information
 
 {yyyymmdd}
 """
-    return (text, today.is_same_date, today.article_link)
+    return (text, status, today.article_link)
 
 def get_epidemic_status_by_country(country: str):
     return False
+
+def get_API_status():
+    url = "https://od.cdc.gov.tw/"
+    with requests.get(url) as s:
+        api_status_dict = s.json()
+        return api_status_dict["state"]
+    return False
+
+
 
 class TaiwanEpidemic(object):
     """docstring for TaiwanEpidemic."""

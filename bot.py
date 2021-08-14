@@ -10,6 +10,7 @@ import re
 import random
 import api
 import pic
+import urllib3
 
 # Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -101,7 +102,7 @@ def today_info(update, context):
     get = api.get_taiwan_outbreak_information()
     text = get[0]
 
-    if get[1]:
+    if get[1] == 0:
         re = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
         for i in re:
             text = text.replace(i, "\\" + str(i))
@@ -119,7 +120,7 @@ def today_info(update, context):
             '''context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")'''
             pass
     else:
-        update.message.reply_text("日期錯誤。本日衛福部新聞稿尚未更新？")
+        update.message.reply_text(text)
 
 def search(update, context):
     if len(context.args) != 0:
@@ -168,7 +169,8 @@ def image(update, context):
         pic.pic(date, today_confirmed, today_domestic, today_imported, today_death, confirmed, deaths)
     else:
         pic.pic()
-    context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("out.png", "rb"), caption="pic")
+
+    context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("out.png", "rb"), caption="pic", timeout=20)
 
     print()
     userName = update.message.from_user.username
