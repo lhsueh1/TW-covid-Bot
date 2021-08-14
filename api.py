@@ -130,12 +130,12 @@ def get_epidemic_status_by_country(country: str):
                  return row
 
         # for fun
-        if country.lower() == "today_death_rate" or country == "todaydeathrate":
+        if country.lower() == "today_death_rate" or country.lower() == "todaydeathrate":
             today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
             return "{:.2f}%".format(float(int(str(today.today_deaths).replace(",", "")) / int(str(today.today_confirmed).replace(",", "")) * 100))
 
 
-        if country.lower() == "rate_death_today" or country == "ratedeathtoday":
+        if country.lower() == "rate_death_today" or country.lower() == "ratedeathtoday":
             today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
             return "{:.2f}%".format(float(int(str(today.today_confirmed).replace(",", "")) / int(str(today.today_deaths).replace(",", "")) * 100))
 
