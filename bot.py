@@ -132,6 +132,9 @@ def search(update, context):
     else:
         context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Give me something to search for!")
 
+        get = api.get_epidemic_status_by_country(str(context.args[0]))
+        update.message.reply_text(get)
+
 COUNT = 0
 def chat(update, context):
     userName = update.message.from_user.username

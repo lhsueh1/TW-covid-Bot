@@ -112,6 +112,21 @@ Taiwan Outbreak Information
     return (text, status, today.article_link)
 
 def get_epidemic_status_by_country(country: str):
+    with requests.Session() as s:
+        url = "https://od.cdc.gov.tw/eic/covid19/covid19_global_cases_and_deaths.csv"
+        download = s.get(url)
+
+        decoded_content = download.content.decode('utf-8')
+        csv_file = csv.reader(decoded_content.splitlines(), delimiter=',')
+
+        for row in csv_file:
+            # Searched by Chinese
+            if country == row[0]:
+                 print(row)
+            # Searched by English
+            if country == row[1]:
+                 print(row)
+
     return False
 
 def get_API_status():
@@ -216,5 +231,6 @@ class GlobalStats(object):
 
 
 if __name__ == '__main__':
-    text = get_taiwan_outbreak_information()
-    print(text[0])
+    get_epidemic_status_by_country("Canada")
+    # text = get_taiwan_outbreak_information()
+    # print(text[0])
