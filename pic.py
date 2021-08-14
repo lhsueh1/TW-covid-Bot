@@ -19,7 +19,8 @@ def pic(date=None, today_confirmed=None, today_domestic=None, today_imported=Non
     epidemic = api.TaiwanEpidemic()
     if date == None:
         date = str(datetime.datetime.now().strftime("%m")) + str(datetime.datetime.now().strftime("%d"))
-    today = TodayConfirmed()
+    cdc_url = api.CDC_NEWS_URL
+    today = TodayConfirmed(cdc_url)
     if today_confirmed == None:
         today_confirmed = str(today.today_confirmed)
     if today_domestic == None:
