@@ -44,16 +44,16 @@ def get_taiwan_outbreak_information():
     api_status = get_API_status()
 
     if not api_status:
-        text = "無法取得Taiwan CDC Open Data Service的狀態"
-        status = ERROR_INTERNET_CONNECTION
-        return (text, ERROR_INTERNET_CONNECTION, "")
+        text = "ERROR: 網路錯誤"
+        status = ERROR_INTERNET_CONNECTION + "\nUnable to get status from Taiwan CDC Open Data Service"
+        return (text, status, "")
     elif api_status == "success":
         print("Taiwan CDC Open Data Service, connection succeed.")
         status = 0
     else:
-        text = f"ERROR: Taiwan CDC Open Data Service 的狀態為 {api_status}"
-        status = ERROR_OPEN_DATA_SERVICE
-        return (text, ERROR_OPEN_DATA_SERVICE, "")
+        text = "ERROR: 政府資料開放平台無法連接"
+        status = ERROR_OPEN_DATA_SERVICE + "status code = " + api_status
+        return (text, status, "")
 
     epidemic = TaiwanEpidemic()
     global_stats = GlobalStats()
