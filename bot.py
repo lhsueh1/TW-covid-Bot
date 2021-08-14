@@ -120,7 +120,7 @@ def today_info(update, context):
             '''context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")'''
             pass
     else:
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update)+"\n\n"+text)
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + get[1])
         update.message.reply_text(text)
 
 def search(update, context):
