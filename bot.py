@@ -92,7 +92,7 @@ def stop(bot, update):
         threading.Thread(target=shutdown).start()
 
     else:
-        update.message.reply_text("Authority needed")
+        bot.message.reply_text("Authority needed")
 
 def start(update, context):
     """Send a message when the command /start is issued."""
