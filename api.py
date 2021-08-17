@@ -121,13 +121,20 @@ def get_epidemic_status_by_country(country: str):
 
         for row in csv_file:
             # Searched by Chinese
-            if country == row[0]:
-                 print(row)
-                 return row
+            if country in row[0]:
+                print(row)
+                text = f"""{row[0]}的疫情狀況：
+累積確診數：{row[2]}
+累計死亡數：{row[3]}
+                """
+                return text
             # Searched by English
-            if country == row[1]:
-                 print(row)
-                 return row
+            if country.lower() in row[1].lower():
+                print(row)
+                text = f"""Covid19 in {row[1]}:
+Confirmed: {row[2]}
+Deaths: {row[3]}"""
+                return text
 
         # for fun
         if country.lower() == "today_death_rate" or country.lower() == "todaydeathrate":
@@ -138,7 +145,6 @@ def get_epidemic_status_by_country(country: str):
         if country.lower() == "rate_death_today" or country.lower() == "ratedeathtoday":
             today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
             return "{:.2f}% lol".format(float(int(str(today.today_confirmed).replace(",", "")) / int(str(today.today_deaths).replace(",", "")) * 100))
-
     return None
 
 def get_API_status():
@@ -243,6 +249,7 @@ class GlobalStats(object):
 
 
 if __name__ == '__main__':
-    get_epidemic_status_by_country("Canada")
+    t=get_epidemic_status_by_country("Canada")
+    print(t)
     # text = get_taiwan_outbreak_information()
     # print(text[0])
