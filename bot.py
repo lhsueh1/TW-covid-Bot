@@ -74,12 +74,16 @@ logger = logging.getLogger(__name__)
     }
 '''
 
+
 def shutdown():
     global updater
     updater.stop()
     updater.is_idle = False
 
 def stop(bot, update):
+    '''
+    DO NOT TOUCH
+    '''
     userName = bot.message.from_user.username
     if userName == "alsoDazzling" or userName == "nullExistenceException":
         bot.message.reply_text("Bye")
