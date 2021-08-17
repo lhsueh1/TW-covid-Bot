@@ -129,7 +129,7 @@ def get_epidemic_status_by_country(country: str):
                 """
                 return text
             # Searched by English
-            if country in row[1]:
+            if country.lower() in row[1].lower():
                 print(row)
                 text = f"""Covid19 in {row[1]}:
 Confirmed: {row[2]}
