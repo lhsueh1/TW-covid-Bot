@@ -136,7 +136,7 @@ def search(update, context):
             if update.message.chat.username != "E36_bb079f22":
                 context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": search hi")
         else:
-            country = update.message.text.split()[1:]
+            country = update.message.text[len(update.message.text.split()[0])+1:]
             context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(country))
 
             get = api.get_epidemic_status_by_country(str(country))
