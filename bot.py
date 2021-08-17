@@ -89,10 +89,10 @@ def help(update, context):
     if len(context.args) == 0:
         update.message.reply_text("Type in question for more help.\n請輸入遇到的問題")
         if update.message.chat.username != "E36_bb079f22":
-            context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + "\t" + str(ID) + ": help")
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + "\t" + str(ID) + ": help")
     else:
         if update.message.chat.username != "E36_bb079f22":
-            context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + "\t" + str(ID) + "\n" + str(update.message.text))
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + "\t" + str(ID) + "\n" + str(update.message.text))
 
 def error(update, context):
     """Log Errors caused by Updates."""
@@ -121,8 +121,8 @@ def today_info(update, context):
 
         userName = update.message.from_user.username
         if update.message.chat.username != "E36_bb079f22":
-            '''context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": test")'''
-            pass
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": today_info")
+            
     else:
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + get[1])
         update.message.reply_text(text)
@@ -131,6 +131,9 @@ def search(update, context):
     if len(context.args) != 0:
         if context.args[0] == "hi":
             context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Hi there")
+
+            if update.message.chat.username != "E36_bb079f22":
+                context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": search hi")
         else:
             country = update.message.text[8:]
             context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(country))
@@ -138,10 +141,18 @@ def search(update, context):
             get = api.get_epidemic_status_by_country(str(country))
             if get != None:
                 update.message.reply_text(get)
+
+                if update.message.chat.username != "E36_bb079f22":
+                    context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": search " + country)
+
             else:
                 update.message.reply_text("Where is "+str(country)+"?")
+                if update.message.chat.username != "E36_bb079f22":
+                    context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": BAD search " + country)
     else:
         context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Give me something to search for!")
+        if update.message.chat.username != "E36_bb079f22":
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": empty search")
 
 def image(update, context):
     update.message.reply_text("Processing...")
@@ -162,7 +173,7 @@ def image(update, context):
     print()
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + " : " + str(update.message.text))
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName)" : " + str(update.message.text))
 
 def test(update, context):
     update.message.reply_text("test")
