@@ -11,6 +11,7 @@ import random
 import api
 import pic
 import urllib3
+import threading
 
 # Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -72,6 +73,20 @@ logger = logging.getLogger(__name__)
         }
     }
 '''
+def get_updater():
+    return 
+
+def shutdown():
+    global updater
+    updater.stop()
+    updater.is_idle = False
+
+def stop(bot, update):
+    userName = bot.message.from_user.username
+    if userName == "alsoDazzling" or userName == "nullExistenceException":
+        threading.Thread(target=shutdown).start()
+    else:
+        update.message.reply_text("Authority needed")
 
 def start(update, context):
     """Send a message when the command /start is issued."""
@@ -238,6 +253,7 @@ def main():
     # Post version 12 this will no longer be necessary
     f = open("api-token", "r")
     token = f.read().strip()
+    global updater
     updater = Updater(token, use_context=True)
 
     # Get the dispatcher to register handlers
@@ -249,9 +265,12 @@ def main():
     dp.add_handler(CommandHandler("today_info", today_info))
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(CommandHandler("image", image))
+    dp.add_handler(CommandHandler("stop", stop))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
+
+    
 
     # log all errors
     dp.add_error_handler(error)
@@ -264,7 +283,6 @@ def main():
     # SIGTERM or SIGABRT. This should be used most of the time, since
     # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
-
 
 if __name__ == '__main__':
     main()
