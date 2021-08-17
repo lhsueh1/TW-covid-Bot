@@ -128,13 +128,14 @@ def search(update, context):
         if context.args[0] == "hi":
             context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Hi there")
         else:
-            context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(context.args[0]))
+            country = update.message.text[8:]
+            context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(country))
 
-            get = api.get_epidemic_status_by_country(str(context.args[0]))
+            get = api.get_epidemic_status_by_country(str(country))
             if get != None:
                 update.message.reply_text(get)
             else:
-                update.message.reply_text("Where is "+str(context.args[0])+"?")
+                update.message.reply_text("Where is "+str(country)+"?")
     else:
         context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Give me something to search for!")
 
@@ -202,9 +203,9 @@ def main():
     # Create the Updater and pass it your bot's token.
     # Make sure to set use_context=True to use the new context based callbacks
     # Post version 12 this will no longer be necessary
-    f = open("api-token", "r")
-    token = f.read().strip()
-    updater = Updater(token, use_context=True)
+    # f = open("api-token", "r")
+    # token = f.read().strip()
+    updater = Updater("1986012895:AAG8fHjrlan9mrvwvGP7u-Azy4FdEJpXk6s", use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
