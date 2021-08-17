@@ -97,7 +97,7 @@ def help(update, context):
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning("Update '%s' caused error '%s'", update, context.error)
-    if update.message.chat.username != "E36_bb079f22":
+    if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + str(context.error))
     update.message.reply_text("Error. Contact moderator.錯誤")
 
