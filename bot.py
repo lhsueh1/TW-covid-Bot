@@ -84,11 +84,15 @@ def start(update, context):
 
 def help(update, context):
     """Send a message when the command /help is issued."""
-    update.message.reply_text("Type in question for more help.\n請輸入遇到的問題")
-
     userName = update.message.from_user.username
-    if update.message.chat.username != "E36_bb079f22":
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + ": help")
+    ID = update.message.chat.id
+    if len(context.args) == 0:
+        update.message.reply_text("Type in question for more help.\n請輸入遇到的問題")
+        if update.message.chat.username != "E36_bb079f22":
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + "\t" + str(ID) + ": help")
+    else:
+        if update.message.chat.username != "E36_bb079f22":
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + "\t" + str(ID) + "\n" + str(update.message.text))
 
 def error(update, context):
     """Log Errors caused by Updates."""
@@ -138,7 +142,6 @@ def search(update, context):
                 update.message.reply_text("Where is "+str(country)+"?")
     else:
         context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Give me something to search for!")
-
 
 COUNT = 0
 def chat(update, context):
