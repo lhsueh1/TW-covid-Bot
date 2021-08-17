@@ -102,8 +102,9 @@ def error(update, context):
     update.message.reply_text("Error. Contact moderator.錯誤")
 
 def today_info(update, context):
-    update.message.reply_text("Processing...")
+    context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...")
     get = api.get_taiwan_outbreak_information()
+    
     text = get[0]
 
     if get[1] == 0:
@@ -122,7 +123,8 @@ def today_info(update, context):
         userName = update.message.from_user.username
         if update.message.chat.username != "E36_bb079f22":
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": today_info")
-            
+
+        context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=update.message.message_id+1)
     else:
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + get[1])
         update.message.reply_text(text)
@@ -171,6 +173,7 @@ def image(update, context):
         pic.pic()
 
     context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("out.png", "rb"), caption="pic", timeout=20)
+    context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=update.message.message_id+1)
 
     print()
     userName = update.message.from_user.username
