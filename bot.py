@@ -132,9 +132,10 @@ def search(update, context):
     if len(context.args) != 0:
         if context.args[0] == "hi":
             context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Hi there")
-
             if update.message.chat.username != "E36_bb079f22":
                 context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": search hi")
+        elif context.args[0] == "歐東":
+            update.message.reply_text("@nullExistenceException 出來打架")
         else:
             country = update.message.text[len(update.message.text.split()[0])+1:]
             context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(country))
