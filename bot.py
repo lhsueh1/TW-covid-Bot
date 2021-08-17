@@ -173,7 +173,7 @@ def image(update, context):
     print()
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName)" : " + str(update.message.text))
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + " : " + str(update.message.text))
 
 def test(update, context):
     update.message.reply_text("test")
