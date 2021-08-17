@@ -128,6 +128,7 @@ def today_info(update, context):
         update.message.reply_text(text)
 
 def search(update, context):
+    userName = update.message.from_user.username
     if len(context.args) != 0:
         if context.args[0] == "hi":
             context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Hi there")
