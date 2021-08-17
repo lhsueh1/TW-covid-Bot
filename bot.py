@@ -166,12 +166,14 @@ def search(update, context):
             get = api.get_epidemic_status_by_country(str(country))
             if get != None:
                 update.message.reply_text(get)
+                context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=update.message.message_id+1)
 
                 if update.message.chat.username != "E36_bb079f22":
                     context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": search " + country)
 
             else:
                 update.message.reply_text("Where is "+str(country)+"?")
+                context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=update.message.message_id+1)
                 if update.message.chat.username != "E36_bb079f22":
                     context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": BAD search " + country)
     else:
