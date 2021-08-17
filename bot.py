@@ -143,32 +143,6 @@ def search(update, context):
     else:
         context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Give me something to search for!")
 
-COUNT = 0
-def chat(update, context):
-    userName = update.message.from_user.username
-    ID = update.message.chat.id
-    global COUNT
-    #record user
-    if (update.message.chat.username != "E36_bb079f22") and (update.message.chat.type == "private"):
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + "\t" + str(ID) + "\n" + str(update.message.text))
-        #context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update))
-
-
-        if COUNT < 2:
-            update.message.reply_text("I'm not a chat bot.")
-            COUNT += 1
-    #talk to user
-    else:
-        message = str(update.message.text)
-        try:
-            recipient  = int(message.split()[0])
-
-            text = message[len(message.split()[0]):]
-            context.bot.sendMessage(chat_id=recipient, text=text)
-            COUNT = 0
-        except:
-            pass
-
 def image(update, context):
     update.message.reply_text("Processing...")
     if len(context.args) != 0:
@@ -201,6 +175,46 @@ def echo(update, context):
     """Echo the user message."""
     update.message.reply_text(update.message.text)
 
+COUNT = 0
+def chat(update, context):
+    userName = update.message.from_user.username
+    ID = update.message.chat.id
+    global COUNT
+    #record user
+    if (update.message.chat.username != "E36_bb079f22") and (update.message.chat.type == "private"):
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + "\t" + str(ID) + "\n" + str(update.message.text))
+        #context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update))
+
+
+        if COUNT < 2:
+            update.message.reply_text("I'm not a chat bot.")
+            COUNT += 1
+    #talk to user
+    else:
+        message = str(update.message.text)
+        try:
+            recipient  = int(message.split()[0])
+
+            text = message[len(message.split()[0]):]
+            context.bot.sendMessage(chat_id=recipient, text=text)
+            COUNT = 0
+        except:
+            pass
+
+def sticker(update, context):
+    #reply sticker to user
+    if update.message.chat.username == "nullExistenceException" and (update.message.chat.type == "private"):
+        stickerCute = random.choice(["src/cute.tgs", "src/cute2.tgs", "src/cute3.tgs", "src/cute4.webp", "src/cute5.webp", "src/cute6.tgs", "src/cute7.tgs"])
+        context.bot.sendSticker(chat_id=update.message.chat_id, sticker=open(stickerCute, "rb"))
+
+    if update.message.chat.username != "E36_bb079f22" and (update.message.chat.type == "private"):
+        if update.message.chat.username != "nullExistenceException":
+            stickerUgly = random.choice(["src/sticker.tgs", "src/sticker2.tgs", "src/sticker3.tgs", "src/sticker4.tgs", "src/sticker5.tgs", "src/sticker6.tgs", "src/sticker7.tgs", "src/sticker8.tgs", "src/sticker9.tgs"])
+            context.bot.sendSticker(chat_id=update.message.chat_id, sticker=open(stickerUgly, "rb"))
+
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(update.message.from_user.username) + ":")
+        context.bot.sendSticker(chat_id="@E36_bb079f22", sticker=update.message.sticker)
+
 def main():
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
@@ -221,6 +235,7 @@ def main():
     dp.add_handler(CommandHandler("image", image))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
+    dp.add_handler(MessageHandler(Filters.sticker, sticker))
 
     # log all errors
     dp.add_error_handler(error)
