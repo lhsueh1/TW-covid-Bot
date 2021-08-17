@@ -73,8 +73,6 @@ logger = logging.getLogger(__name__)
         }
     }
 '''
-def get_updater():
-    return 
 
 def shutdown():
     global updater
