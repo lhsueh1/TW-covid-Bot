@@ -121,7 +121,7 @@ def get_epidemic_status_by_country(country: str):
 
         for row in csv_file:
             # Searched by Chinese
-            if country == row[0]:
+            if country in row[0]:
                 print(row)
                 text = f"""{row[0]}的疫情狀況：
 累積確診數：{row[2]}
@@ -129,7 +129,7 @@ def get_epidemic_status_by_country(country: str):
                 """
                 return text
             # Searched by English
-            if country == row[1]:
+            if country in row[1]:
                 print(row)
                 text = f"""Covid19 in {row[1]}:
 Confirmed: {row[2]}
