@@ -123,9 +123,10 @@ def error(update, context):
     update.message.reply_text("Error. Contact moderator.錯誤")
 
 def today_info(update, context):
-    context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...")
+    processingMessageId = update.message.chat.id
+    context.bot.sendMessage(chat_id=processingMessageId, text="Processing...")
     get = api.get_taiwan_outbreak_information()
-    
+
     text = get[0]
 
     if get[1] == 0:
@@ -145,7 +146,7 @@ def today_info(update, context):
         if update.message.chat.username != "E36_bb079f22":
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": today_info")
 
-        context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=update.message.message_id+1)
+        context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessageId)
     else:
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + get[1])
         update.message.reply_text(text)
@@ -278,7 +279,7 @@ def main():
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
 
-    
+
 
     # log all errors
     dp.add_error_handler(error)
