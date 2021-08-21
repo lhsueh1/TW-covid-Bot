@@ -124,7 +124,6 @@ def error(update, context):
 
 def today_info(update, context):
     processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...")
-    print(processingMessage)
     get = api.get_taiwan_outbreak_information()
 
     text = get[0]
@@ -163,28 +162,29 @@ def search(update, context):
             update.message.reply_text("@nullExistenceException 出來打架")
         else:
             country = update.message.text[len(update.message.text.split()[0])+1:]
-            context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(country))
+            processingMessage = context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(country))
 
             get = api.get_epidemic_status_by_country(str(country))
             if get != None:
                 update.message.reply_text(get)
-                context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=update.message.message_id+1)
 
                 if update.message.chat.username != "E36_bb079f22":
                     context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": search " + country)
 
             else:
                 update.message.reply_text("Where is "+str(country)+"?")
-                context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=update.message.message_id+1)
                 if update.message.chat.username != "E36_bb079f22":
                     context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": BAD search " + country)
+
+            if processingMessage is not None:
+                context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
     else:
         context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Give me something to search for!")
         if update.message.chat.username != "E36_bb079f22":
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": empty search")
 
 def image(update, context):
-    update.message.reply_text("Processing...")
+    processingMessage = update.message.reply_text("Processing...")
     if len(context.args) != 0:
         date = context.args[0]
         today_confirmed = context.args[1]
@@ -198,7 +198,9 @@ def image(update, context):
         pic.pic()
 
     context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("out.png", "rb"), caption="pic", timeout=20)
-    context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=update.message.message_id+1)
+
+    if processingMessage is not None:
+        context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
 
     print()
     userName = update.message.from_user.username
