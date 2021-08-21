@@ -88,12 +88,13 @@ class TodayConfirmed(object):
 
             # Addidtional text 處理
             # 個案分佈 及 疫調資訊
-            for t in texts:
-                if "個案分布" in t:
-                    texts = t.split("個案分布")
-            self.additional_text = "個案分布"+texts[1]
-            self.additional_text = self.additional_text.replace("；", "。\n")
-            self.additional_text = self.additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
+            if "個案分佈" in texts:
+                for t in texts:
+                    if "個案分布" in t:
+                        texts = t.split("個案分布")
+                self.additional_text = "個案分布"+texts[1]
+                self.additional_text = self.additional_text.replace("；", "。\n")
+                self.additional_text = self.additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
 
 
             if self.additional_text is not None or self.additional_text != "":
