@@ -97,7 +97,7 @@ class TodayConfirmed(object):
                 self.additional_text = self.additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
 
 
-            if self.additional_text is not None or self.additional_text != "":
+            if self.additional_text is not None and self.additional_text != "":
                 self.additional_text = "\n" + self.additional_text
 
             # 死亡分析

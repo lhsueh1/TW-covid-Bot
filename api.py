@@ -249,7 +249,7 @@ class GlobalStats(object):
 
 
 if __name__ == '__main__':
-    t=get_epidemic_status_by_country("Canada")
-    print(t)
-    # text = get_taiwan_outbreak_information()
-    # print(text[0])
+    # t=get_epidemic_status_by_country("Canada")
+    # print(t)
+    text = get_taiwan_outbreak_information()
+    print(text[0])
