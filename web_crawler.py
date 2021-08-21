@@ -92,8 +92,11 @@ class TodayConfirmed(object):
                 for t in texts:
                     if "個案分布" in t:
                         texts = t.split("個案分布")
-                self.additional_text = "個案分布"+texts[1]
+                self.additional_text = "個案分布"
+
+            self.additional_text += texts[1]
             self.additional_text = self.additional_text.replace("；", "。\n")
+            self.additional_text = self.additional_text.replace("指揮中心表示，", "")
             self.additional_text = self.additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
 
 
