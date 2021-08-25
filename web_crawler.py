@@ -120,7 +120,7 @@ class TodayConfirmed(object):
             d2 = d2.replace(tzinfo=None)
             self.date = d1
             if d1 < d2:
-                print("日期錯誤")
+                print(f"日期錯誤:{d1}")
                 self.is_same_date = False
             else:
                 self.is_same_date = True
