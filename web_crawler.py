@@ -29,7 +29,8 @@ class TodayConfirmed(object):
     error = False
 
     def __init__(self, url):
-        self.web_crawler(url)
+        if url != 0:
+            self.web_crawler(url)
 
     def web_crawler(self, url):
         try:

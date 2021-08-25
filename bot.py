@@ -124,7 +124,11 @@ def error(update, context):
 
 def today_info(update, context):
     processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...")
-    get = api.get_taiwan_outbreak_information()
+
+    if len(context.args) != 0:
+        get = api.get_taiwan_outbreak_information(str(context.args[0]))
+    else:
+        get = api.get_taiwan_outbreak_information()
 
     text = get[0]
 
@@ -134,7 +138,8 @@ def today_info(update, context):
             text = text.replace(i, "\\" + str(i))
 
         text = text.replace("統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`[群組](t.me/joinchat/VXSevGfKN560hTWH)`告知，我們會立刻更正，謝謝。`\n```")
-        text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
+        if get[2] is not None:
+            text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
 

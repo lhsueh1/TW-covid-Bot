@@ -40,7 +40,9 @@ def get_taiwan_epidemic_status():
         return text
     return False
 
-def get_taiwan_outbreak_information():
+def get_taiwan_outbreak_information(arg: str = ""):
+    # force 只能通過CDC，如果API接不到一樣會出現錯誤
+    isForce = arg == "force"
     api_status = get_API_status()
 
     if not api_status:
@@ -55,22 +57,32 @@ def get_taiwan_outbreak_information():
         status = ERROR_OPEN_DATA_SERVICE + "\nstatus code = " + api_status
         return (text, status, "")
 
+    mmdd = "(????)"
+    yyyymmdd = "(????/??/??)"
+
     epidemic = TaiwanEpidemic()
     global_stats = GlobalStats()
     today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
 
-    if today.error is not False:
+    if today.error is not False and not isForce:
         text = "無法連上CDC官網"
         status = ERROR_CDC_WEBPAGE
         return (text, f"ERROR_CDC_WEBPAGE\n{today.error}", "")
 
-    if not today.is_same_date:
+    if not today.is_same_date and not isForce:
         text = "ERROR: 日期錯誤。本日衛福部新聞稿尚未更新？"
         status = ERROR_NOT_SAME_DATE
         return (text, ERROR_NOT_SAME_DATE, "")
 
-    mmdd = today.date.strftime("%m%d")
-    yyyymmdd = today.date.strftime("%Y/%m/%d")
+    # 強制執行，且 today 無法取得時的處理
+    if isForce and (today.error or not today.is_same_date):
+        # 製作一個沒有爬蟲的TodayConfirmed object，讓文章的資料被填入None
+        today = web_crawler.TodayConfirmed(0)
+        yyyymmdd = "ERROR: 無法取得衛福部的新聞稿資訊"
+
+    if today.date is not None:
+        mmdd = today.date.strftime("%m%d")
+        yyyymmdd = today.date.strftime("%Y/%m/%d")
 
     death_rate = (int(epidemic.deaths.replace(",", "")) / int(epidemic.confirmed.replace(",", ""))) * 100
     death_rate = "{:.2f}".format(death_rate)
@@ -251,5 +263,5 @@ class GlobalStats(object):
 if __name__ == '__main__':
     # t=get_epidemic_status_by_country("Canada")
     # print(t)
-    text = get_taiwan_outbreak_information()
+    text = get_taiwan_outbreak_information("force")
     print(text[0])
