@@ -150,11 +150,13 @@ def today_info(update, context):
         if update.message.chat.username != "E36_bb079f22":
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": today_info")
 
-        if processingMessage is not None:
-            context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
     else:
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + get[1])
         update.message.reply_text(text)
+
+    if processingMessage is not None:
+        context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
+
 
 def search(update, context):
     userName = update.message.from_user.username

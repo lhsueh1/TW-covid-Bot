@@ -42,7 +42,7 @@ def get_taiwan_epidemic_status():
 
 def get_taiwan_outbreak_information(arg: str = ""):
     # force 只能通過CDC，如果API接不到一樣會出現錯誤
-    isForce = arg == "force"
+    isForce = arg.lower() == "force"
     api_status = get_API_status()
 
     if not api_status:
