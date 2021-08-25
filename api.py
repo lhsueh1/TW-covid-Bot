@@ -71,7 +71,7 @@ def get_taiwan_outbreak_information(arg: str = ""):
 
     if not today.is_same_date and not isForce:
         text = "ERROR: 日期錯誤。本日衛福部新聞稿尚未更新？"
-        status = ERROR_NOT_SAME_DATE
+        status = ERROR_NOT_SAME_DATE + today.date
         return (text, ERROR_NOT_SAME_DATE, "")
 
     # 強制執行，且 today 無法取得時的處理
