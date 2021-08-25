@@ -123,7 +123,7 @@ def error(update, context):
     update.message.reply_text("Error. Contact moderator.錯誤")
 
 def today_info(update, context):
-    processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...")
+    processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...", disable_notification=True)
 
     if len(context.args) != 0:
         get = api.get_taiwan_outbreak_information(str(context.args[0]))
@@ -169,7 +169,7 @@ def search(update, context):
             update.message.reply_text("@nullExistenceException 出來打架")
         else:
             country = update.message.text[len(update.message.text.split()[0])+1:]
-            processingMessage = context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(country))
+            processingMessage = context.bot.sendMessage(chat_id=str(update.message.chat.id), text="Searching for " + str(country), disable_notification=True)
 
             get = api.get_epidemic_status_by_country(str(country))
             if get != None:
@@ -191,7 +191,7 @@ def search(update, context):
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": empty search")
 
 def image(update, context):
-    processingMessage = update.message.reply_text("Processing...")
+    processingMessage = update.message.reply_text("Processing...", disable_notification=True)
     if len(context.args) != 0:
         date = context.args[0]
         today_confirmed = context.args[1]
