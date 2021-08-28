@@ -17,10 +17,10 @@ def center_text(img, font, text, background_w, background_h, color=(0,0,0)):
 
 def pic(date=None, today_confirmed=None, today_domestic=None, today_imported=None, today_death=None, confirmed=None, deaths=None):
     epidemic = api.TaiwanEpidemic()
-    if date == None:
-        date = str(datetime.datetime.now().strftime("%m")) + str(datetime.datetime.now().strftime("%d"))
     cdc_url = api.CDC_NEWS_URL
     today = TodayConfirmed(cdc_url)
+    if date == None:
+        date = str(today.date.strftime("%m%d"))#str(datetime.datetime.now().strftime("%m")) + str(datetime.datetime.now().strftime("%d"))
     if today_confirmed == None:
         today_confirmed = str(today.today_confirmed)
     if today_domestic == None:
@@ -75,5 +75,7 @@ def pic(date=None, today_confirmed=None, today_domestic=None, today_imported=Non
 
 
     original.save("out.png")
+
+    return date
 
 #pic("10")

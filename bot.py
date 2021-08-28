@@ -12,6 +12,7 @@ import api
 import pic
 import urllib3
 import threading
+from datetime import datetime
 
 # Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -157,7 +158,6 @@ def today_info(update, context):
     if processingMessage is not None:
         context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
 
-
 def search(update, context):
     userName = update.message.from_user.username
     if len(context.args) != 0:
@@ -192,7 +192,11 @@ def search(update, context):
 
 def image(update, context):
     processingMessage = update.message.reply_text("Processing...", disable_notification=True)
+    cap = "pic"
     if len(context.args) != 0:
+        if len(context.args) < 7:
+            update.message.reply_text("手動輸入格式錯誤\n格式：[日期] [今日確診] [今日本土] [今日境外] [今日死亡] [總確診] [總死亡]\n例如：/image 0101 10 6 4 1 100 15")
+            return
         date = context.args[0]
         today_confirmed = context.args[1]
         today_domestic = context.args[2]
@@ -202,9 +206,12 @@ def image(update, context):
         deaths = context.args[6]
         pic.pic(date, today_confirmed, today_domestic, today_imported, today_death, confirmed, deaths)
     else:
-        pic.pic()
+        the_date = pic.pic()
+        if str(datetime.now().strftime("%m%d")) != the_date:
+            cap = "這是 " + the_date + " 的資料，今日尚未更新，或沒新增"
 
-    context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("out.png", "rb"), caption="pic", timeout=20)
+
+    context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("out.png", "rb"), caption=cap, timeout=20)
 
     if processingMessage is not None:
         context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
