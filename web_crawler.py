@@ -9,6 +9,7 @@ import re
 from datetime import datetime, timedelta
 import pytz
 
+import sys, os
 
 class TodayConfirmed(object):
     """
@@ -53,23 +54,43 @@ class TodayConfirmed(object):
             if titles is None:
                 raise MyException("Unable to find tbody. 爬蟲網址有誤或是「衛福部最新消息」壞了")
 
-            target = titles.select('a[title*="例COVID-19確定病例"]')[0]
+            targets = titles.select('a[title*="COVID-19"]')[:5]
+            for target in targets:
+                title = target.get('title')
+                print(title)
+                if re.search(r'COVID-19\w*病例', title):
+                    target_title = title
+                    target_href = target.get("href")
+                    break
 
-            # 目標文章標題文字
-            target_title = target.get_text().strip()
-
-            # 目標文章超連結
-            target_href = target.get("href")
-            #print(target_title)
-            #print(target_href)
+            # r = re.compile(r'COVID-19\w*病例')
+            # targets = list(filter(r.match, targets))
+            # target = targets[0]
+            #
+            # # 目標文章標題文字
+            # target_title = target.get_text().strip()
+            #
+            # # 目標文章超連結
+            # target_href = target.get("href")
+            # #print(target_title)
+            # #print(target_href)
 
             # 文章標題的確診病例、本土、境外處理
-            newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
-            listOfNumbers = [int(i) for i in newstr.split()]
-            #print(listOfNumbers)
-            self.today_confirmed = listOfNumbers[0]
-            self.today_domestic = listOfNumbers[2]
-            self.today_imported = listOfNumbers[3]
+            if re.match(r'新增\d+例COVID-19確定病例，分別為\d+例本土及\d+例境外移入', target_title):
+                newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
+                listOfNumbers = [int(i) for i in newstr.split()]
+                #print(listOfNumbers)
+                self.today_confirmed = listOfNumbers[0]
+                self.today_domestic = listOfNumbers[2]
+                self.today_imported = listOfNumbers[3]
+
+            if re.match(r'新增\d+例境外移入COVID-19病例', target_title):
+                newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
+                listOfNumbers = [int(i) for i in newstr.split()]
+                #print(listOfNumbers)
+                self.today_confirmed = listOfNumbers[0]
+                self.today_domestic = 0
+                self.today_imported = listOfNumbers[0]
 
             # 病例公布新聞稿
             article_response = requests.get(
@@ -99,6 +120,7 @@ class TodayConfirmed(object):
             self.additional_text = self.additional_text.replace("；", "。\n")
             self.additional_text = self.additional_text.replace("指揮中心表示，", "")
             self.additional_text = self.additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
+            self.additional_text = self.additional_text.replace("詳如新聞稿附件。", "")
 
 
             if self.additional_text is not None and self.additional_text != "":
@@ -130,8 +152,10 @@ class TodayConfirmed(object):
             self.error = e
         except Exception as e:
             print("ERROR: TodayConfirmed init failed")
-            print(e)
-            self.error = e
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(str(exc_type) + "\t" + str(fname) + "\t" + str(exc_tb.tb_lineno))
+            self.error = str(exc_type) + "\t" + str(fname) + "\t" + str(exc_tb.tb_lineno)
 
 # class TotalTestsConducted(object):
 #     total_tests_conducted = None
