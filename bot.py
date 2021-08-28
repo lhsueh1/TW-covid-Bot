@@ -289,13 +289,14 @@ def today_info_everyday(context):
             text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
+        context.bot.sendMessage(chat_id="@WeaRetRYiNgtOMakEaBot", text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
+        context.bot.sendMessage(chat_id="@WeaRetRYiNgtOMakEaBot", text="諸位早安，這是定時發送的測試訊息，如果看到就代表我成功了哇哈哈哈哈", parse_mode='MarkdownV2', disable_web_page_preview=True)
 
     else:
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text="everyday fail" + "\n\n" + text + "\n" + get[1])
+        context.bot.sendMessage(chat_id="@WeaRetRYiNgtOMakEaBot", text="everyday fail" + "\n\n" + text + "\n" + get[1])
 
 def everyday(update, context):
-    context.job_queue.run_daily(today_info_everyday, datetime.time(hour=1, minute=49, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6))
+    context.job_queue.run_daily(today_info_everyday, datetime.time(hour=9, minute=0, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6))
 
 
 
