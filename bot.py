@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from telegram import Update
 import telegram
 import requests
@@ -12,7 +12,8 @@ import api
 import pic
 import urllib3
 import threading
-from datetime import datetime
+import pytz
+import datetime
 
 # Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -207,7 +208,7 @@ def image(update, context):
         pic.pic(date, today_confirmed, today_domestic, today_imported, today_death, confirmed, deaths)
     else:
         the_date = pic.pic()
-        if str(datetime.now().strftime("%m%d")) != the_date:
+        if str(datetime.datetime.now().strftime("%m%d")) != the_date:
             cap = "這是 " + the_date + " 的資料，今日尚未更新，或沒新增"
 
 
@@ -221,13 +222,13 @@ def image(update, context):
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + " : " + str(update.message.text))
 
-def test(update, context):
-    update.message.reply_text("test")
-
+def test(context):
+    context.bot.sendMessage(chat_id="@E36_bb079f22", text="test")
+    '''
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + " : test")
-
+    '''
 def echo(update, context):
     """Echo the user message."""
     update.message.reply_text(update.message.text)
@@ -272,6 +273,32 @@ def sticker(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(update.message.from_user.username) + ":")
         context.bot.sendSticker(chat_id="@E36_bb079f22", sticker=update.message.sticker)
 
+def today_info_everyday(context):
+
+    get = api.get_taiwan_outbreak_information()
+
+    text = get[0]
+
+    if get[1] == 0:
+        special = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+        for i in special:
+            text = text.replace(i, "\\" + str(i))
+
+        text = text.replace("統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`[群組](t.me/joinchat/VXSevGfKN560hTWH)`告知，我們會立刻更正，謝謝。`\n```")
+        if get[2] is not None:
+            text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
+        text = "```\n" + text + "\n```"
+
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
+
+    else:
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text="everyday fail" + "\n\n" + text + "\n" + get[1])
+
+def everyday(update, context):
+    context.job_queue.run_daily(today_info_everyday, datetime.time(hour=1, minute=49, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6))
+
+
+
 def main():
     """Start the bot."""
     # Create the Updater and pass it your bot's token.
@@ -292,9 +319,11 @@ def main():
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(CommandHandler("image", image))
     dp.add_handler(CommandHandler("stop", stop))
+    dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
+
 
 
 
