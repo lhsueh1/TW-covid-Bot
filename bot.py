@@ -295,7 +295,7 @@ def today_info_everyday(context):
         context.bot.sendMessage(chat_id="@WeaRetRYiNgtOMakEaBot", text="everyday fail" + "\n\n" + text + "\n" + get[1])
 
 def everyday(update, context):
-    context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=10, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6))
+    context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6))
 
 
 
