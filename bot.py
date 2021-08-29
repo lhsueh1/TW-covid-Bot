@@ -89,8 +89,8 @@ def stop(bot, update):
     userName = bot.message.from_user.username
     if userName == "alsoDazzling" or userName == "nullExistenceException":
         bot.message.reply_text("Bye")
-        if bot.message.chat.username != "E36_bb079f22":
-            update.bot.sendMessage(chat_id="@E36_bb079f22", text="closed")
+        # if bot.message.chat.username != "E36_bb079f22":
+        #     update.bot.sendMessage(chat_id="@E36_bb079f22", text="closed")
         threading.Thread(target=shutdown).start()
 
     else:
@@ -229,6 +229,7 @@ def test(context):
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + " : test")
     '''
+
 def echo(update, context):
     """Echo the user message."""
     update.message.reply_text(update.message.text)
@@ -276,9 +277,7 @@ def sticker(update, context):
 def today_info_everyday(context):
 
     get = api.get_taiwan_outbreak_information()
-
     text = get[0]
-
     if get[1] == 0:
         special = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
         for i in special:
@@ -289,13 +288,96 @@ def today_info_everyday(context):
             text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
-        context.bot.sendMessage(chat_id="@WeaRetRYiNgtOMakEaBot", text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
+        group = "@WeaRetRYiNgtOMakEaBot"
+        control = "@E36_bb079f22"
+        lilia = 1211462447
+        oud = 710970043
+
+        chat = group
+        context.bot.sendMessage(chat_id=chat, text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
     else:
-        context.bot.sendMessage(chat_id="@WeaRetRYiNgtOMakEaBot", text="everyday fail" + "\n\n" + text + "\n" + get[1])
+        context.bot.sendMessage(chat_id=chat, text="everyday fail" + "\n\n" + text + "\n" + get[1])
 
 def everyday(update, context):
-    context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6))
+    userName = update.message.from_user.username
+    chat = "@WeaRetRYiNgtOMakEaBot"
+
+    if userName == "alsoDazzling" or userName == "nullExistenceException":
+
+        if len(context.args) == 0: # defult add
+            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name="1420Default")
+
+            msg = "Default 1420 everyday added\!"
+            context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
+
+        elif context.args[0] == "jobs": # list jobs
+            if len(context.job_queue.jobs()) != 0:
+                t = context.job_queue.jobs()
+                job_names = [job.name for job in t]
+
+                s = ""
+                for i in range(len(context.job_queue.jobs())):
+                    s += str(job_names[i])
+                    s += " at `"
+                    s += str(t[i])[-15:-1]
+                    s += "` \n"
+                context.bot.sendMessage(chat_id=chat, text=s, parse_mode='MarkdownV2', disable_web_page_preview=True)
+            else:
+                context.bot.sendMessage(chat_id=chat, text="None jobs", parse_mode='MarkdownV2', disable_web_page_preview=True)
+
+        elif len(context.args) == 2: # remove
+            if context.args[0] == "rm":
+                job_for_delete = context.job_queue.get_jobs_by_name(str(context.args[1]))
+                if len(job_for_delete) > 0:
+                    job_for_delete[0].schedule_removal()
+
+                    msg = "Removed " + str(context.args[1])
+                    context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
+                else:
+                    msg = "Nothing to remove"
+                    context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
+
+        elif len(context.args) == 1: # add with specify name
+            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=str(context.args[0]))
+
+            msg = str(context.args[0]) + " at 1420 everyday added\!"
+            context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
+
+        elif len(context.args) == 3: # add with specify name and time
+            name = str(context.args[0])
+            hour = int(context.args[1])
+            minute = int(context.args[2])
+            if (hour > 24) or (minute > 60):
+                context.bot.sendMessage(chat_id=chat, text="Got to be kidding me. No.")
+                return
+
+            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=hour, minute=minute, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name)
+
+            msg = name + " at " + str(hour) + str(minute) + " everyday added\!"
+            context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
+
+        elif len(context.args) > 3 and len(context.args) < 11: # add with specify all
+            name = str(context.args[0])
+            hour = int(context.args[1])
+            minute = int(context.args[2])
+            if (hour > 24) or (minute > 60):
+                context.bot.sendMessage(chat_id=chat, text="Got to be kidding me. No.")
+                return
+
+            day_list = [int(i) for i in context.args[3:] if int(i) < 7 and int(i) >= 0]
+            day_list.sort()
+            days = tuple(day_list)
+            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=hour, minute=minute, tzinfo=pytz.timezone('Asia/Taipei')), days=days, name=name)
+
+            msg = name + " at " + str(hour) + str(minute) + " on days " + ','.join(str(d) for d in days) + " added\!"
+            context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
+
+        elif len(context.args) >= 11:
+            context.bot.sendMessage(chat_id=chat, text="Look at what you're typing. No.")
+            return
+
+
 
 
 
