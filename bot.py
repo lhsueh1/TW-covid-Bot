@@ -89,8 +89,8 @@ def stop(bot, update):
     userName = bot.message.from_user.username
     if userName == "alsoDazzling" or userName == "nullExistenceException":
         bot.message.reply_text("Bye")
-        if bot.message.chat.username != "E36_bb079f22":
-            update.bot.sendMessage(chat_id="@E36_bb079f22", text="closed")
+        # if bot.message.chat.username != "E36_bb079f22":
+        #     update.bot.sendMessage(chat_id="@E36_bb079f22", text="closed")
         threading.Thread(target=shutdown).start()
 
     else:
@@ -120,8 +120,8 @@ def help(update, context):
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning("Update '%s' caused error '%s'", update, context.error)
-    if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + str(context.error))
+    # if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
+    #     context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + str(context.error))
     update.message.reply_text("Error. Contact moderator.錯誤")
 
 def today_info(update, context):
@@ -192,6 +192,13 @@ def search(update, context):
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": empty search")
 
 def image(update, context):
+
+    if len(context.args) == 1:
+        if context.args[0] == "-h":
+
+            update.message.reply_text("Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [total confirmed] [total deaths]`", parse_mode='MarkdownV2')
+            return
+
     processingMessage = update.message.reply_text("Processing...", disable_notification=True)
     cap = "pic"
     if len(context.args) != 0:
@@ -223,12 +230,8 @@ def image(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + " : " + str(update.message.text))
 
 def test(context):
-    context.bot.sendMessage(chat_id="@E36_bb079f22", text="test")
-    '''
-    userName = update.message.from_user.username
-    if update.message.chat.username != "E36_bb079f22":
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + " : test")
-    '''
+    update.message.reply_text("Specify func to call everyday\nhelp for search\n")
+
 
 def echo(update, context):
     """Echo the user message."""
@@ -303,7 +306,14 @@ def everyday(update, context):
     userName = update.message.from_user.username
     chat = "@WeaRetRYiNgtOMakEaBot"
 
-    if userName == "alsoDazzling" or userName == "nullExistenceException":
+    if len(context.args) == 1:
+        if context.args[0] == "-h":
+
+            update.message.reply_text("Usage: `/everyday [option] [hour] [minute] [days]`\n\n`[option]`:\n\t\t\t\t`jobs`: List all jobs\n\t\t\t\t`rm`: Followed by `[name]` of job to remove\n\t\t\t\t`[name]`: Add a job with specified name\n`[hour]`: From 0 to 23\n`[minute]`: From 0 to 59\n`[days]`: 0\-6 correspond to Monday\-Sunday\n\nExamples:\nLaunch default: `/everyday`\nList jobs: `/everyday jobs`\nRemove DefaultJob: `/everyday rm DefaultJob`\nSpecify name: `/everyday MyName`\nSpecify name and time: `/everyday MyName 10 20`\nSpecify all: `/everyday MyName 10 20 0 1 2 3 4 7`", parse_mode='MarkdownV2')
+            return
+
+
+    if True: #userName == "alsoDazzling" or userName == "nullExistenceException":
 
         if len(context.args) == 0: # defult add
             context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name="1420Default")
