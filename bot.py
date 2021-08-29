@@ -89,8 +89,8 @@ def stop(bot, update):
     userName = bot.message.from_user.username
     if userName == "alsoDazzling" or userName == "nullExistenceException":
         bot.message.reply_text("Bye")
-        # if bot.message.chat.username != "E36_bb079f22":
-        #     update.bot.sendMessage(chat_id="@E36_bb079f22", text="closed")
+        if bot.message.chat.username != "E36_bb079f22":
+            update.bot.sendMessage(chat_id="@E36_bb079f22", text="closed")
         threading.Thread(target=shutdown).start()
 
     else:
@@ -120,8 +120,8 @@ def help(update, context):
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning("Update '%s' caused error '%s'", update, context.error)
-    # if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
-    #     context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + str(context.error))
+    if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + str(context.error))
     update.message.reply_text("Error. Contact moderator.錯誤")
 
 def today_info(update, context):
