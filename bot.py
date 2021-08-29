@@ -89,8 +89,8 @@ def stop(bot, update):
     userName = bot.message.from_user.username
     if userName == "alsoDazzling" or userName == "nullExistenceException":
         bot.message.reply_text("Bye")
-        # if bot.message.chat.username != "E36_bb079f22":
-        #     update.bot.sendMessage(chat_id="@E36_bb079f22", text="closed")
+        if bot.message.chat.username != "E36_bb079f22":
+            update.bot.sendMessage(chat_id="@E36_bb079f22", text="closed")
         threading.Thread(target=shutdown).start()
 
     else:
