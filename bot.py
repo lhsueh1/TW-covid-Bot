@@ -290,13 +290,12 @@ def today_info_everyday(context):
         text = "```\n" + text + "\n```"
 
         context.bot.sendMessage(chat_id="@WeaRetRYiNgtOMakEaBot", text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
-        context.bot.sendMessage(chat_id="@WeaRetRYiNgtOMakEaBot", text="諸位早安，這是定時發送的測試訊息，如果看到就代表我成功了哇哈哈哈哈", parse_mode='MarkdownV2', disable_web_page_preview=True)
 
     else:
         context.bot.sendMessage(chat_id="@WeaRetRYiNgtOMakEaBot", text="everyday fail" + "\n\n" + text + "\n" + get[1])
 
 def everyday(update, context):
-    context.job_queue.run_daily(today_info_everyday, datetime.time(hour=9, minute=0, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6))
+    context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=10, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6))
 
 
 
