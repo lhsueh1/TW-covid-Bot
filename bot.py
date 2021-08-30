@@ -307,7 +307,7 @@ def everyday(update, context):
     chat = "@WeaRetRYiNgtOMakEaBot"
 
     if len(context.args) == 1:
-        if context.args[0] == "-h":
+        if str(context.args[0]).lower() in {"-h", "help", "-help", "h"}:
 
             update.message.reply_text("Usage: `/everyday [option] [hour] [minute] [days]`\n\n`[option]`:\n\t\t\t\t`jobs`: List all jobs\n\t\t\t\t`rm`: Followed by `[name]` of job to remove\n\t\t\t\t`[name]`: Add a job with specified name\n`[hour]`: From 0 to 23\n`[minute]`: From 0 to 59\n`[days]`: 0\-6 correspond to Monday\-Sunday\n\nExamples:\nLaunch default: `/everyday`\nList jobs: `/everyday jobs`\nRemove DefaultJob: `/everyday rm DefaultJob`\nSpecify name: `/everyday MyName`\nSpecify name and time: `/everyday MyName 10 20`\nSpecify all: `/everyday MyName 10 20 0 1 2 3 4 7`", parse_mode='MarkdownV2')
             return
