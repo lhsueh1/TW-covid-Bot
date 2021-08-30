@@ -63,18 +63,6 @@ class TodayConfirmed(object):
                     target_href = target.get("href")
                     break
 
-            # r = re.compile(r'COVID-19\w*病例')
-            # targets = list(filter(r.match, targets))
-            # target = targets[0]
-            #
-            # # 目標文章標題文字
-            # target_title = target.get_text().strip()
-            #
-            # # 目標文章超連結
-            # target_href = target.get("href")
-            # #print(target_title)
-            # #print(target_href)
-
             # 文章標題的確診病例、本土、境外處理
             if re.match(r'新增\d+例COVID-19確定病例，分別為\d+例本土及\d+例境外移入', target_title):
                 newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
@@ -110,15 +98,17 @@ class TodayConfirmed(object):
 
             # Addidtional text 處理
             # 個案分佈 及 疫調資訊
-            if "個案分佈" in texts:
-                for t in texts:
-                    if "個案分布" in t:
-                        texts = t.split("個案分布")
-                self.additional_text = "個案分布"
+            # if "個案分佈" in texts:
+            #     for t in texts:
+            #         if "個案分佈" in t:
+            #             texts = t.split("個案分佈")
+            #     self.additional_text = "個案分佈"
 
             self.additional_text += texts[1]
             self.additional_text = self.additional_text.replace("；", "。\n")
             self.additional_text = self.additional_text.replace("指揮中心表示，", "")
+            self.additional_text = self.additional_text.replace("，個案分佈", "\n個案分佈")
+            self.additional_text = self.additional_text.replace("，個案分布", "。\n個案分布")
             self.additional_text = self.additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
             self.additional_text = self.additional_text.replace("詳如新聞稿附件。", "")
 
