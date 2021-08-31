@@ -302,6 +302,19 @@ def today_info_everyday(context):
     else:
         context.bot.sendMessage(chat_id=chat, text="everyday fail" + "\n\n" + text + "\n" + get[1])
 
+def image_everyday(context):
+    cap = "pic"
+
+    the_date = pic.pic()
+    if str(datetime.datetime.now().strftime("%m%d")) != the_date:
+        cap = "這是 " + the_date + " 的資料，今日尚未更新，或沒新增"
+
+    group = "@WeaRetRYiNgtOMakEaBot"
+
+    chat = group
+    context.bot.sendPhoto(chat_id=chat, photo=open("out.png", "rb"), caption=cap, timeout=20)
+
+
 def everyday(update, context):
     userName = update.message.from_user.username
     chat = "@WeaRetRYiNgtOMakEaBot"
@@ -316,7 +329,8 @@ def everyday(update, context):
     if True: #userName == "alsoDazzling" or userName == "nullExistenceException":
 
         if len(context.args) == 0: # defult add
-            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name="1420Default")
+            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name="1420_Default_today_info")
+            context.job_queue.run_daily(image_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name="1420_Default_image")
 
             msg = "Default 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
