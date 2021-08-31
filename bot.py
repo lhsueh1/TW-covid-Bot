@@ -282,9 +282,7 @@ def today_info_everyday(context):
     get = api.get_taiwan_outbreak_information()
     text = get[0]
     if get[1] == 0:
-        special = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
-        for i in special:
-            text = text.replace(i, "\\" + str(i))
+        text = text_adjustment(text)
 
         text = text.replace("統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`[群組](t.me/joinchat/VXSevGfKN560hTWH)`告知，我們會立刻更正，謝謝。`\n```")
         if get[2] is not None:
@@ -329,8 +327,8 @@ def everyday(update, context):
     if True: #userName == "alsoDazzling" or userName == "nullExistenceException":
 
         if len(context.args) == 0: # defult add
-            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name="1420_Default_today_info")
-            context.job_queue.run_daily(image_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name="1420_Default_image")
+            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=text_adjustment("1420_Default_today_info"))
+            context.job_queue.run_daily(image_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=text_adjustment("1420_Default_image"))
 
             msg = "Default 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
@@ -363,13 +361,14 @@ def everyday(update, context):
                     context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
         elif len(context.args) == 1: # add with specify name
-            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=str(context.args[0]))
+            name = text_adjustment(str(context.args[0]))
+            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name)
 
             msg = str(context.args[0]) + " at 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
         elif len(context.args) == 3: # add with specify name and time
-            name = str(context.args[0])
+            name = text_adjustment(str(context.args[0]))
             hour = int(context.args[1])
             minute = int(context.args[2])
             if (hour > 24) or (minute > 60):
@@ -382,7 +381,7 @@ def everyday(update, context):
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
         elif len(context.args) > 3 and len(context.args) < 11: # add with specify all
-            name = str(context.args[0])
+            name = text_adjustment(str(context.args[0]))
             hour = int(context.args[1])
             minute = int(context.args[2])
             if (hour > 24) or (minute > 60):
@@ -402,7 +401,11 @@ def everyday(update, context):
             return
 
 
-
+def text_adjustment(text: str):
+    special = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+    for i in special:
+        text = text.replace(i, "\\" + str(i))
+    return text
 
 
 def main():
