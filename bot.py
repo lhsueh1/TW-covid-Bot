@@ -128,7 +128,7 @@ def today_info(update, context):
     processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...", disable_notification=True)
 
     if len(context.args) != 0:
-        get = api.get_taiwan_outbreak_information(str(context.args[0]))
+        get = api.get_taiwan_outbreak_information(context.args)
     else:
         get = api.get_taiwan_outbreak_information()
 

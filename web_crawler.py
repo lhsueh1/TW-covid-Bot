@@ -29,20 +29,31 @@ class TodayConfirmed(object):
     article_link = ""
     error = False
 
-    def __init__(self, url):
+    def __init__(self, url, **kwargs):
         if url != 0:
             self.web_crawler(url)
 
-    def web_crawler(self, url):
+    def web_crawler(self, url, **kwargs):
+
+        if "max_retries" in kwargs:
+            max_retries = kwargs["max_retries"]
+        else:
+            max_retries = 3
+
+        if "SSLVerify" in kwargs:
+            SSLVerify = kwargs["SSLVerify"]
+        else:
+            SSLVerify = True
+
         try:
             session = requests.Session()
-            retry = Retry(connect=3, backoff_factor=0.5)
+            retry = Retry(connect=max_retries, backoff_factor=0.5)
             adapter = HTTPAdapter(max_retries=retry)
             session.mount('http://', adapter)
             session.mount('https://', adapter)
 
             # 衛福部最新消息
-            response = session.get(url)
+            response = session.get(url, verify = SSLVerify)
 
             if response.status_code != requests.codes.ok:
                 raise MyException("衛福部最新消息 Status code not OK")
@@ -57,7 +68,7 @@ class TodayConfirmed(object):
             targets = titles.select('a[title*="COVID-19"]')[:5]
             for target in targets:
                 title = target.get('title')
-                print(title)
+                print(f"找到的標題：{title}")
                 if re.search(r'COVID-19\w*病例', title):
                     target_title = title
                     target_href = target.get("href")

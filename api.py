@@ -8,6 +8,9 @@ from datetime import datetime
 import pytz
 import web_crawler
 from requests.packages import urllib3
+import pic
+
+import certifi
 
 ERROR_INTERNET_CONNECTION = "ERROR_INTERNET_CONNECTION"
 ERROR_OPEN_DATA_SERVICE = "ERROR_OPEN_DATA_SERVICE "
@@ -40,29 +43,45 @@ def get_taiwan_epidemic_status():
         return text
     return False
 
-def get_taiwan_outbreak_information(arg: str = ""):
+def get_taiwan_outbreak_information(*arg: str):
     # force 只能通過CDC，如果API接不到一樣會出現錯誤
-    isForce = arg.lower() == "force"
-    api_status = get_API_status()
+    print(f"args:{arg}")
 
-    if not api_status:
-        text = "ERROR: 網路錯誤"
-        status = ERROR_INTERNET_CONNECTION + "\nUnable to get status from Taiwan CDC Open Data Service"
+    force_texts = ["force", "f", "-f", "-force"]
+    if any(x in force_texts for x in arg):
+        print("Force mode")
+        isForce = True
+    else:
+        isForce = False
+
+    ignoressl_texts = ["IgnoreSSL", "ignoressl", "ignoreSSL", "Ignoressl"]
+    if any(x in ignoressl_texts for x in arg):
+        print("IgnoreSSL")
+        isSSLVerify = False
+    else:
+        isSSLVerify = True
+
+    api_status = get_API_status(isSSLVerify)
+
+    if not api_status[0]:
+        text = "ERROR: 網路錯誤\n" + api_status[0]
+        status = ERROR_INTERNET_CONNECTION + "\nUnable to get status from Taiwan CDC Open Data Service\n" + api_status[0] + "\n" + api_status[1]
         return (text, status, "")
-    elif api_status == "success":
+    elif api_status[0] == "success":
         print("Taiwan CDC Open Data Service, connection succeed.")
         status = 0
     else:
-        text = "ERROR: 政府資料開放平台無法連接"
-        status = ERROR_OPEN_DATA_SERVICE + "\nstatus code = " + api_status
+        text = "ERROR: 政府資料開放平台無法連接\n訊息：" + api_status[0]
+        status = ERROR_OPEN_DATA_SERVICE + "\n訊息：" + api_status[0] + "\n" + api_status[1]
         return (text, status, "")
 
     mmdd = "(????)"
     yyyymmdd = "(????/??/??)"
 
-    epidemic = TaiwanEpidemic()
-    global_stats = GlobalStats()
-    today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
+    epidemic = TaiwanEpidemic(SSLVerify=isSSLVerify)
+    global_stats = GlobalStats(SSLVerify=isSSLVerify)
+
+    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify)
 
     if today.error is not False and not isForce:
         text = "無法連上CDC官網"
@@ -126,7 +145,7 @@ Taiwan Outbreak Information
 def get_epidemic_status_by_country(country: str):
     with requests.Session() as s:
         url = "https://od.cdc.gov.tw/eic/covid19/covid19_global_cases_and_deaths.csv"
-        download = s.get(url)
+        download = s.get(url, verify=False)
 
         decoded_content = download.content.decode('utf-8')
         csv_file = csv.reader(decoded_content.splitlines(), delimiter=',')
@@ -159,12 +178,18 @@ Deaths: {row[3]}"""
             return "{:.2f}% lol".format(float(int(str(today.today_confirmed).replace(",", "")) / int(str(today.today_deaths).replace(",", "")) * 100))
     return None
 
-def get_API_status():
-    url = "https://od.cdc.gov.tw/"
-    with requests.get(url) as s:
+def get_API_status(SSLVerify = True):
+    try:
+        url = "https://od.cdc.gov.tw/"
+        s = requests.get(url, verify=SSLVerify)
         api_status_dict = s.json()
-        return api_status_dict["state"]
-    return False
+        return (api_status_dict["state"], "")
+    except requests.exceptions.Timeout as e:
+        return ("請求超時", str(e))
+    except requests.exceptions.SSLError as e:
+        return ("SSL錯誤", str(e))
+    except Exception as e:
+        return (False, str(e))
 
 class TaiwanEpidemic(object):
     """docstring for TaiwanEpidemic."""
@@ -178,11 +203,11 @@ class TaiwanEpidemic(object):
 
     full_text = None
 
-    def __init__(self):
+    def __init__(self, SSLVerify = True):
         with requests.Session() as s:
             url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
 
-            download = s.get(url)
+            download = s.get(url, verify = SSLVerify)
 
             decoded_content = download.content.decode('utf-8')
 
@@ -224,11 +249,11 @@ class GlobalStats(object):
 
     full_text = None
 
-    def __init__(self):
+    def __init__(self, SSLVerify = True):
         with requests.Session() as s:
             url = "https://od.cdc.gov.tw/eic/covid19/covid19_global_stats.csv"
 
-            download = s.get(url)
+            download = s.get(url, verify=SSLVerify)
 
             decoded_content = download.content.decode('utf-8')
 
@@ -263,5 +288,7 @@ class GlobalStats(object):
 if __name__ == '__main__':
     # t=get_epidemic_status_by_country("Canada")
     # print(t)
-    text = get_taiwan_outbreak_information("force")
-    print(text[0])
+    text = get_taiwan_outbreak_information("ignoressl")
+    for t in text:
+        print(str(t)+"\n")
+    #pic.pic("0904", "1", "0", "1", "0", "16013", "837")
