@@ -74,6 +74,17 @@ class TodayConfirmed(object):
                     target_href = target.get("href")
                     break
 
+            # 病例公布新聞稿
+            article_response = requests.get(
+                "https://www.cdc.gov.tw" + target_href)
+            article_soup = BeautifulSoup(article_response.text, "html.parser")
+            self.article_link = f"https://www.cdc.gov.tw{target_href}"
+            print(f"新聞稿連結: {self.article_link}")
+
+            article_content = article_soup.find("p", class_="con-word").get_text()
+            article_date = article_soup.find("div", class_="date text-right").get_text().strip()[5:]
+            dates = article_date.split("/")
+
             # 文章標題的確診病例、本土、境外處理
             if re.match(r'新增\d+例COVID-19\w*病例，分別為\d+例本土及\d+例境外移入', target_title):
                 newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
@@ -91,35 +102,32 @@ class TodayConfirmed(object):
                 self.today_domestic = 0
                 self.today_imported = listOfNumbers[0]
 
-            elif re.match(r'新增\d+例COVID-19\w*病例', target_title):
+            # 如果標題找不到境外移入、本土的病例數量的話，透過文章分析
+            # 利用article_content找到 新增\d+例境外移入 並判斷本土數量
+            elif re.search(r'新增\d+例COVID-19\w*病例', target_title):
                 newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
                 listOfNumbers = [int(i) for i in newstr.split()]
-                #print(listOfNumbers)
                 self.today_confirmed = listOfNumbers[0]
 
-            # 病例公布新聞稿
-            article_response = requests.get(
-                "https://www.cdc.gov.tw" + target_href)
-            article_soup = BeautifulSoup(article_response.text, "html.parser")
-            self.article_link = f"https://www.cdc.gov.tw{target_href}"
-            print(f"新聞稿連結: {self.article_link}")
+                imported_text = re.search(r'新增\d+例境外移入', article_content)
+                if imported_text is not None:
+                    newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in imported_text.group(0))
+                    listOfNumbers = [int(i) for i in newstr.split()]
+                    self.today_imported = listOfNumbers[0]
 
-            article_content = article_soup.find("p", class_="con-word").get_text()
-            article_date = article_soup.find("div", class_="date text-right").get_text().strip()[5:]
-            dates = article_date.split("/")
-            #print(article_content)
-            #print(article_date)
+                domestic_text = re.search(r'新增\d+例本土病例', article_content)
+                if domestic_text is not None:
+                    newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in domestic_text.group(0))
+                    listOfNumbers = [int(i) for i in newstr.split()]
+                    self.today_domestic = listOfNumbers[0]
 
+                if self.today_domestic is None and self.today_confirmed is not None and self.today_imported is not None:
+                    self.today_domestic = int(self.today_confirmed) - int(self.today_imported)
+
+                if self.today_imported is None and self.today_confirmed is not None and self.today_domestic is not None:
+                    self.today_imported = int(self.today_confirmed) - int(self.today_domestic)
 
             texts = article_content.split()
-
-            # Addidtional text 處理
-            # 個案分佈 及 疫調資訊
-            # if "個案分佈" in texts:
-            #     for t in texts:
-            #         if "個案分佈" in t:
-            #             texts = t.split("個案分佈")
-            #     self.additional_text = "個案分佈"
 
             self.additional_text += texts[1]
             self.additional_text = self.additional_text.replace("；", "。\n")
