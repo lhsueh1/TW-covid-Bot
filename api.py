@@ -288,7 +288,7 @@ class GlobalStats(object):
 if __name__ == '__main__':
     # t=get_epidemic_status_by_country("Canada")
     # print(t)
-    text = get_taiwan_outbreak_information("ignoressl")
+    text = get_taiwan_outbreak_information("")
     for t in text:
         print(str(t)+"\n")
     #pic.pic("0904", "1", "0", "1", "0", "16013", "837")

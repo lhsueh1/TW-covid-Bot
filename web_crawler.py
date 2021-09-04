@@ -75,7 +75,7 @@ class TodayConfirmed(object):
                     break
 
             # 文章標題的確診病例、本土、境外處理
-            if re.match(r'新增\d+例COVID-19確定病例，分別為\d+例本土及\d+例境外移入', target_title):
+            if re.match(r'新增\d+例COVID-19\w*病例，分別為\d+例本土及\d+例境外移入', target_title):
                 newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
                 listOfNumbers = [int(i) for i in newstr.split()]
                 #print(listOfNumbers)
@@ -83,13 +83,19 @@ class TodayConfirmed(object):
                 self.today_domestic = listOfNumbers[2]
                 self.today_imported = listOfNumbers[3]
 
-            if re.match(r'新增\d+例境外移入COVID-19病例', target_title):
+            elif re.match(r'新增\d+例境外移入COVID-19\w*病例', target_title):
                 newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
                 listOfNumbers = [int(i) for i in newstr.split()]
                 #print(listOfNumbers)
                 self.today_confirmed = listOfNumbers[0]
                 self.today_domestic = 0
                 self.today_imported = listOfNumbers[0]
+
+            elif re.match(r'新增\d+例COVID-19\w*病例', target_title):
+                newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in target_title)
+                listOfNumbers = [int(i) for i in newstr.split()]
+                #print(listOfNumbers)
+                self.today_confirmed = listOfNumbers[0]
 
             # 病例公布新聞稿
             article_response = requests.get(
