@@ -289,7 +289,7 @@ def today_info_everyday(context):
             text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
-        group = "@WeaRetRYiNgtOMakEaBot"
+        group = "@hfjdkg93yreljkghre34"
         control = "@E36_bb079f22"
         lilia = 1211462447
         oud = 710970043
