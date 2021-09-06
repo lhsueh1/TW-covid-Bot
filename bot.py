@@ -421,8 +421,8 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
 
             context.job_queue.run_daily(today_info_everyday,
                                         datetime.time(hour=14,
-                                        minute=20,
-                                        tzinfo=pytz.timezone('Asia/Taipei')),
+                                                      minute=20,
+                                                      tzinfo=pytz.timezone('Asia/Taipei')),
                                         days=range(7),
                                         name=name,
                                         job_kwargs={'kwargs': {'chat_ids': tuple(chat_ids)}})
@@ -432,13 +432,30 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
 
         elif len(context.args) == 3: # add with specify name and time
             name = text_adjustment(str(context.args[0]))
+            chat_ids = []
+            print(name)
+
+            if "channel" in name:
+                chat_ids += "@Taiwanepidemic"
+                chat_ids += "@hfjdkg93yreljkghre34"
+                pass
+            if text_adjustment("toi_group") in name:
+                chat_ids += "@WeaRetRYiNgtOMakEaBot"
+
             hour = int(context.args[1])
             minute = int(context.args[2])
             if (hour > 24) or (minute > 60):
                 context.bot.sendMessage(chat_id=chat, text="Got to be kidding me. No.")
                 return
 
-            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=hour, minute=minute, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name)
+
+            context.job_queue.run_daily(today_info_everyday,
+                                        datetime.time(hour=hour,
+                                                      minute=minute,
+                                                      tzinfo=pytz.timezone('Asia/Taipei')),
+                                        days=range(7),
+                                        name=name,
+                                        job_kwargs={'kwargs': {'chat_ids': tuple(chat_ids)}})
 
             msg = name + " at " + str(hour) + str(minute) + " everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
