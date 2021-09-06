@@ -464,6 +464,9 @@ def queue_daily(context,
                 name = '1420_Default_today_info',
                 chat_ids: list = ['@WeaRetRYiNgtOMakEaBot']):
 
+    if chat_ids is None:
+        chat_ids = ['@WeaRetRYiNgtOMakEaBot']
+
     context.job_queue.run_daily(task,
                                 datetime.time(hour=hour,
                                               minute=minute,
