@@ -311,8 +311,8 @@ def today_info_everyday(context, *chat_ids):
             text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
-        if "chat_ids" in chat_ids:
-            for _, id in chat_ids:
+        if chat_ids is not None:
+            for id in chat_ids:
                 context.bot.sendMessage(chat_id=id, text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
         else:
             group = "@hfjdkg93yreljkghre34"
@@ -422,7 +422,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                                         tzinfo=pytz.timezone('Asia/Taipei')),
                                         days=range(7),
                                         name=name,
-                                        job_kwargs={'chat_ids': tuple(chat_ids)})
+                                        job_kwargs={'args': tuple(chat_ids)})
 
             msg = name + " at 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
