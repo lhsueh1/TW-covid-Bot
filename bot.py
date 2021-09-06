@@ -391,7 +391,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             if "channel" in name:
                 chat_ids += "@Taiwanepidemic"
                 pass
-            if "toi_group" in name:
+            if text_adjustment("toi_group") in name:
                 chat_ids += "@WeaRetRYiNgtOMakEaBot"
 
             context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name,  job_kwargs=tuple(chat_ids))
