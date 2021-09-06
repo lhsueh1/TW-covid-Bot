@@ -254,10 +254,6 @@ def image(update, context):
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + " : " + str(update.message.text))
 
-def test(context):
-    update.message.reply_text("Specify func to call everyday\nhelp for search\n")
-
-
 def echo(update, context):
     """Echo the user message."""
     update.message.reply_text(update.message.text)
@@ -331,18 +327,25 @@ def today_info_everyday(context, **chat_ids):
         chat = "@WeaRetRYiNgtOMakEaBot"
         context.bot.sendMessage(chat_id=chat, text="everyday fail" + "\n\n" + text + "\n" + get[1])
 
-def image_everyday(context):
+def image_everyday(context, **chat_ids):
     cap = "pic"
 
     the_date = pic.pic()
-    if str(datetime.datetime.now().strftime("%m%d")) != the_date:
+    if str(datetime.datetime.now().strftime("%m%d")) == the_date:
+        if "chat_ids" in chat_ids:
+            for id in chat_ids["chat_ids"]:
+                context.bot.sendPhoto(chat_id=id, photo=open("out.png", "rb"), timeout=20)
+        else:
+            group = "@hfjdkg93yreljkghre34"
+            context.bot.sendPhoto(chat_id=group, photo=open("out.png", "rb"), timeout=20)
+
+    else:
         cap = "這是 " + the_date + " 的資料，今日尚未更新，或沒新增"
 
-    group = "@WeaRetRYiNgtOMakEaBot"
+        group = "@WeaRetRYiNgtOMakEaBot"
 
-    chat = group
-    context.bot.sendPhoto(chat_id=chat, photo=open("out.png", "rb"), caption=cap, timeout=20)
-
+        chat = group
+        context.bot.sendPhoto(chat_id=chat, photo=open("out.png", "rb"), caption=cap, timeout=20)
 
 def everyday(update, context):
     userName = update.message.from_user.username
