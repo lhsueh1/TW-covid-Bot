@@ -316,7 +316,7 @@ def today_info_everyday(context, **chat_ids):
 
         print('chat_ids: ', chat_ids)
         if "chat_ids" in chat_ids:
-            for _, id in chat_ids:
+            for id in chat_ids["chat_ids"]:
                 context.bot.sendMessage(chat_id=id, text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
         else:
             group = "@hfjdkg93yreljkghre34"
