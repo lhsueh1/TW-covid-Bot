@@ -277,7 +277,7 @@ def sticker(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(update.message.from_user.username) + ":")
         context.bot.sendSticker(chat_id="@E36_bb079f22", sticker=update.message.sticker)
 
-def today_info_everyday(context):
+def today_info_everyday(context, *chat_ids):
 
     get = api.get_taiwan_outbreak_information()
     text = get[0]
@@ -289,15 +289,20 @@ def today_info_everyday(context):
             text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
-        group = "@hfjdkg93yreljkghre34"
-        control = "@E36_bb079f22"
-        lilia = 1211462447
-        oud = 710970043
+        if chat_ids is not None:
+            for id in chat_ids:
+                context.bot.sendMessage(chat_id=id, text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
+        else:
+            group = "@hfjdkg93yreljkghre34"
+            control = "@E36_bb079f22"
+            lilia = 1211462447
+            oud = 710970043
 
-        chat = group
-        context.bot.sendMessage(chat_id=chat, text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
+            chat = group
+            context.bot.sendMessage(chat_id=chat, text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
     else:
+        chat = "@WeaRetRYiNgtOMakEaBot"
         context.bot.sendMessage(chat_id=chat, text="everyday fail" + "\n\n" + text + "\n" + get[1])
 
 def image_everyday(context):
@@ -319,8 +324,27 @@ def everyday(update, context):
 
     if len(context.args) == 1:
         if str(context.args[0]).lower() in {"-h", "help", "-help", "h"}:
+            text = '''
+Usage: `/everyday [option] [hour] [minute] [days]`
 
-            update.message.reply_text("Usage: `/everyday [option] [hour] [minute] [days]`\n\n`[option]`:\n\t\t\t\t`jobs`: List all jobs\n\t\t\t\t`rm`: Followed by `[name]` of job to remove\n\t\t\t\t`[name]`: Add a job with specified name\n`[hour]`: From 0 to 23\n`[minute]`: From 0 to 59\n`[days]`: 0\-6 correspond to Monday\-Sunday\n\nExamples:\nLaunch default: `/everyday`\nList jobs: `/everyday jobs`\nRemove DefaultJob: `/everyday rm DefaultJob`\nSpecify name: `/everyday MyName`\nSpecify name and time: `/everyday MyName 10 20`\nSpecify all: `/everyday MyName 10 20 0 1 2 3 4 7`", parse_mode='MarkdownV2')
+[option]:
+    jobs: List all jobs
+    rm: Followed by `[name]` of job to remove
+    `[name]`: Add a job with specified name
+`[hour]`: From 0 to 23
+`[minute]`: From 0 to 59
+`[days]`: 0-6 correspond to Monday-Sunday
+
+Examples:
+Launch default: `/everyday`
+List jobs: `/everyday jobs`
+Remove DefaultJob: `/everyday rm DefaultJob`
+Specify name: `/everyday MyName`
+Specify name and time: `/everyday MyName 10 20`
+Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
+'''
+
+            update.message.reply_text(text, parse_mode='MarkdownV2')
             return
 
 
@@ -362,7 +386,15 @@ def everyday(update, context):
 
         elif len(context.args) == 1: # add with specify name
             name = text_adjustment(str(context.args[0]))
-            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name)
+            chat_ids = []
+
+            if "channel" in name:
+                chat_ids += "@Taiwanepidemic"
+                pass
+            if "toi_group" in name:
+                chat_ids += "@WeaRetRYiNgtOMakEaBot"
+
+            context.job_queue.run_daily(today_info_everyday(tuple(chat_ids)), datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name)
 
             msg = str(context.args[0]) + " at 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)

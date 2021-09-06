@@ -44,6 +44,19 @@ def get_taiwan_epidemic_status():
     return False
 
 def get_taiwan_outbreak_information(*arg: str):
+    '''
+    產生回傳臺灣疫情資訊站的標準格式文章。
+
+        Arguments:
+            force: 跳過衛福部官網的爬蟲，產生其他API提供的資料
+            IgnoreSSL: 忽略SSL安全性認證
+
+        Returns:
+            text (str): 臺灣疫情資訊站的標準格式文章或用戶可讀的錯誤訊息
+            status (str): 狀態訊息以及debug用錯誤訊息，回傳"0"表示成功
+            today.article_link (str): 文章連結
+    '''
+
     # force 只能通過CDC，如果API接不到一樣會出現錯誤
     print(f"args:{arg}")
 
