@@ -476,13 +476,16 @@ def queue_daily(context,
                                 job_kwargs={'kwargs': {'chat_ids': tuple(chat_ids)}})
 
 def option_to_chat_id(name: str):
-    chat_ids = None
+    chat_ids = []
 
     if "channel" in name:
         #chat_ids.append("@Taiwanepidemic")
         chat_ids.append("@hfjdkg93yreljkghre34")
     if text_adjustment("toi_group") in name:
         chat_ids.append("@WeaRetRYiNgtOMakEaBot")
+
+    if not chat_ids:
+        chat_ids = None
 
     return chat_ids
 
