@@ -277,7 +277,7 @@ def sticker(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(update.message.from_user.username) + ":")
         context.bot.sendSticker(chat_id="@E36_bb079f22", sticker=update.message.sticker)
 
-def today_info_everyday(context, *chat_ids):
+def today_info_everyday(context, **chat_ids):
 
     get = api.get_taiwan_outbreak_information()
     text = get[0]
@@ -289,8 +289,8 @@ def today_info_everyday(context, *chat_ids):
             text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
-        if chat_ids is not None:
-            for id in chat_ids:
+        if "chat_ids" in chat_ids:
+            for id in chat_ids.values():
                 context.bot.sendMessage(chat_id=id, text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
         else:
             group = "@hfjdkg93yreljkghre34"
@@ -394,7 +394,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             if text_adjustment("toi_group") in name:
                 chat_ids += "@WeaRetRYiNgtOMakEaBot"
 
-            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name,  job_kwargs=tuple(chat_ids))
+            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name,  job_kwargs={chat_ids:tuple(chat_ids)})
 
             msg = name + " at 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
