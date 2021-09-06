@@ -420,7 +420,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                 chat_ids += "@hfjdkg93yreljkghre34"
             if text_adjustment("toi_group") in name:
                 chat_ids += "@WeaRetRYiNgtOMakEaBot"
-            if chat_ids == []:
+            if not chat_ids:
                 chat_ids += "@WeaRetRYiNgtOMakEaBot"
 
             context.job_queue.run_daily(today_info_everyday,
