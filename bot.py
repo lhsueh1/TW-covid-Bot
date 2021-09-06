@@ -422,7 +422,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                                         tzinfo=pytz.timezone('Asia/Taipei')),
                                         days=range(7),
                                         name=name,
-                                        job_kwargs={'kwargs': tuple(chat_ids)})
+                                        job_kwargs={'kwargs': {'chat_ids': tuple(chat_ids)}})
 
             msg = name + " at 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
