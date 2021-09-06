@@ -396,7 +396,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
 
             context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name,  job_kwargs=tuple(chat_ids))
 
-            msg = str(context.args[0]) + " at 1420 everyday added\!"
+            msg = name + " at 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
         elif len(context.args) == 3: # add with specify name and time
