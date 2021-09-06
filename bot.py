@@ -433,7 +433,6 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
         elif len(context.args) == 3: # add with specify name and time
             name = text_adjustment(str(context.args[0]))
             chat_ids = []
-            print(name)
 
             if "channel" in name:
                 chat_ids += "@Taiwanepidemic"
@@ -441,6 +440,8 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                 pass
             if text_adjustment("toi_group") in name:
                 chat_ids += "@WeaRetRYiNgtOMakEaBot"
+
+            print(chat_ids)
 
             hour = int(context.args[1])
             minute = int(context.args[2])
