@@ -376,14 +376,15 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
 
     if True: #userName == "alsoDazzling" or userName == "nullExistenceException":
 
-        if len(context.args) == 0: # defult add
-            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=text_adjustment("1420_Default_today_info"))
-            context.job_queue.run_daily(image_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=text_adjustment("1420_Default_image"))
+        if len(context.args) == 0:  # defult add
+
+            queue_daily(task=today_info_everyday)
+            queue_daily(task=image_everyday, name="1420_Default_image")
 
             msg = "Default 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
-        elif context.args[0] == "jobs": # list jobs
+        elif context.args[0] == "jobs":  # list jobs
             if len(context.job_queue.jobs()) != 0:
                 t = context.job_queue.jobs()
                 job_names = [job.name for job in t]
@@ -398,7 +399,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             else:
                 context.bot.sendMessage(chat_id=chat, text="None jobs", parse_mode='MarkdownV2', disable_web_page_preview=True)
 
-        elif len(context.args) == 2: # remove
+        elif len(context.args) == 2:  # remove
             if context.args[0] == "rm":
                 job_for_delete = context.job_queue.get_jobs_by_name(str(context.args[1]))
                 if len(job_for_delete) > 0:
@@ -410,42 +411,18 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                     msg = "Nothing to remove"
                     context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
-        elif len(context.args) == 1: # add with specify name
+        elif len(context.args) == 1:  # add with specify name
             name = text_adjustment(str(context.args[0]))
-            chat_ids = []
-            print(name)
+            chat_ids = option_to_chat_id(name)
 
-            if "channel" in name:
-                #chat_ids += "@Taiwanepidemic"
-                chat_ids += "@hfjdkg93yreljkghre34"
-            if text_adjustment("toi_group") in name:
-                chat_ids += "@WeaRetRYiNgtOMakEaBot"
-            if not chat_ids:
-                chat_ids += "@WeaRetRYiNgtOMakEaBot"
-
-            context.job_queue.run_daily(today_info_everyday,
-                                        datetime.time(hour=14,
-                                                      minute=20,
-                                                      tzinfo=pytz.timezone('Asia/Taipei')),
-                                        days=range(7),
-                                        name=name,
-                                        job_kwargs={'kwargs': {'chat_ids': tuple(chat_ids)}})
+            queue_daily(name=name, chat_ids=chat_ids)
 
             msg = name + " at 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
-        elif len(context.args) == 3: # add with specify name and time
+        elif len(context.args) == 3:  # add with specify name and time
             name = text_adjustment(str(context.args[0]))
-            chat_ids = []
-
-            if "channel" in name:
-                #chat_ids.append("@Taiwanepidemic")
-                chat_ids.append("@hfjdkg93yreljkghre34")
-                pass
-            if text_adjustment("toi_group") in name:
-                chat_ids.append("@WeaRetRYiNgtOMakEaBot")
-
-            print(chat_ids)
+            chat_ids = option_to_chat_id(name)
 
             hour = int(context.args[1])
             minute = int(context.args[2])
@@ -453,20 +430,14 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                 context.bot.sendMessage(chat_id=chat, text="Got to be kidding me. No.")
                 return
 
-
-            context.job_queue.run_daily(today_info_everyday,
-                                        datetime.time(hour=hour,
-                                                      minute=minute,
-                                                      tzinfo=pytz.timezone('Asia/Taipei')),
-                                        days=range(7),
-                                        name=name,
-                                        job_kwargs={'kwargs': {'chat_ids': tuple(chat_ids)}})
+            queue_daily(hour=hour, minute=minute, name=name, chat_ids=chat_ids)
 
             msg = name + " at " + str(hour) + str(minute) + " everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
-        elif len(context.args) > 3 and len(context.args) < 11: # add with specify all
+        elif len(context.args) > 3 and len(context.args) < 11:  # add with specify all
             name = text_adjustment(str(context.args[0]))
+            chat_ids = option_to_chat_id(name)
             hour = int(context.args[1])
             minute = int(context.args[2])
             if (hour > 24) or (minute > 60):
@@ -476,7 +447,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             day_list = [int(i) for i in context.args[3:] if int(i) < 7 and int(i) >= 0]
             day_list.sort()
             days = tuple(day_list)
-            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=hour, minute=minute, tzinfo=pytz.timezone('Asia/Taipei')), days=days, name=name)
+            queue_daily(hour=hour, minute=minute, days=days, name=name, chat_ids=chat_ids)
 
             msg = name + " at " + str(hour) + str(minute) + " on days " + ','.join(str(d) for d in days) + " added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
@@ -485,6 +456,33 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             context.bot.sendMessage(chat_id=chat, text="Look at what you're typing. No.")
             return
 
+def queue_daily(update,
+                context,
+                task: callable = today_info_everyday,
+                hour: int = 14,
+                minute: int = 20,
+                days: tuple = range(7),
+                name = '1420_Default_today_info',
+                chat_ids: list = ['@WeaRetRYiNgtOMakEaBot']):
+
+    context.job_queue.run_daily(task,
+                                datetime.time(hour=hour,
+                                              minute=minute,
+                                              tzinfo=pytz.timezone('Asia/Taipei')),
+                                days=days,
+                                name=text_adjustment(name),
+                                job_kwargs={'kwargs': {'chat_ids': tuple(chat_ids)}})
+
+def option_to_chat_id(name: str):
+    chat_ids = None
+
+    if "channel" in name:
+        #chat_ids.append("@Taiwanepidemic")
+        chat_ids.append("@hfjdkg93yreljkghre34")
+    if text_adjustment("toi_group") in name:
+        chat_ids.append("@WeaRetRYiNgtOMakEaBot")
+
+    return chat_ids
 
 def text_adjustment(text: str):
     special = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
