@@ -5,6 +5,9 @@ import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from telegram import Update
 import telegram
+import traceback
+import html
+import json
 import requests
 import re
 import random
@@ -120,8 +123,26 @@ def help(update, context):
 def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning("Update '%s' caused error '%s'", update, context.error)
+
+        # traceback.format_exception returns the usual python message about an exception, but as a
+    # list of strings rather than a single string, so we have to join them together.
+    tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
+    tb_string = ''.join(tb_list)
+
+    # Build the message with some markup and additional information about what happened.
+    # You might need to add some logic to deal with messages longer than the 4096 character limit.
+    update_str = update.to_dict() if isinstance(update, Update) else str(update)
+    message = (
+        f'An exception was raised while handling an update\n'
+        f'<pre>update = {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}'
+        '</pre>\n\n'
+        f'<pre>context.chat_data = {html.escape(str(context.chat_data))}</pre>\n\n'
+        f'<pre>context.user_data = {html.escape(str(context.user_data))}</pre>\n\n'
+        f'<pre>{html.escape(tb_string)}</pre>'
+    )
+
     if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + str(context.error))
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text=message)
     update.message.reply_text("Error. Contact moderator.錯誤")
 
 def today_info(update, context):
