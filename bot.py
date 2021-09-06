@@ -435,11 +435,11 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             chat_ids = []
 
             if "channel" in name:
-                chat_ids += "@Taiwanepidemic"
-                chat_ids += "@hfjdkg93yreljkghre34"
+                chat_ids.append("@Taiwanepidemic")
+                chat_ids.append("@hfjdkg93yreljkghre34")
                 pass
             if text_adjustment("toi_group") in name:
-                chat_ids += "@WeaRetRYiNgtOMakEaBot"
+                chat_ids.append("@WeaRetRYiNgtOMakEaBot")
 
             print(chat_ids)
 
