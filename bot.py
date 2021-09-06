@@ -142,9 +142,12 @@ def error(update, context):
         f'<pre>{html.escape(tb_string)}</pre>'
     )
 
-    if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
+    if update is None:
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=message, parse_mode=ParseMode.HTML)
-    update.message.reply_text("Error. Contact moderator.錯誤")
+    else:
+        if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text=message, parse_mode=ParseMode.HTML)
+        update.message.reply_text("Error. Contact moderator.錯誤")
 
 def today_info(update, context):
     processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...", disable_notification=True)
