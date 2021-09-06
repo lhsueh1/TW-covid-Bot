@@ -311,6 +311,7 @@ def today_info_everyday(context, **chat_ids):
             text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
+        print('chat_ids: ', chat_ids)
         if "chat_ids" in chat_ids:
             for _, id in chat_ids:
                 context.bot.sendMessage(chat_id=id, text=text, parse_mode='MarkdownV2', disable_web_page_preview=True)
@@ -409,6 +410,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
         elif len(context.args) == 1: # add with specify name
             name = text_adjustment(str(context.args[0]))
             chat_ids = []
+            print(name)
 
             if "channel" in name:
                 chat_ids += "@Taiwanepidemic"
