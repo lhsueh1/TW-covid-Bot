@@ -124,7 +124,7 @@ def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning("Update '%s' caused error '%s'", update, context.error)
 
-        # traceback.format_exception returns the usual python message about an exception, but as a
+    # traceback.format_exception returns the usual python message about an exception, but as a
     # list of strings rather than a single string, so we have to join them together.
     tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
     tb_string = ''.join(tb_list)
@@ -134,7 +134,7 @@ def error(update, context):
     update_str = update.to_dict() if isinstance(update, Update) else str(update)
     message = (
         f'An exception was raised while handling an update\n'
-        f'<pre>update = {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}'
+        #f'<pre>update = {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}'
         '</pre>\n\n'
         f'<pre>context.chat_data = {html.escape(str(context.chat_data))}</pre>\n\n'
         f'<pre>context.user_data = {html.escape(str(context.user_data))}</pre>\n\n'
@@ -415,7 +415,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             if text_adjustment("toi_group") in name:
                 chat_ids += "@WeaRetRYiNgtOMakEaBot"
 
-            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name,  job_kwargs={chat_ids:tuple(chat_ids)})
+            context.job_queue.run_daily(today_info_everyday, datetime.time(hour=14, minute=20, tzinfo=pytz.timezone('Asia/Taipei')), days=(0, 1, 2, 3, 4, 5, 6), name=name,  job_kwargs={'chat_ids':tuple(chat_ids)})
 
             msg = name + " at 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
