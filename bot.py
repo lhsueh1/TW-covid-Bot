@@ -416,7 +416,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             print(name)
 
             if "channel" in name:
-                chat_ids += "@Taiwanepidemic"
+                #chat_ids += "@Taiwanepidemic"
                 chat_ids += "@hfjdkg93yreljkghre34"
                 pass
             if text_adjustment("toi_group") in name:
