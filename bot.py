@@ -299,7 +299,7 @@ def sticker(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(update.message.from_user.username) + ":")
         context.bot.sendSticker(chat_id="@E36_bb079f22", sticker=update.message.sticker)
 
-def today_info_everyday(context, **chat_ids):
+def today_info_everyday(context, *chat_ids):
 
     get = api.get_taiwan_outbreak_information()
     text = get[0]
@@ -420,7 +420,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                                         datetime.time(hour=14,
                                         minute=20,
                                         tzinfo=pytz.timezone('Asia/Taipei')),
-                                        days=(0, 1, 2, 3, 4, 5, 6),
+                                        days=range(7),
                                         name=name,
                                         job_kwargs={'chat_ids': tuple(chat_ids)})
 
