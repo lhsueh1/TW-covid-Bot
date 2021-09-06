@@ -378,8 +378,8 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
 
         if len(context.args) == 0:  # defult add
 
-            queue_daily(task=today_info_everyday)
-            queue_daily(task=image_everyday, name="1420_Default_image")
+            queue_daily(context, task=today_info_everyday)
+            queue_daily(context, task=image_everyday, name="1420_Default_image")
 
             msg = "Default 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
@@ -415,7 +415,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             name = text_adjustment(str(context.args[0]))
             chat_ids = option_to_chat_id(name)
 
-            queue_daily(name=name, chat_ids=chat_ids)
+            queue_daily(context, name=name, chat_ids=chat_ids)
 
             msg = name + " at 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
@@ -430,7 +430,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                 context.bot.sendMessage(chat_id=chat, text="Got to be kidding me. No.")
                 return
 
-            queue_daily(hour=hour, minute=minute, name=name, chat_ids=chat_ids)
+            queue_daily(context, hour=hour, minute=minute, name=name, chat_ids=chat_ids)
 
             msg = name + " at " + str(hour) + str(minute) + " everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
@@ -447,7 +447,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             day_list = [int(i) for i in context.args[3:] if int(i) < 7 and int(i) >= 0]
             day_list.sort()
             days = tuple(day_list)
-            queue_daily(hour=hour, minute=minute, days=days, name=name, chat_ids=chat_ids)
+            queue_daily(context, hour=hour, minute=minute, days=days, name=name, chat_ids=chat_ids)
 
             msg = name + " at " + str(hour) + str(minute) + " on days " + ','.join(str(d) for d in days) + " added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
@@ -456,8 +456,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             context.bot.sendMessage(chat_id=chat, text="Look at what you're typing. No.")
             return
 
-def queue_daily(update,
-                context,
+def queue_daily(context,
                 task: callable = today_info_everyday,
                 hour: int = 14,
                 minute: int = 20,
