@@ -418,7 +418,8 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             name = text_adjustment(str(context.args[0]))
             chat_ids = option_to_chat_id(name)
 
-            queue_daily(context, name=name, chat_ids=chat_ids)
+            queue_daily(context, task=today_info_everyday, name=name, chat_ids=chat_ids)
+            queue_daily(context, task=image_everyday, name=name, chat_ids=chat_ids)
 
             msg = name + " at 1420 everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
@@ -434,6 +435,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                 return
 
             queue_daily(context, hour=hour, minute=minute, name=name, chat_ids=chat_ids)
+            queue_daily(context, task=image_everyday, hour=hour, minute=minute, name=name, chat_ids=chat_ids)
 
             msg = name + " at " + str(hour) + str(minute) + " everyday added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
@@ -451,6 +453,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             day_list.sort()
             days = tuple(day_list)
             queue_daily(context, hour=hour, minute=minute, days=days, name=name, chat_ids=chat_ids)
+            queue_daily(context, task=image_everyday, hour=hour, minute=minute, days=days, name=name, chat_ids=chat_ids)
 
             msg = name + " at " + str(hour) + str(minute) + " on days " + ','.join(str(d) for d in days) + " added\!"
             context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
@@ -482,7 +485,6 @@ def option_to_chat_id(name: str):
     chat_ids = []
 
     if "channel" in name:
-        chat_ids.append("@hfjdkg93yreljkghre34")
         chat_ids.append("@Taiwanepidemic")
     if text_adjustment("toi_group") in name:
         chat_ids.append("@WeaRetRYiNgtOMakEaBot")
