@@ -161,10 +161,10 @@ def error(update, context):
     )
 
     if update is None:
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text=message, parse_mode='MarkdownV2')
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text=text_adjustment(message), parse_mode='MarkdownV2')
     else:
         if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
-            context.bot.sendMessage(chat_id="@E36_bb079f22", text=message, parse_mode='MarkdownV2')
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text=text_adjustment(message), parse_mode='MarkdownV2')
         update.message.reply_text("Error. Contact moderator.錯誤")
 
 def today_info(update, context):
