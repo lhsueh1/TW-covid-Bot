@@ -401,7 +401,7 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
             return
 
 
-    if True: #userName == "alsoDazzling" or userName == "nullExistenceException":
+    if True:  # userName == "alsoDazzling" or userName == "nullExistenceException":
 
         if len(context.args) == 0:  # defult add
 
