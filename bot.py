@@ -113,9 +113,6 @@ def restart_and_upgrade(update, context):
         update.message.reply_text(text)
         threading.Thread(target=stop_and_restart).start()
 
-        queue_daily(context, task=today_info_everyday)
-        queue_daily(context, task=image_everyday, name="1420_Default_image")
-
     else:
         update.message.reply_text('Already up to date.')
 
@@ -160,18 +157,14 @@ def error(update, context):
     message = (
         f'An exception was raised while handling an update\n'
         #f'<pre>update = {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}'
-        f'<pre>update = {str(update)}'
-        '</pre>\n\n'
-        f'<pre>context.chat_data = {html.escape(str(context.chat_data))}</pre>\n\n'
-        f'<pre>context.user_data = {html.escape(str(context.user_data))}</pre>\n\n'
-        f'<pre>{html.escape(tb_string)}</pre>'
+        f'{str(update)}\n\n{tb_string}'
     )
 
     if update is None:
-        context.bot.sendMessage(chat_id="@E36_bb079f22", text=message, parse_mode=ParseMode.HTML)
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text=message, parse_mode='MarkdownV2')
     else:
         if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
-            context.bot.sendMessage(chat_id="@E36_bb079f22", text=message, parse_mode=ParseMode.HTML)
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text=message, parse_mode='MarkdownV2')
         update.message.reply_text("Error. Contact moderator.錯誤")
 
 def today_info(update, context):
@@ -550,8 +543,6 @@ def main():
 
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
-
-
 
 
     # log all errors
