@@ -104,7 +104,7 @@ def stop(bot, update):
 
 def restart_and_upgrade(update, context):
     g = git.cmd.Git()
-    g = g.fetch()
+    g.fetch()
     # 如果有新的版本就pull，印出訊息，並且restart
     status = g.log('HEAD..origin/main')
     if status != "":
@@ -541,7 +541,7 @@ def main():
     dp.add_handler(CommandHandler("today_info", today_info))
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(CommandHandler("image", image))
-    dp.add_handler(CommandHandler("stop", stop))
+    dp.add_handler(CommandHandler(["stop", "quit", "exit"], stop))
     dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade, filters=Filters.user(username=['@alsoDazzling', '@nullExistenceException'])))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
 
