@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import os
+import sys
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from telegram import Update, ParseMode
@@ -17,6 +19,7 @@ import urllib3
 import threading
 import pytz
 import datetime
+import git
 
 # Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -98,6 +101,23 @@ def stop(bot, update):
 
     else:
         bot.message.reply_text("Authority needed")
+
+def restart_and_upgrade(update, context):
+    g = git.cmd.Git()
+    # 如果有新的版本就pull，印出訊息，並且restart
+    fetch = g.fetch()
+    if fetch is not None or fetch != "":
+        g.pull()
+        text = 'Bot is restarting...\nUpdate info:\n'+str(fetch)
+        update.message.reply_text(text_adjustment(text))
+        threading.Thread(target=stop_and_restart).start()
+    else:
+        update.message.reply_text('Already up to date.')
+
+def stop_and_restart():
+    """Gracefully stop the Updater and replace the current process with a new one"""
+    updater.stop()
+    os.execl(sys.executable, sys.executable, *sys.argv)
 
 def start(update, context):
     """Send a message when the command /start is issued."""
@@ -521,6 +541,7 @@ def main():
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(CommandHandler("image", image))
     dp.add_handler(CommandHandler("stop", stop))
+    dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade, filters=Filters.user(username=['@alsoDazzling", "@nullExistenceException'])))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
