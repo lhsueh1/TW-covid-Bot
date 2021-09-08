@@ -106,7 +106,7 @@ def restart_and_upgrade(update, context):
     g = git.cmd.Git()
     # 如果有新的版本就pull，印出訊息，並且restart
     fetch = g.fetch()
-    if fetch is not None or fetch != "":
+    if fetch != "":
         g.pull()
         text = 'Bot is restarting...\nUpdate info:\n'+str(fetch)
         update.message.reply_text(text_adjustment(text))
