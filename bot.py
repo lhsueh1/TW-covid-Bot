@@ -100,7 +100,7 @@ def stop(bot, update):
         threading.Thread(target=shutdown).start()
 
     else:
-        bot.message.reply_text("Authority needed")
+        bot.message.reply_text("Authority needed.")
 
 def restart_and_upgrade(update, context):
     g = git.cmd.Git()
