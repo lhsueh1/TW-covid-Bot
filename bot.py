@@ -293,7 +293,7 @@ def chat(update, context):
         if COUNT < 2:
             update.message.reply_text("I'm not a chat bot.")
             COUNT += 1
-    #talk to user
+    # talk to user
     else:
         message = str(update.message.text)
         try:
