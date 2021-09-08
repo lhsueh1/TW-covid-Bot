@@ -541,7 +541,7 @@ def main():
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(CommandHandler("image", image))
     dp.add_handler(CommandHandler("stop", stop))
-    dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade, filters=Filters.user(username=['@alsoDazzling", "@nullExistenceException'])))
+    dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade, filters=Filters.user(username=['@alsoDazzling', '@nullExistenceException'])))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
