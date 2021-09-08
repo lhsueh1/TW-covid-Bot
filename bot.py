@@ -105,11 +105,11 @@ def stop(bot, update):
 def restart_and_upgrade(update, context):
     g = git.cmd.Git()
     # 如果有新的版本就pull，印出訊息，並且restart
-    fetch = g.fetch()
-    if fetch != "":
+    status = g.log('HEAD..origin/main')
+    if status != "":
         g.pull()
-        text = 'Bot is restarting...\nUpdate info:\n'+str(fetch)
-        update.message.reply_text(text_adjustment(text))
+        text = 'Bot is restarting...\n\nUpdate info:\n'+text_adjustment(status)
+        update.message.reply_text(text)
         threading.Thread(target=stop_and_restart).start()
     else:
         update.message.reply_text('Already up to date.')
