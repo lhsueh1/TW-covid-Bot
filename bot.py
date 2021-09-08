@@ -112,6 +112,10 @@ def restart_and_upgrade(update, context):
         text = 'Bot is restarting...\n\nUpdate info:\n'+status
         update.message.reply_text(text)
         threading.Thread(target=stop_and_restart).start()
+
+        queue_daily(context, task=today_info_everyday)
+        queue_daily(context, task=image_everyday, name="1420_Default_image")
+
     else:
         update.message.reply_text('Already up to date.')
 
