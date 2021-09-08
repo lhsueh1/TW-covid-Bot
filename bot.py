@@ -306,7 +306,7 @@ def chat(update, context):
             pass
 
 def sticker(update, context):
-    #reply sticker to user
+    # reply sticker to user
     if update.message.chat.username == "nullExistenceException" and (update.message.chat.type == "private"):
         stickerCute = random.choice(["src/cute.tgs", "src/cute2.tgs", "src/cute3.tgs", "src/cute4.webp", "src/cute5.webp", "src/cute6.tgs", "src/cute7.tgs"])
         context.bot.sendSticker(chat_id=update.message.chat_id, sticker=open(stickerCute, "rb"))
