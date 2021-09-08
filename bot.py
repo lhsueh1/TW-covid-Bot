@@ -289,7 +289,6 @@ def chat(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + "\t" + str(ID) + "\n" + str(update.message.text))
         #context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update))
 
-
         if COUNT < 2:
             update.message.reply_text("I'm not a chat bot.")
             COUNT += 1
