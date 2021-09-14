@@ -74,6 +74,8 @@ def get_taiwan_outbreak_information(*arg: str):
     else:
         isSSLVerify = True
 
+    isrecrawl = ("recrawl" in arg)
+
     api_status = get_API_status(isSSLVerify)
 
     if not api_status[0]:
@@ -94,7 +96,7 @@ def get_taiwan_outbreak_information(*arg: str):
     epidemic = TaiwanEpidemic(SSLVerify=isSSLVerify)
     global_stats = GlobalStats(SSLVerify=isSSLVerify)
 
-    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify)
+    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl)
 
     if today.error is not False and not isForce:
         text = "無法連上CDC官網"
