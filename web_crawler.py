@@ -132,9 +132,13 @@ class TodayConfirmed(object):
             self.additional_text += texts[1]
             self.additional_text = self.additional_text.replace("；", "。\n")
             self.additional_text = self.additional_text.replace("指揮中心表示，", "")
+            self.additional_text = self.additional_text.replace("指揮中心說明，", "")
             self.additional_text = self.additional_text.replace("，個案分佈", "\n個案分佈")
             self.additional_text = self.additional_text.replace("，個案分布", "。\n個案分布")
             self.additional_text = self.additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
+            self.additional_text = self.additional_text.replace("，衛生單位刻正進行相關疫調及接觸者匡列", "")
+            self.additional_text = self.additional_text.replace("。衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
+            self.additional_text = self.additional_text.replace("，衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
             self.additional_text = self.additional_text.replace("詳如新聞稿附件。", "")
 
 
