@@ -49,17 +49,22 @@ class TodayConfirmed(object):
                     self.today_imported = today_dict["today_imported"]
                     self.today_deaths = today_dict["today_deaths"]
                     self.additional_text = today_dict["additional_text"]
-                    self.is_same_date = today_dict["is_same_date"]
                     json_datetime = today_dict["date"]
                     self.date = datetime.fromisoformat(json_datetime)
                     self.article_link = today_dict["article_link"]
                     self.error = today_dict["error"]
 
+                    self.date_compare(self.date)
+
                     if self.error is not False:
                         print("Error info in today confirmed info json is not false. Trying web crawler.")
                         self.web_crawler(url)
+                    elif self.is_same_date is not True:
+                        print("Today is a new day. Trying web crawler.")
+                        self.web_crawler(url)
                     else:
                         print("Extracted today confirmed info from json.")
+
             except Exception as e:
                 print("Unable to extract today confirmed info from json. Trying web crawler.")
                 tb_msg = traceback.format_tb(e.__traceback__)
@@ -122,17 +127,10 @@ class TodayConfirmed(object):
 
             self.data_extractor(target_title, article_content)
 
-            # todo 如果新聞稿發布日期<今日日期-12小時，會發出錯誤
             d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2]))
-            #d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2])+1)
-            d2 = datetime.now(pytz.timezone('Asia/Taipei')) - timedelta(hours=36)
-            d2 = d2.replace(tzinfo=None)
+            self.date_compare(d1)
             self.date = d1
-            if d1 < d2:
-                print(f"日期錯誤:{d1}")
-                self.is_same_date = False
-            else:
-                self.is_same_date = True
+
 
         except requests.exceptions.HTTPError as e:
             print("HTTPError: ", e.reason)
@@ -225,7 +223,6 @@ class TodayConfirmed(object):
             "today_imported" : self.today_imported,
             "today_deaths" : self.today_deaths,
             "additional_text" : self.additional_text,
-            "is_same_date" : self.is_same_date,
             "date" : formatted_datetime,
             "article_link" : self.article_link,
             "error" : self.error,
@@ -235,6 +232,17 @@ class TodayConfirmed(object):
 
         with open("TodayConfirmed.json", "w", encoding='utf8') as outfile:
             outfile.write(json_object)
+
+    def date_compare(self, article_date):
+        """如果新聞稿發布日期<今日日期-12小時，會發出錯誤"""
+
+        d2 = datetime.now(pytz.timezone('Asia/Taipei')) - timedelta(hours=36)
+        d2 = d2.replace(tzinfo=None)
+        if article_date < d2:
+            print(f"日期錯誤:{article_date}")
+            self.is_same_date = False
+        else:
+            self.is_same_date = True
 
 class MyException(Exception):
 
