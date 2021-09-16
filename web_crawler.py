@@ -189,7 +189,7 @@ class TodayConfirmed(object):
 
         texts = article_content.split()
 
-        self.additional_text += texts[1]
+        self.additional_text = texts[1]
         self.additional_text = self.additional_text.replace("；", "。\n")
         self.additional_text = self.additional_text.replace("指揮中心表示，", "")
         self.additional_text = self.additional_text.replace("指揮中心說明，", "")
