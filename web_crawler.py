@@ -74,6 +74,11 @@ class TodayConfirmed(object):
             self.web_crawler(url)
 
     def web_crawler(self, url, **kwargs):
+        self.today_confirmed = 0
+        self.today_domestic = 0
+        self.today_imported = 0
+        self.today_deaths = 0
+        self.additional_text = ""
 
         if "max_retries" in kwargs:
             max_retries = kwargs["max_retries"]
