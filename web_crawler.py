@@ -169,17 +169,15 @@ class TodayConfirmed(object):
             listOfNumbers = [int(i) for i in newstr.split()]
             self.today_confirmed = listOfNumbers[0]
 
-            imported_text = re.search(r'新增\w?\d+例境外移入', article_content)
-            if imported_text is not None:
-                newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in imported_text.group(0))
-                listOfNumbers = [int(i) for i in newstr.split()]
-                self.today_imported = listOfNumbers[0]
+            imported_text_match = re.search(r'新增\w?\d+例境外移入', article_content)
+            if imported_text_match is not None:
+                num_mtach = re.search(r'\d+', imported_text_match.group(0))
+                self.today_imported = int(num_mtach.group(0))
 
-            domestic_text = re.search(r'新增\w?\d+例本土病例', article_content)
-            if domestic_text is not None:
-                newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in domestic_text.group(0))
-                listOfNumbers = [int(i) for i in newstr.split()]
-                self.today_domestic = listOfNumbers[0]
+            domestic_text_match = re.search(r'新增\w?\d+例本土病例', article_content)
+            if domestic_text_match is not None:
+                num_mtach = re.search(r'\d+', domestic_text_match.group(0))
+                self.today_imported = int(num_mtach.group(0))
 
             if self.today_domestic is None and self.today_confirmed is not None and self.today_imported is not None:
                 self.today_domestic = int(self.today_confirmed) - int(self.today_imported)
