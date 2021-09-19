@@ -202,6 +202,7 @@ class TodayConfirmed(object):
         self.additional_text = self.additional_text.replace("，衛生單位刻正進行相關疫調及接觸者匡列", "")
         self.additional_text = self.additional_text.replace("。衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
         self.additional_text = self.additional_text.replace("，衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
+        self.additional_text = self.additional_text.replace("衛生單位持續進行疫情調查及防治，接觸者匡列中。", "")
         self.additional_text = self.additional_text.replace("詳如新聞稿附件。", "")
 
 
