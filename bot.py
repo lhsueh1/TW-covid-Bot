@@ -432,10 +432,9 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                     context.bot.sendMessage(chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
             elif context.args[0] == "clear":
                 jobs_for_delete = context.job_queue.jobs()
-                for i in jobs_for_delete:
-                    jobs_for_delete[i].schedule_removal()
+                for job in jobs_for_delete:
+                    job.schedule_removal()
                 context.bot.sendMessage(chat_id=chat, text="All schedules removed", parse_mode='MarkdownV2', disable_web_page_preview=True)
-
 
 
         elif len(context.args) == 1:  # add with specify name
