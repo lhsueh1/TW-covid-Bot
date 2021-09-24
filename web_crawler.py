@@ -203,6 +203,8 @@ class TodayConfirmed(object):
 
         if self.additional_text is not None and self.additional_text != "":
             self.additional_text = "\n" + self.additional_text
+            # only remove trailing newline characters.
+            self.additional_text = self.additional_text.rstrip()
 
         # 死亡分析
         regex_death = re.compile(r"新增(\d+-*\d*)例死亡")
