@@ -136,6 +136,8 @@ class TodayConfirmed(object):
             self.date_compare(d1)
             self.date = d1
 
+            self.error = False
+            self.save_to_json()
 
         except requests.exceptions.HTTPError as e:
             print("HTTPError: ", e.reason)
@@ -143,46 +145,39 @@ class TodayConfirmed(object):
 
         except Exception as e:
             print("ERROR: TodayConfirmed init failed")
+            print(e)
             tb_msg = traceback.format_tb(e.__traceback__)
             print(*tb_msg, sep='\n')
-
-        self.error = False
-        self.save_to_json()
 
     def data_extractor(self, title, article_content):
         # 文章標題的確診病例、本土、境外處理
         if re.match(r'新增\d+例COVID-19\w*病例，分別為\d+例本土及\d+例境外移入', title):
-            newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in title)
-            listOfNumbers = [int(i) for i in newstr.split()]
-            #print(listOfNumbers)
-            self.today_confirmed = listOfNumbers[0]
-            self.today_domestic = listOfNumbers[2]
-            self.today_imported = listOfNumbers[3]
+            nums = re.findall(r'\d+', title)
+            self.today_confirmed = nums[0]
+            self.today_domestic = nums[2]
+            self.today_imported = nums[3]
 
         elif re.match(r'新增\d+例境外移入COVID-19\w*病例', title):
-            newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in title)
-            listOfNumbers = [int(i) for i in newstr.split()]
-            #print(listOfNumbers)
-            self.today_confirmed = listOfNumbers[0]
+            nums = re.findall(r'\d+', title)
+            self.today_confirmed = nums[0]
             self.today_domestic = 0
-            self.today_imported = listOfNumbers[0]
+            self.today_imported = nums[0]
 
         # 如果標題找不到境外移入、本土的病例數量的話，透過文章分析
         # 利用article_content找到 新增\d+例境外移入 並判斷本土數量
         elif re.search(r'新增\d+例COVID-19\w*病例', title):
-            newstr = ''.join((ch if ch in '0123456789' else ' ') for ch in title)
-            listOfNumbers = [int(i) for i in newstr.split()]
-            self.today_confirmed = listOfNumbers[0]
+            nums = re.findall(r'\d+', title)
+            self.today_confirmed = nums[0]
 
             imported_text_match = re.search(r'新增\w?\d+例境外移入', article_content)
             if imported_text_match is not None:
-                num_mtach = re.search(r'\d+', imported_text_match.group(0))
-                self.today_imported = int(num_mtach.group(0))
+                num_match = re.search(r'\d+', imported_text_match.group(0))
+                self.today_imported = int(num_match.group(0))
 
             domestic_text_match = re.search(r'新增\w?\d+例本土病例', article_content)
             if domestic_text_match is not None:
-                num_mtach = re.search(r'\d+', domestic_text_match.group(0))
-                self.today_imported = int(num_mtach.group(0))
+                num_match = re.search(r'\d+', domestic_text_match.group(0))
+                self.today_imported = int(num_match.group(0))
 
             if self.today_domestic is None and self.today_confirmed is not None and self.today_imported is not None:
                 self.today_domestic = int(self.today_confirmed) - int(self.today_imported)
