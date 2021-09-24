@@ -153,15 +153,15 @@ class TodayConfirmed(object):
         # 文章標題的確診病例、本土、境外處理
         if re.match(r'新增\d+例COVID-19\w*病例，分別為\d+例本土及\d+例境外移入', title):
             nums = re.findall(r'\d+', title)
-            self.today_confirmed = nums[0]
-            self.today_domestic = nums[2]
-            self.today_imported = nums[3]
+            self.today_confirmed = int(nums[0])
+            self.today_domestic = int(nums[2])
+            self.today_imported = int(nums[3])
 
         elif re.match(r'新增\d+例境外移入COVID-19\w*病例', title):
             nums = re.findall(r'\d+', title)
-            self.today_confirmed = nums[0]
+            self.today_confirmed = int(nums[0])
             self.today_domestic = 0
-            self.today_imported = nums[0]
+            self.today_imported = int(nums[0])
 
         # 如果標題找不到境外移入、本土的病例數量的話，透過文章分析
         # 利用article_content找到 新增\d+例境外移入 並判斷本土數量
