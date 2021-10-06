@@ -78,9 +78,10 @@ def get_taiwan_outbreak_information(*arg: str):
     if any(x in manual_texts for x in arg):
         print("ismanual")
         ismanual = True
-        CDC_NEWS_URL = arg[1]
+        article = arg[1]
     else:
         ismanual = False
+        article = None
 
 
     isrecrawl = ("recrawl" in arg)
@@ -105,7 +106,7 @@ def get_taiwan_outbreak_information(*arg: str):
     epidemic = TaiwanEpidemic(SSLVerify=isSSLVerify)
     global_stats = GlobalStats(SSLVerify=isSSLVerify)
 
-    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual)
+    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual, article = article)
 
     if today.error is not False and not isForce:
         text = "無法連上CDC官網"

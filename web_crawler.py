@@ -34,7 +34,7 @@ class TodayConfirmed(object):
         if "ismanual" in kwargs:
             if kwargs["ismanual"]:
                 self.is_same_date = True
-                self.data_extractor("", url)
+                self.data_extractor("", kwargs["article"])
                 return
 
         if "recrawl" in kwargs:
