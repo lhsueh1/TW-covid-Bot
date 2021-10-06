@@ -604,7 +604,7 @@ def main():
         },
         fallbacks=[CommandHandler('cancel', conversation_cancel)],
         allow_reentry=True,
-        conversation_timeout=60,
+        conversation_timeout=300,
     )
     dp.add_handler(manual_handler)
 
