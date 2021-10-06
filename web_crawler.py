@@ -35,6 +35,7 @@ class TodayConfirmed(object):
             if kwargs["ismanual"]:
                 self.is_same_date = True
                 self.data_extractor("", kwargs["article"])
+                self.save_to_json()
                 return
 
         if "recrawl" in kwargs:
@@ -207,7 +208,7 @@ class TodayConfirmed(object):
                 num_match = re.search(r'\d+', domestic_text_match.group(0))
                 self.today_imported = int(num_match.group(0))
 
-            date_text_match = re.search(r'\d{3,4}-\d{2}-\d{2}', article_content)
+            date_text_match = re.search(r'\d{3,4}[-/]\d{1,2}[-/]\d{1,2}', article_content)
             if date_text_match is not None:
                 date_text = re.findall(r'\d+', date_text_match.group(0))
                 date_year = int(date_text[0])

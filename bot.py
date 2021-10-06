@@ -323,7 +323,7 @@ def conversation_cancel(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
     logger.info("User %s canceled the conversation.", user.first_name)
     update.message.reply_text(
-        'Bye! I hope we can talk again some day.', reply_markup=ReplyKeyboardRemove()
+        'Then shut up and fuck off.\n    -- Lilia', reply_markup=ReplyKeyboardRemove()
     )
 
     return ConversationHandler.END
@@ -615,8 +615,8 @@ def main():
     dp.add_handler(CommandHandler("image", image))
     dp.add_handler(CommandHandler(["stop", "quit", "exit"], stop))
     dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade, filters=Filters.user(username=['@alsoDazzling', '@nullExistenceException'])))
+    #dp.add_handler(CommandHandler('post_to_channel', post_to_channel, filters=Filters.user(user_id=834069847, username=['@alsoDazzling', '@nullExistenceException'])))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
-    # dp.add_handler(CommandHandler("manual_article", manual_article))
     dp.add_handler(CommandHandler("manual_url", manual_url))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
