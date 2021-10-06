@@ -125,6 +125,7 @@ def start(update, context):
     """Send a message when the command /start is issued."""
     user = update.effective_user
     update.message.reply_text("Start.開始")
+    print(user)
 
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
@@ -278,6 +279,7 @@ def manaual_article_entry(update: Update, context: CallbackContext) -> int:
     update.message.reply_text(
         '請輸入文章全文'
     )
+    print("請輸入文章全文")
 
     return 0
 
@@ -315,6 +317,16 @@ def manaual_url(update, context):
         'Function unavailable'
     )
     return
+
+def conversation_cancel(update: Update, context: CallbackContext) -> int:
+    """Cancels and ends the conversation."""
+    user = update.message.from_user
+    logger.info("User %s canceled the conversation.", user.first_name)
+    update.message.reply_text(
+        'Bye! I hope we can talk again some day.', reply_markup=ReplyKeyboardRemove()
+    )
+
+    return ConversationHandler.END
 
 
 def echo(update, context):
@@ -604,6 +616,7 @@ def main():
             0: [MessageHandler(Filters.text & ~Filters.command, manaual_article)],
 
         },
+        fallbacks=[CommandHandler('cancel', conversation_cancel)],
     )
     dp.add_handler(manaual_handler)
 
