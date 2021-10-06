@@ -31,12 +31,19 @@ class TodayConfirmed(object):
     error = False
 
     def __init__(self, url, **kwargs):
+        if "isManaual" in kwargs:
+            if kwargs["isManaual"]:
+                self.data_extractor("", url)
+                self.is_same_date = True
+                self.date = datetime.now(pytz.timezone('Asia/Taipei'))
+                return
+
         if "recrawl" in kwargs:
             if kwargs["recrawl"]:
                 self.web_crawler(url)
-            else:
-                self.init(url, **kwargs)
-        elif url != 0:
+                return
+
+        if url != 0:
             self.init(url, **kwargs)
 
     def init(self, url, **kwargs):
@@ -168,6 +175,28 @@ class TodayConfirmed(object):
         elif re.search(r'新增\d+例COVID-19\w*病例', title):
             nums = re.findall(r'\d+', title)
             self.today_confirmed = nums[0]
+
+            imported_text_match = re.search(r'新增\w?\d+例境外移入', article_content)
+            if imported_text_match is not None:
+                num_match = re.search(r'\d+', imported_text_match.group(0))
+                self.today_imported = int(num_match.group(0))
+
+            domestic_text_match = re.search(r'新增\w?\d+例本土病例', article_content)
+            if domestic_text_match is not None:
+                num_match = re.search(r'\d+', domestic_text_match.group(0))
+                self.today_imported = int(num_match.group(0))
+
+            if self.today_domestic is None and self.today_confirmed is not None and self.today_imported is not None:
+                self.today_domestic = int(self.today_confirmed) - int(self.today_imported)
+
+            if self.today_imported is None and self.today_confirmed is not None and self.today_domestic is not None:
+                self.today_imported = int(self.today_confirmed) - int(self.today_domestic)
+
+        if title == "":
+            imported_text_match = re.search(r'新增\d+例COVID-19\w*病例', article_content)
+            if imported_text_match is not None:
+                num_match = re.search(r'\d+', imported_text_match.group(0))
+                self.today_confirmed = int(num_match.group(0))
 
             imported_text_match = re.search(r'新增\w?\d+例境外移入', article_content)
             if imported_text_match is not None:

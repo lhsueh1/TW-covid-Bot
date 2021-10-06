@@ -74,6 +74,15 @@ def get_taiwan_outbreak_information(*arg: str):
     else:
         isSSLVerify = True
 
+    manaual_texts = ["manaual", "Manaual"]
+    if any(x in manaual_texts for x in arg):
+        print("isManaual")
+        isManaual = True
+        CDC_NEWS_URL = arg[1]
+    else:
+        isManaual = False
+
+
     isrecrawl = ("recrawl" in arg)
 
     api_status = get_API_status(isSSLVerify)
@@ -96,7 +105,7 @@ def get_taiwan_outbreak_information(*arg: str):
     epidemic = TaiwanEpidemic(SSLVerify=isSSLVerify)
     global_stats = GlobalStats(SSLVerify=isSSLVerify)
 
-    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl)
+    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, isManaual = isManaual)
 
     if today.error is not False and not isForce:
         text = "無法連上CDC官網"
@@ -303,7 +312,16 @@ class GlobalStats(object):
 if __name__ == '__main__':
     # t=get_epidemic_status_by_country("Canada")
     # print(t)
-    text = get_taiwan_outbreak_information("recrawl")
+    s = """
+    中央流行疫情指揮中心今(6)日公佈國內新增5例COVID-19確定病例，均為境外移入；另確診個案中無新增死亡。
+
+指揮中心說明，今日新增5例境外移入個案，為1例男性、4例女性，年齡介於20多歲至40多歲，其中4例分別自美國(3例，案16373、案16374、案16376)、南非(案16375)入境，餘1例調查中(案16377)，入境日介於今(2021)年9月14日至9月26日；詳如新聞稿附件。
+
+指揮中心統計，截至目前國內累計3,507,972例新型冠狀病毒肺炎相關通報(含3,490,728例排除)，其中16,267例確診，分別為1,632例境外移入，14,581例本土病例，36例敦睦艦隊、3例航空器感染、1例不明及14例調查中；另累計110例移除為空號。2020年起累計844例COVID-19死亡病例，其中832例本土，個案居住縣市分佈為新北市412例、臺北市319例、基隆市29例、桃園市26例、彰化縣15例、新竹縣13例、臺中市5例、苗栗縣3例、宜蘭縣及花蓮縣各2例，臺東縣、雲林縣、臺南市、南投縣、高雄市及屏東縣各1例；另12例為境外移入。
+
+指揮中心再次呼籲，民眾應落實手部衛生、咳嗽禮節及佩戴口罩等個人防護措施，減少不必要移動、活動或集會，避免出入人多擁擠的場所，或高感染傳播風險場域，並主動積極配合各項防疫措施，共同嚴守社區防線。
+"""
+    text = get_taiwan_outbreak_information("manaual", s)
     for t in text:
         print(str(t)+"\n")
     #pic.pic("0904", "1", "0", "1", "0", "16013", "837")

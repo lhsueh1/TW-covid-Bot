@@ -4,8 +4,8 @@
 import os
 import sys
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
-from telegram import Update, ParseMode
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ParseMode
 import telegram
 import traceback
 import html
@@ -271,6 +271,51 @@ def image(update, context):
     userName = update.message.from_user.username
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + " : " + str(update.message.text))
+
+def manaual_article_entry(update: Update, context: CallbackContext) -> int:
+    reply_keyboard = [['Article', 'Url']]
+
+    update.message.reply_text(
+        '請輸入文章全文'
+    )
+
+    return 0
+
+def manaual_article(update, context):
+    get = api.get_taiwan_outbreak_information("manaual", update.message.text)
+
+    text = get[0]
+
+    if get[1] == 0:
+        special = ['_', '*', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
+        for i in special:
+            text = text.replace(i, "\\" + str(i))
+
+        text = text.replace("統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`[群組](t.me/joinchat/VXSevGfKN560hTWH)`告知，我們會立刻更正，謝謝。`\n```")
+        if get[2] is not None:
+            text = text.replace("疾管署新聞稿及政府資料開放平臺", f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
+        text = "```\n" + text + "\n```"
+
+
+        update.message.reply_text(text, parse_mode='MarkdownV2', disable_web_page_preview=True)
+
+
+        userName = update.message.from_user.username
+        if update.message.chat.username != "E36_bb079f22":
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": today_info")
+
+    else:
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + get[1])
+        update.message.reply_text(text)
+
+    return ConversationHandler.END
+
+def manaual_url(update, context):
+    update.message.reply_text(
+        'Function unavailable'
+    )
+    return
+
 
 def echo(update, context):
     """Echo the user message."""
@@ -546,10 +591,21 @@ def main():
     dp.add_handler(CommandHandler(["stop", "quit", "exit"], stop))
     dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade, filters=Filters.user(username=['@alsoDazzling', '@nullExistenceException'])))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
+    # dp.add_handler(CommandHandler("manaual_article", manaual_article))
+    dp.add_handler(CommandHandler("manaual_url", manaual_url))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
 
+    # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
+    manaual_handler = ConversationHandler(
+        entry_points=[CommandHandler('manaual_article', manaual_article_entry)],
+        states={
+            0: [MessageHandler(Filters.text & ~Filters.command, manaual_article)],
+
+        },
+    )
+    dp.add_handler(manaual_handler)
 
     # log all errors
     dp.add_error_handler(error)
