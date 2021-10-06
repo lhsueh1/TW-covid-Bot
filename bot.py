@@ -595,6 +595,17 @@ def main():
     dp = updater.dispatcher
 
     # on different commands - answer in Telegram
+
+    manual_handler = ConversationHandler(
+        entry_points=[CommandHandler('manual_article', manual_article_entry)],
+        states={
+            0: [MessageHandler(Filters.text & ~Filters.command, manual_article)],
+
+        },
+        fallbacks=[CommandHandler('cancel', conversation_cancel)],
+    )
+    dp.add_handler(manual_handler)
+
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("today_info", today_info))
@@ -608,17 +619,6 @@ def main():
 
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
-
-    # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
-    manual_handler = ConversationHandler(
-        entry_points=[CommandHandler('manual_article', manual_article_entry)],
-        states={
-            0: [MessageHandler(Filters.text & ~Filters.command, manual_article)],
-
-        },
-        fallbacks=[CommandHandler('cancel', conversation_cancel)],
-    )
-    dp.add_handler(manual_handler)
 
     # log all errors
     dp.add_error_handler(error)

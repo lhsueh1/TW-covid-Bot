@@ -31,11 +31,10 @@ class TodayConfirmed(object):
     error = False
 
     def __init__(self, url, **kwargs):
-        if "isManaual" in kwargs:
-            if kwargs["isManaual"]:
-                self.data_extractor("", url)
+        if "ismanual" in kwargs:
+            if kwargs["ismanual"]:
                 self.is_same_date = True
-                self.date = datetime.now(pytz.timezone('Asia/Taipei'))
+                self.data_extractor("", url)
                 return
 
         if "recrawl" in kwargs:
@@ -207,6 +206,22 @@ class TodayConfirmed(object):
             if domestic_text_match is not None:
                 num_match = re.search(r'\d+', domestic_text_match.group(0))
                 self.today_imported = int(num_match.group(0))
+
+            date_text_match = re.search(r'\d{3,4}-\d{2}-\d{2}', article_content)
+            if date_text_match is not None:
+                date_text = re.findall(r'\d+', date_text_match.group(0))
+                date_year = int(date_text[0])
+
+                # 中華民國還沒死透
+                if date_year < 2000:
+                    date_year = date_year + 1911
+
+                date_month = int(date_text[1])
+
+                date_day = int(date_text[2])
+                self.date = datetime(date_year, date_month, date_day, 0, 0)
+            else:
+                self.date = datetime.now(pytz.timezone('Asia/Taipei'))
 
             if self.today_domestic is None and self.today_confirmed is not None and self.today_imported is not None:
                 self.today_domestic = int(self.today_confirmed) - int(self.today_imported)

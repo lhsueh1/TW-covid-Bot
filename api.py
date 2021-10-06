@@ -74,13 +74,13 @@ def get_taiwan_outbreak_information(*arg: str):
     else:
         isSSLVerify = True
 
-    manaual_texts = ["manaual", "Manaual"]
-    if any(x in manaual_texts for x in arg):
-        print("isManaual")
-        isManaual = True
+    manual_texts = ["manual", "manual"]
+    if any(x in manual_texts for x in arg):
+        print("ismanual")
+        ismanual = True
         CDC_NEWS_URL = arg[1]
     else:
-        isManaual = False
+        ismanual = False
 
 
     isrecrawl = ("recrawl" in arg)
@@ -105,7 +105,7 @@ def get_taiwan_outbreak_information(*arg: str):
     epidemic = TaiwanEpidemic(SSLVerify=isSSLVerify)
     global_stats = GlobalStats(SSLVerify=isSSLVerify)
 
-    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, isManaual = isManaual)
+    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual)
 
     if today.error is not False and not isForce:
         text = "無法連上CDC官網"
@@ -313,7 +313,11 @@ if __name__ == '__main__':
     # t=get_epidemic_status_by_country("Canada")
     # print(t)
     s = """
-    中央流行疫情指揮中心今(6)日公佈國內新增5例COVID-19確定病例，均為境外移入；另確診個案中無新增死亡。
+    新增5例境外移入COVID-19確定病例
+  資料來源：疾病管制署
+  建檔日期：110-10-01
+  更新時間：110-10-01
+中央流行疫情指揮中心今(6)日公佈國內新增5例COVID-19確定病例，均為境外移入；另確診個案中無新增死亡。
 
 指揮中心說明，今日新增5例境外移入個案，為1例男性、4例女性，年齡介於20多歲至40多歲，其中4例分別自美國(3例，案16373、案16374、案16376)、南非(案16375)入境，餘1例調查中(案16377)，入境日介於今(2021)年9月14日至9月26日；詳如新聞稿附件。
 
@@ -321,7 +325,7 @@ if __name__ == '__main__':
 
 指揮中心再次呼籲，民眾應落實手部衛生、咳嗽禮節及佩戴口罩等個人防護措施，減少不必要移動、活動或集會，避免出入人多擁擠的場所，或高感染傳播風險場域，並主動積極配合各項防疫措施，共同嚴守社區防線。
 """
-    text = get_taiwan_outbreak_information("manaual", s)
+    text = get_taiwan_outbreak_information("manual", s)
     for t in text:
         print(str(t)+"\n")
     #pic.pic("0904", "1", "0", "1", "0", "16013", "837")
