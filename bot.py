@@ -273,7 +273,7 @@ def image(update, context):
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + " : " + str(update.message.text))
 
-def manaual_article_entry(update: Update, context: CallbackContext) -> int:
+def manual_article_entry(update: Update, context: CallbackContext) -> int:
     reply_keyboard = [['Article', 'Url']]
 
     update.message.reply_text(
@@ -283,8 +283,8 @@ def manaual_article_entry(update: Update, context: CallbackContext) -> int:
 
     return 0
 
-def manaual_article(update, context):
-    get = api.get_taiwan_outbreak_information("manaual", update.message.text)
+def manual_article(update, context):
+    get = api.get_taiwan_outbreak_information("manual", update.message.text)
 
     text = get[0]
 
@@ -312,7 +312,7 @@ def manaual_article(update, context):
 
     return ConversationHandler.END
 
-def manaual_url(update, context):
+def manual_url(update, context):
     update.message.reply_text(
         'Function unavailable'
     )
@@ -603,22 +603,22 @@ def main():
     dp.add_handler(CommandHandler(["stop", "quit", "exit"], stop))
     dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade, filters=Filters.user(username=['@alsoDazzling', '@nullExistenceException'])))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
-    # dp.add_handler(CommandHandler("manaual_article", manaual_article))
-    dp.add_handler(CommandHandler("manaual_url", manaual_url))
+    # dp.add_handler(CommandHandler("manual_article", manual_article))
+    dp.add_handler(CommandHandler("manual_url", manual_url))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
 
     # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
-    manaual_handler = ConversationHandler(
-        entry_points=[CommandHandler('manaual_article', manaual_article_entry)],
+    manual_handler = ConversationHandler(
+        entry_points=[CommandHandler('manual_article', manual_article_entry)],
         states={
-            0: [MessageHandler(Filters.text & ~Filters.command, manaual_article)],
+            0: [MessageHandler(Filters.text & ~Filters.command, manual_article)],
 
         },
         fallbacks=[CommandHandler('cancel', conversation_cancel)],
     )
-    dp.add_handler(manaual_handler)
+    dp.add_handler(manual_handler)
 
     # log all errors
     dp.add_error_handler(error)
