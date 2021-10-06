@@ -222,7 +222,7 @@ class TodayConfirmed(object):
                 date_day = int(date_text[2])
                 self.date = datetime(date_year, date_month, date_day, 0, 0)
             else:
-                self.date = datetime.now(pytz.timezone('Asia/Taipei'))
+                self.date = datetime.now()
 
             if self.today_domestic is None and self.today_confirmed is not None and self.today_imported is not None:
                 self.today_domestic = int(self.today_confirmed) - int(self.today_imported)
