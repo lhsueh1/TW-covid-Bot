@@ -6,7 +6,7 @@ from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 import re
-from datetime import datetime, timedelta
+import datetime
 import pytz
 import traceback
 import json
@@ -57,7 +57,7 @@ class TodayConfirmed(object):
                     self.today_deaths = today_dict["today_deaths"]
                     self.additional_text = today_dict["additional_text"]
                     json_datetime = today_dict["date"]
-                    self.date = datetime.fromisoformat(json_datetime)
+                    self.date = datetime.date.fromisoformat(json_datetime)
                     self.article_link = today_dict["article_link"]
                     self.error = today_dict["error"]
 
@@ -139,7 +139,7 @@ class TodayConfirmed(object):
 
             self.data_extractor(target_title, article_content)
 
-            d1 = datetime(int(dates[0]), int(dates[1]), int(dates[2]))
+            d1 = datetime.date(int(dates[0]), int(dates[1]), int(dates[2]))
             self.date_compare(d1)
             self.date = d1
 
@@ -220,9 +220,9 @@ class TodayConfirmed(object):
                 date_month = int(date_text[1])
 
                 date_day = int(date_text[2])
-                self.date = datetime(date_year, date_month, date_day, 0, 0)
+                self.date = datetime.date(date_year, date_month, date_day)
             else:
-                self.date = datetime.now()
+                self.date = datetime.date.today()
 
             if self.today_domestic is None and self.today_confirmed is not None and self.today_imported is not None:
                 self.today_domestic = int(self.today_confirmed) - int(self.today_imported)
@@ -282,8 +282,7 @@ class TodayConfirmed(object):
     def date_compare(self, article_date):
         """如果新聞稿發布日期<今日日期-12小時，會發出錯誤"""
 
-        d2 = datetime.now(pytz.timezone('Asia/Taipei')) - timedelta(hours=36)
-        d2 = d2.replace(tzinfo=None)
+        d2 = datetime.date.today()
         if article_date < d2:
             print(f"日期錯誤:{article_date}")
             self.is_same_date = False
