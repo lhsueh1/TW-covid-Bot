@@ -599,6 +599,9 @@ def main():
     with open('moderators') as f:
         mod_list = f.read().splitlines()
 
+    for i in range(len(mod_list)):
+        mod_list[i] = int(mod_list[i])
+
     manual_handler = ConversationHandler(
         entry_points=[CommandHandler('manual_article', manual_article_entry, filters=Filters.user(user_id=mod_list))],
         states={
