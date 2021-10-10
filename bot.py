@@ -597,7 +597,7 @@ def main():
     # on different commands - answer in Telegram
 
     manual_handler = ConversationHandler(
-        entry_points=[CommandHandler('manual_article', manual_article_entry)],
+        entry_points=[CommandHandler('manual_article', manual_article_entry, filters=Filters.user(user_id=834069847, username=['@alsoDazzling', '@nullExistenceException']))],
         states={
             0: [MessageHandler(Filters.text & ~Filters.command, manual_article)],
 
