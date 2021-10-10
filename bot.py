@@ -158,7 +158,8 @@ def stop_and_restart():
     updater.stop()
     os.execl(sys.executable, sys.executable, *sys.argv)
 
-
+def unknown_command(update, context):
+    update.sendMessage(chat_id=update.message.chat_id, text="指令不存在")
 
 def start(update, context):
     """Send a message when the command /start is issued."""
@@ -661,6 +662,7 @@ def main():
     dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
     dp.add_handler(CommandHandler("manual_url", manual_url))
+    dp.add_handler(MessageHandler([Filters.command], unknown_command))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
