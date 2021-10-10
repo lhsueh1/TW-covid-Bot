@@ -176,15 +176,8 @@ class TodayConfirmed(object):
             nums = re.findall(r'\d+', title)
             self.today_confirmed = nums[0]
 
-            imported_text_match = re.search(r'新增\w?\d+例境外', article_content)
-            if imported_text_match is not None:
-                num_match = re.search(r'\d+', imported_text_match.group(0))
-                self.today_imported = int(num_match.group(0))
-
-            domestic_text_match = re.search(r'新增\w?\d+例本土', article_content)
-            if domestic_text_match is not None:
-                num_match = re.search(r'\d+', domestic_text_match.group(0))
-                self.today_imported = int(num_match.group(0))
+            self.today_imported = self.extract_number(r'新增\w?\d+例境外', article_content)
+            self.today_domestic = self.extract_number(r'新增\w?\d+例本土', article_content)
 
             if self.today_domestic is None and self.today_confirmed is not None and self.today_imported is not None:
                 self.today_domestic = int(self.today_confirmed) - int(self.today_imported)
@@ -194,20 +187,15 @@ class TodayConfirmed(object):
 
         # 如果不是透過爬蟲取得的文章，就不會有標題，故透過文章分析資料，並分析日期
         if title == "":
-            imported_text_match = re.search(r'新增\d+例COVID-19\w*病例', article_content)
-            if imported_text_match is not None:
-                num_match = re.search(r'\d+', imported_text_match.group(0))
-                self.today_confirmed = int(num_match.group(0))
+            self.today_confirmed = self.extract_number(r'新增\d+例COVID-19\w*病例', article_content)
+            self.today_imported = self.extract_number(r'新增\w?\d+例境外', article_content)
+            self.today_domestic = self.extract_number(r'新增\w?\d+例本土', article_content)
 
-            imported_text_match = re.search(r'新增\w?\d+例境外', article_content)
-            if imported_text_match is not None:
-                num_match = re.search(r'\d+', imported_text_match.group(0))
-                self.today_imported = int(num_match.group(0))
+            if self.today_domestic is None and self.today_confirmed is not None and self.today_imported is not None:
+                self.today_domestic = int(self.today_confirmed) - int(self.today_imported)
 
-            domestic_text_match = re.search(r'新增\w?\d+例本土', article_content)
-            if domestic_text_match is not None:
-                num_match = re.search(r'\d+', domestic_text_match.group(0))
-                self.today_imported = int(num_match.group(0))
+            if self.today_imported is None and self.today_confirmed is not None and self.today_domestic is not None:
+                self.today_imported = int(self.today_confirmed) - int(self.today_domestic)
 
             # 抓日期
             date_text_match = re.search(r'\d{3,4}[-/]\d{1,2}[-/]\d{1,2}', article_content)
@@ -226,11 +214,6 @@ class TodayConfirmed(object):
             else:
                 self.date = datetime.date.today()
 
-            if self.today_domestic is None and self.today_confirmed is not None and self.today_imported is not None:
-                self.today_domestic = int(self.today_confirmed) - int(self.today_imported)
-
-            if self.today_imported is None and self.today_confirmed is not None and self.today_domestic is not None:
-                self.today_imported = int(self.today_confirmed) - int(self.today_domestic)
 
         texts = article_content.split()
 
@@ -263,6 +246,22 @@ class TodayConfirmed(object):
 
         if re.search(r"無新增死亡", article_content):
             self.today_deaths = 0
+
+        if self.today_confirmed is None or self.today_domestic is None or self.today_imported is None or self.today_deaths is None:
+            self.error = f"""
+本日數據包含None
+today_confirmed = {self.today_confirmed}
+today_imported = {self.today_imported}
+today_domestic = {self.today_domestic}
+today_deaths = {self.today_deaths}
+"""
+
+    def extract_number(self, regex: str, text: str):
+        text_matched = re.search(regex, text)
+        if text_matched is not None:
+            num_match = re.search(r'\d+', text_matched.group(0))
+            return int(num_match.group(0))
+        return None
 
     def save_to_json(self):
         formatted_datetime = self.date.isoformat()
