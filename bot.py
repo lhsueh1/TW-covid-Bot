@@ -596,8 +596,11 @@ def main():
 
     # on different commands - answer in Telegram
 
+    with open('moderators') as f:
+        mod_list = f.read().splitlines()
+
     manual_handler = ConversationHandler(
-        entry_points=[CommandHandler('manual_article', manual_article_entry, filters=Filters.user(user_id=834069847, username=['@alsoDazzling', '@nullExistenceException']))],
+        entry_points=[CommandHandler('manual_article', manual_article_entry, filters=Filters.user(user_id=mod_list))],
         states={
             0: [MessageHandler(Filters.text & ~Filters.command, manual_article)],
 
@@ -614,7 +617,7 @@ def main():
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(CommandHandler("image", image))
     dp.add_handler(CommandHandler(["stop", "quit", "exit"], stop))
-    dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade, filters=Filters.user(username=['@alsoDazzling', '@nullExistenceException'])))
+    dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade, filters=Filters.user(user_id=mod_list)))
     #dp.add_handler(CommandHandler('post_to_channel', post_to_channel, filters=Filters.user(user_id=834069847, username=['@alsoDazzling', '@nullExistenceException'])))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
     dp.add_handler(CommandHandler("manual_url", manual_url))
