@@ -158,13 +158,13 @@ class TodayConfirmed(object):
 
     def data_extractor(self, title, article_content):
         # 文章標題的確診病例、本土、境外處理
-        if re.match(r'新增\d+例COVID-19\w*病例，分別為\d+例本土及\d+例境外移入', title):
+        if re.match(r'新增\d+例COVID-19\w*病例，分別為\d+例本土\w*及\d+例境外', title):
             nums = re.findall(r'\d+', title)
             self.today_confirmed = int(nums[0])
             self.today_domestic = int(nums[2])
             self.today_imported = int(nums[3])
 
-        elif re.match(r'新增\d+例境外移入COVID-19\w*病例', title):
+        elif re.match(r'新增\d+例境外\w*移入COVID-19\w*病例', title):
             nums = re.findall(r'\d+', title)
             self.today_confirmed = int(nums[0])
             self.today_domestic = 0
@@ -176,12 +176,12 @@ class TodayConfirmed(object):
             nums = re.findall(r'\d+', title)
             self.today_confirmed = nums[0]
 
-            imported_text_match = re.search(r'新增\w?\d+例境外移入', article_content)
+            imported_text_match = re.search(r'新增\w?\d+例境外', article_content)
             if imported_text_match is not None:
                 num_match = re.search(r'\d+', imported_text_match.group(0))
                 self.today_imported = int(num_match.group(0))
 
-            domestic_text_match = re.search(r'新增\w?\d+例本土病例', article_content)
+            domestic_text_match = re.search(r'新增\w?\d+例本土', article_content)
             if domestic_text_match is not None:
                 num_match = re.search(r'\d+', domestic_text_match.group(0))
                 self.today_imported = int(num_match.group(0))
@@ -192,22 +192,24 @@ class TodayConfirmed(object):
             if self.today_imported is None and self.today_confirmed is not None and self.today_domestic is not None:
                 self.today_imported = int(self.today_confirmed) - int(self.today_domestic)
 
+        # 如果不是透過爬蟲取得的文章，就不會有標題，故透過文章分析資料，並分析日期
         if title == "":
             imported_text_match = re.search(r'新增\d+例COVID-19\w*病例', article_content)
             if imported_text_match is not None:
                 num_match = re.search(r'\d+', imported_text_match.group(0))
                 self.today_confirmed = int(num_match.group(0))
 
-            imported_text_match = re.search(r'新增\w?\d+例境外移入', article_content)
+            imported_text_match = re.search(r'新增\w?\d+例境外', article_content)
             if imported_text_match is not None:
                 num_match = re.search(r'\d+', imported_text_match.group(0))
                 self.today_imported = int(num_match.group(0))
 
-            domestic_text_match = re.search(r'新增\w?\d+例本土病例', article_content)
+            domestic_text_match = re.search(r'新增\w?\d+例本土', article_content)
             if domestic_text_match is not None:
                 num_match = re.search(r'\d+', domestic_text_match.group(0))
                 self.today_imported = int(num_match.group(0))
 
+            # 抓日期
             date_text_match = re.search(r'\d{3,4}[-/]\d{1,2}[-/]\d{1,2}', article_content)
             if date_text_match is not None:
                 date_text = re.findall(r'\d+', date_text_match.group(0))
@@ -245,9 +247,11 @@ class TodayConfirmed(object):
         self.additional_text = self.additional_text.replace("衛生單位持續進行疫情調查及防治，接觸者匡列中。", "")
         self.additional_text = self.additional_text.replace("詳如新聞稿附件。", "")
 
-
+        # 因應文章格式加入換行
         if self.additional_text is not None and self.additional_text != "":
             self.additional_text = "\n" + self.additional_text
+
+            # 刪除多餘的換行
             # only remove trailing newline characters.
             self.additional_text = self.additional_text.rstrip()
 
