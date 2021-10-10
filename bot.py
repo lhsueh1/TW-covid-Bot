@@ -7,6 +7,7 @@ import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ParseMode
 import telegram
+from functools import wraps
 import traceback
 import html
 import json
@@ -82,12 +83,30 @@ logger = logging.getLogger(__name__)
     }
 '''
 
+def restricted(func):
+    @wraps(func)
+    def wrapped(update, context, *args, **kwargs):
+        user_id = update.effective_user.id
+
+        with open('moderators') as f:
+            mod_list = f.read().splitlines()
+
+        for i in range(len(mod_list)):
+            mod_list[i] = int(mod_list[i])
+
+        if user_id not in mod_list:
+            print("Unauthorized access denied for {}.".format(user_id))
+            update.message.reply_text('Authority needed.')
+            return
+        return func(update, context, *args, **kwargs)
+    return wrapped
 
 def shutdown():
     global updater
     updater.stop()
     updater.is_idle = False
 
+@restricted
 def stop(bot, update):
     '''
     DO NOT TOUCH
@@ -102,6 +121,7 @@ def stop(bot, update):
     else:
         bot.message.reply_text("Authority needed.")
 
+@restricted
 def restart_and_upgrade(update, context):
     g = git.cmd.Git()
     g.fetch()
@@ -120,6 +140,8 @@ def stop_and_restart():
     """Gracefully stop the Updater and replace the current process with a new one."""
     updater.stop()
     os.execl(sys.executable, sys.executable, *sys.argv)
+
+
 
 def start(update, context):
     """Send a message when the command /start is issued."""
@@ -273,6 +295,7 @@ def image(update, context):
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + " : " + str(update.message.text))
 
+@restricted
 def manual_article_entry(update: Update, context: CallbackContext) -> int:
     reply_keyboard = [['Article', 'Url']]
 
@@ -596,14 +619,8 @@ def main():
 
     # on different commands - answer in Telegram
 
-    with open('moderators') as f:
-        mod_list = f.read().splitlines()
-
-    for i in range(len(mod_list)):
-        mod_list[i] = int(mod_list[i])
-
     manual_handler = ConversationHandler(
-        entry_points=[CommandHandler('manual_article', manual_article_entry, filters=Filters.user(user_id=mod_list))],
+        entry_points=[CommandHandler('manual_article', manual_article_entry)],
         states={
             0: [MessageHandler(Filters.text & ~Filters.command, manual_article)],
 
@@ -620,8 +637,7 @@ def main():
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(CommandHandler("image", image))
     dp.add_handler(CommandHandler(["stop", "quit", "exit"], stop))
-    dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade, filters=Filters.user(user_id=mod_list)))
-    #dp.add_handler(CommandHandler('post_to_channel', post_to_channel, filters=Filters.user(user_id=834069847, username=['@alsoDazzling', '@nullExistenceException'])))
+    dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
     dp.add_handler(CommandHandler("manual_url", manual_url))
 

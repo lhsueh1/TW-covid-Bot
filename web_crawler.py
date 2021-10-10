@@ -214,6 +214,24 @@ class TodayConfirmed(object):
             else:
                 self.date = datetime.date.today()
 
+        # 死亡分析
+        regex_death = re.compile(r"新增(\d+-*\d*)例死亡")
+        match_death = regex_death.search(article_content)
+        if match_death is not None:
+            self.today_deaths = match_death.group(1)
+
+        if re.search(r"無新增死亡", article_content):
+            self.today_deaths = 0
+
+        if self.today_confirmed is None or self.today_domestic is None or self.today_imported is None or self.today_deaths is None:
+            self.error = f"""
+本日數據包含None
+today_confirmed = {self.today_confirmed}
+today_imported = {self.today_imported}
+today_domestic = {self.today_domestic}
+today_deaths = {self.today_deaths}
+"""
+            return
 
         texts = article_content.split()
 
@@ -237,24 +255,6 @@ class TodayConfirmed(object):
             # 刪除多餘的換行
             # only remove trailing newline characters.
             self.additional_text = self.additional_text.rstrip()
-
-        # 死亡分析
-        regex_death = re.compile(r"新增(\d+-*\d*)例死亡")
-        match_death = regex_death.search(article_content)
-        if match_death is not None:
-            self.today_deaths = match_death.group(1)
-
-        if re.search(r"無新增死亡", article_content):
-            self.today_deaths = 0
-
-        if self.today_confirmed is None or self.today_domestic is None or self.today_imported is None or self.today_deaths is None:
-            self.error = f"""
-本日數據包含None
-today_confirmed = {self.today_confirmed}
-today_imported = {self.today_imported}
-today_domestic = {self.today_domestic}
-today_deaths = {self.today_deaths}
-"""
 
     def extract_number(self, regex: str, text: str):
         text_matched = re.search(regex, text)
