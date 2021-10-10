@@ -5,7 +5,7 @@ import os
 import sys
 import logging
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ParseMode
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ParseMode, ChatAction
 import telegram
 from functools import wraps
 import traceback
@@ -101,6 +101,23 @@ def restricted(func):
         return func(update, context, *args, **kwargs)
     return wrapped
 
+def send_action(action):
+    """Sends `action` while processing func command."""
+
+    def decorator(func):
+        @wraps(func)
+        def command_func(update, context, *args, **kwargs):
+            context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action=action)
+            return func(update, context,  *args, **kwargs)
+        return command_func
+
+    return decorator
+
+
+send_typing_action = send_action(ChatAction.TYPING)
+send_upload_video_action = send_action(ChatAction.UPLOAD_VIDEO)
+send_upload_photo_action = send_action(ChatAction.UPLOAD_PHOTO)
+
 def shutdown():
     global updater
     updater.stop()
@@ -190,8 +207,9 @@ def error(update, context):
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=text_adjustment(message), parse_mode='MarkdownV2')
         update.message.reply_text("Error. Contact moderator.錯誤")
 
+@send_typing_action
 def today_info(update, context):
-    processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...", disable_notification=True)
+    #processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...", disable_notification=True)
 
     if len(context.args) != 0:
         get = api.get_taiwan_outbreak_information(*context.args)
@@ -222,9 +240,10 @@ def today_info(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + get[1])
         update.message.reply_text(text)
 
-    if processingMessage is not None:
-        context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
+    # if processingMessage is not None:
+    #     context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
 
+@send_typing_action
 def search(update, context):
     userName = update.message.from_user.username
     if len(context.args) != 0:
@@ -257,6 +276,7 @@ def search(update, context):
         if update.message.chat.username != "E36_bb079f22":
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": empty search")
 
+@send_upload_photo_action
 def image(update, context):
 
     if len(context.args) == 1:
@@ -265,7 +285,7 @@ def image(update, context):
             update.message.reply_text("Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [total confirmed] [total deaths]`", parse_mode='MarkdownV2')
             return
 
-    processingMessage = update.message.reply_text("Processing...", disable_notification=True)
+    #processingMessage = update.message.reply_text("Processing...", disable_notification=True)
     cap = "pic"
     if len(context.args) != 0:
         if len(context.args) < 7:
@@ -287,8 +307,8 @@ def image(update, context):
 
     context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("out.png", "rb"), caption=cap, timeout=20)
 
-    if processingMessage is not None:
-        context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
+    # if processingMessage is not None:
+    #     context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
 
     print()
     userName = update.message.from_user.username
@@ -306,6 +326,7 @@ def manual_article_entry(update: Update, context: CallbackContext) -> int:
 
     return 0
 
+@send_typing_action
 def manual_article(update, context):
     get = api.get_taiwan_outbreak_information("manual", update.message.text)
 
