@@ -326,7 +326,7 @@ def manual_article_entry(update: Update, context: CallbackContext) -> int:
     return CONVERSATION_INPUT_ARTICLE
 
 @send_typing_action
-def manual_article(update: Update, context: CallbackContext) -> int:
+def manual_article(update: Update, context: CallbackContext):
     get = api.get_taiwan_outbreak_information("manual", update.message.text)
 
     text = get[0]
@@ -349,11 +349,12 @@ def manual_article(update: Update, context: CallbackContext) -> int:
         if update.message.chat.username != "E36_bb079f22":
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": today_info")
 
+        manual_save(update, context)
+
     else:
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + get[1])
         update.message.reply_text(text)
-
-    return CONVERSATION_SAVE_ARTICLE
+        return ConversationHandler.END
 
 @send_typing_action
 def manual_save(update: Update, context: CallbackContext) -> int:
@@ -372,9 +373,9 @@ def manual_end(update: Update, context: CallbackContext) -> int:
     text = update.message.text
     if text == "儲存":
         # do 儲存
-        update.message.reply_text("(測試)文章已儲存")
+        update.message.reply_text("(測試)文章已儲存", reply_markup=ReplyKeyboardRemove())
     else:
-        update.message.reply_text("(測試)文章不儲存")
+        update.message.reply_text("(測試)文章不儲存", reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 def manual_url(update, context):
@@ -664,7 +665,6 @@ def main():
         entry_points=[CommandHandler('manual_article', manual_article_entry)],
         states={
             CONVERSATION_INPUT_ARTICLE: [MessageHandler(Filters.text & ~Filters.command, manual_article)],
-            CONVERSATION_SAVE_ARTICLE: [MessageHandler(Filters.text & ~Filters.command, manual_save)],
             CONVERSATION_END: [MessageHandler(Filters.text & ~Filters.command, manual_end)],
         },
         fallbacks=[CommandHandler('cancel', conversation_cancel)],
