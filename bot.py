@@ -352,24 +352,20 @@ def manual_article(update: Update, context: CallbackContext):
         if update.message.chat.username != "E36_bb079f22":
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": today_info")
 
-        manual_save(update, context)
+        reply_keyboard = [['儲存', '不儲存']]
+
+        update.message.reply_text(
+            '是否要將文章存入bot？',
+            reply_markup=ReplyKeyboardMarkup(
+                reply_keyboard, one_time_keyboard=True, input_field_placeholder='(測試)是否儲存？'
+            )
+        )
+        return CONVERSATION_END
 
     else:
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + get[1])
         update.message.reply_text(text)
         return ConversationHandler.END
-
-@send_typing_action
-def manual_save(update: Update, context: CallbackContext) -> int:
-    reply_keyboard = [['儲存', '不儲存']]
-
-    update.message.reply_text(
-        '是否要將文章存入bot？',
-        reply_markup=ReplyKeyboardMarkup(
-            reply_keyboard, one_time_keyboard=True, input_field_placeholder='(測試)是否儲存？'
-        )
-    )
-    return CONVERSATION_END
 
 @send_typing_action
 def manual_end(update: Update, context: CallbackContext) -> int:
