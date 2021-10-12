@@ -369,7 +369,7 @@ def manual_save(update: Update, context: CallbackContext) -> int:
             reply_keyboard, one_time_keyboard=True, input_field_placeholder='(測試)是否儲存？'
         )
     )
-    return CONVERSATION_SAVE_ARTICLE
+    return CONVERSATION_END
 
 @send_typing_action
 def manual_end(update: Update, context: CallbackContext) -> int:
