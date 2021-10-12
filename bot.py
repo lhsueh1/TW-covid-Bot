@@ -686,7 +686,7 @@ def main():
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
     dp.add_handler(CommandHandler("manual_url", manual_url))
 
-    dp.add_handler(MessageHandler(Filters.regex(r'\.*'), unknown_command))
+    dp.add_handler(MessageHandler(Filters.regex(r'/.*'), unknown_command))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
