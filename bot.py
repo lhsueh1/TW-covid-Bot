@@ -315,6 +315,9 @@ def image(update, context):
 
 CONVERSATION_INPUT_ARTICLE, CONVERSATION_SAVE_ARTICLE, CONVERSATION_END = range(3)
 
+def unknown_command(update, context):
+    update.message.reply_text('Command not found.')
+
 @restricted
 def manual_article_entry(update: Update, context: CallbackContext) -> int:
 
@@ -665,7 +668,7 @@ def main():
         entry_points=[CommandHandler('manual_article', manual_article_entry)],
         states={
             CONVERSATION_INPUT_ARTICLE: [MessageHandler(Filters.text & ~Filters.command, manual_article)],
-            CONVERSATION_END: [MessageHandler(Filters.text & ~Filters.command, manual_end)],
+            CONVERSATION_END: [MessageHandler(Filters.regex('^([不]?儲存)$'), manual_end)],
         },
         fallbacks=[CommandHandler('cancel', conversation_cancel)],
         allow_reentry=True,
@@ -682,6 +685,7 @@ def main():
     dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
     dp.add_handler(CommandHandler("manual_url", manual_url))
+    dp.add_handler(CommandHandler(Filters.regex(r'\.*'), unknown_command))
 
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
