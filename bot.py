@@ -313,19 +313,20 @@ def image(update, context):
     if update.message.chat.username != "E36_bb079f22":
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + " : " + str(update.message.text))
 
+CONVERSATION_INPUT_ARTICLE, CONVERSATION_SAVE_ARTICLE, CONVERSATION_END = range(3)
+
 @restricted
 def manual_article_entry(update: Update, context: CallbackContext) -> int:
-    reply_keyboard = [['Article', 'Url']]
 
     update.message.reply_text(
         '請輸入文章全文'
     )
     print("請輸入文章全文")
 
-    return 0
+    return CONVERSATION_INPUT_ARTICLE
 
 @send_typing_action
-def manual_article(update, context):
+def manual_article(update: Update, context: CallbackContext) -> int:
     get = api.get_taiwan_outbreak_information("manual", update.message.text)
 
     text = get[0]
@@ -352,6 +353,28 @@ def manual_article(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + get[1])
         update.message.reply_text(text)
 
+    return CONVERSATION_SAVE_ARTICLE
+
+@send_typing_action
+def manual_save(update: Update, context: CallbackContext) -> int:
+    reply_keyboard = [['儲存', '不儲存']]
+
+    update.message.reply_text(
+        '是否要將文章存入bot？',
+        reply_markup=ReplyKeyboardMarkup(
+            reply_keyboard, one_time_keyboard=True, input_field_placeholder='(測試)是否儲存？'
+        )
+    )
+    return CONVERSATION_SAVE_ARTICLE
+
+@send_typing_action
+def manual_end(update: Update, context: CallbackContext) -> int:
+    text = update.message.text
+    if text == "儲存":
+        # do 儲存
+        update.message.reply_text("(測試)文章已儲存")
+    else:
+        update.message.reply_text("(測試)文章不儲存")
     return ConversationHandler.END
 
 def manual_url(update, context):
@@ -640,8 +663,9 @@ def main():
     manual_handler = ConversationHandler(
         entry_points=[CommandHandler('manual_article', manual_article_entry)],
         states={
-            0: [MessageHandler(Filters.text & ~Filters.command, manual_article)],
-
+            CONVERSATION_INPUT_ARTICLE: [MessageHandler(Filters.text & ~Filters.command, manual_article)],
+            CONVERSATION_SAVE_ARTICLE: [MessageHandler(Filters.text & ~Filters.command, manual_save)],
+            CONVERSATION_END: [MessageHandler(Filters.text & ~Filters.command, manual_end)],
         },
         fallbacks=[CommandHandler('cancel', conversation_cancel)],
         allow_reentry=True,
