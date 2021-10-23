@@ -78,11 +78,16 @@ def get_taiwan_outbreak_information(*arg: str):
     if any(x in manual_texts for x in arg):
         print("ismanual")
         ismanual = True
-        article = arg[1]
+        article = arg[0]
     else:
         ismanual = False
         article = None
 
+    if "save" in arg:
+        print("save to json in manual mode")
+        save_to_json_in_maual_mode = True
+    else:
+        save_to_json_in_maual_mode = False
 
     isrecrawl = ("recrawl" in arg)
 
@@ -106,7 +111,7 @@ def get_taiwan_outbreak_information(*arg: str):
     epidemic = TaiwanEpidemic(SSLVerify=isSSLVerify)
     global_stats = GlobalStats(SSLVerify=isSSLVerify)
 
-    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual, article = article)
+    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual, article = article, save = save_to_json_in_maual_mode)
 
     if today.error is not False and not isForce:
         text = "無法連上CDC官網或是爬蟲出現錯誤"

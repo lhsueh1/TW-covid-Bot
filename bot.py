@@ -330,7 +330,7 @@ def manual_article_entry(update: Update, context: CallbackContext) -> int:
 
 @send_typing_action
 def manual_article(update: Update, context: CallbackContext):
-    get = api.get_taiwan_outbreak_information("manual", update.message.text)
+    get = api.get_taiwan_outbreak_information(update.message.text, "manual")
 
     text = get[0]
 
@@ -372,7 +372,12 @@ def manual_end(update: Update, context: CallbackContext) -> int:
     text = update.message.text
     if text == "儲存":
         # do 儲存
-        update.message.reply_text("(測試)文章已儲存", reply_markup=ReplyKeyboardRemove())
+        get = api.get_taiwan_outbreak_information(update.message.text, "manual", "save")
+        if get[1] == 0:
+            update.message.reply_text("(測試)文章已儲存", reply_markup=ReplyKeyboardRemove())
+        else:
+            context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + get[0] + "\n" + get[1])
+            update.message.reply_text("文章儲存失敗\n" + get[0], reply_markup=ReplyKeyboardRemove())
     else:
         update.message.reply_text("(測試)文章不儲存", reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
@@ -388,7 +393,7 @@ def conversation_cancel(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user
     logger.info("User %s canceled the conversation.", user.first_name)
     update.message.reply_text(
-        'Then shut up and fuck off.\n    -- Lilia', reply_markup=ReplyKeyboardRemove()
+        'Then shut up and fuck off.\n            -- Lilia', reply_markup=ReplyKeyboardRemove()
     )
 
     return ConversationHandler.END

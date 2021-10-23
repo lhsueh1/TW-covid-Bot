@@ -35,7 +35,8 @@ class TodayConfirmed(object):
             if kwargs["ismanual"]:
                 self.is_same_date = True
                 self.data_extractor("", kwargs["article"])
-                self.save_to_json()
+                if kwargs["save"]:
+                    self.save_to_json()
                 return
 
         if "recrawl" in kwargs:
