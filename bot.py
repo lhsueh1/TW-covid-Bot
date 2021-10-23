@@ -328,8 +328,12 @@ def manual_article_entry(update: Update, context: CallbackContext) -> int:
 
     return CONVERSATION_INPUT_ARTICLE
 
+
+user_input_article = ""
 @send_typing_action
 def manual_article(update: Update, context: CallbackContext):
+    global user_input_article
+    user_input_article = update.message.text
     get = api.get_taiwan_outbreak_information(update.message.text, "manual")
 
     text = get[0]
@@ -357,7 +361,7 @@ def manual_article(update: Update, context: CallbackContext):
         update.message.reply_text(
             '是否要將文章存入bot？',
             reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='(測試)是否儲存？'
+                reply_keyboard, one_time_keyboard=True, input_field_placeholder='是否儲存？'
             )
         )
         return CONVERSATION_END
@@ -369,17 +373,18 @@ def manual_article(update: Update, context: CallbackContext):
 
 @send_typing_action
 def manual_end(update: Update, context: CallbackContext) -> int:
+    global user_input_article
     text = update.message.text
     if text == "儲存":
         # do 儲存
-        get = api.get_taiwan_outbreak_information(update.message.text, "manual", "save")
+        get = api.get_taiwan_outbreak_information(user_input_article, "manual", "save")
         if get[1] == 0:
-            update.message.reply_text("(測試)文章已儲存", reply_markup=ReplyKeyboardRemove())
+            update.message.reply_text("文章已儲存", reply_markup=ReplyKeyboardRemove())
         else:
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update) + "\n\n" + get[0] + "\n" + get[1])
             update.message.reply_text("文章儲存失敗\n" + get[0], reply_markup=ReplyKeyboardRemove())
     else:
-        update.message.reply_text("(測試)文章不儲存", reply_markup=ReplyKeyboardRemove())
+        update.message.reply_text("文章不儲存", reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 def manual_url(update, context):
@@ -687,8 +692,10 @@ def main():
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
     dp.add_handler(CommandHandler("manual_url", manual_url))
 
-    dp.add_handler(MessageHandler(Filters.regex(r'^/.*'), unknown_command))
-
+    dp.add_handler(MessageHandler(Filters.regex(r'^/([^@]*|.*@Taiwanepidemic_bot.*)$'), unknown_command))
+    # ^/.*
+    # ^/([^@]*)$
+    # ^/([^@]*|.*@Taiwanepidemic_bot.*)$
     dp.add_handler(MessageHandler(Filters.text, chat))
     dp.add_handler(MessageHandler(Filters.sticker, sticker))
 
