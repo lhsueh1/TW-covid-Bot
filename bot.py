@@ -523,7 +523,7 @@ Usage: `/everyday [option] [hour] [minute] [days]`
     `[name]`: Add a job with specified name
 `[hour]`: From 0 to 23
 `[minute]`: From 0 to 59
-`[days]`: 0-6 correspond to Monday-Sunday
+`[days]`: 0 to 6 correspond to Monday \- Sunday
 
 Examples:
 Launch default: `/everyday`
@@ -533,7 +533,7 @@ Specify name: `/everyday MyName`
 Specify name and time: `/everyday MyName 10 20`
 Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
 '''
-
+            #text = text_adjustment(text)
             update.message.reply_text(text, parse_mode='MarkdownV2')
             return
 
