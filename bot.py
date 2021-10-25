@@ -318,6 +318,10 @@ CONVERSATION_INPUT_ARTICLE, CONVERSATION_SAVE_ARTICLE, CONVERSATION_END = range(
 def unknown_command(update, context):
     update.message.reply_text('Command not found.')
 
+    userName = update.message.from_user.username
+    if update.message.chat.username != "E36_bb079f22":
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + ": " + str(update.message.text))
+
 @restricted
 def manual_article_entry(update: Update, context: CallbackContext) -> int:
 
@@ -332,6 +336,10 @@ def manual_article_entry(update: Update, context: CallbackContext) -> int:
 user_input_article = ""
 @send_typing_action
 def manual_article(update: Update, context: CallbackContext):
+    userName = update.message.from_user.username
+    if update.message.chat.username != "E36_bb079f22":
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + " : manual_article")
+
     global user_input_article
     user_input_article = update.message.text
     get = api.get_taiwan_outbreak_information(update.message.text, "manual")
@@ -400,6 +408,10 @@ def conversation_cancel(update: Update, context: CallbackContext) -> int:
     update.message.reply_text(
         'Then shut up and fuck off.\n            -- Lilia', reply_markup=ReplyKeyboardRemove()
     )
+
+    userName = update.message.from_user.username
+    if update.message.chat.username != "E36_bb079f22":
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" + str(userName) + " " + str(update.message.from_user.first_name) + "conversation_cancel")
 
     return ConversationHandler.END
 
