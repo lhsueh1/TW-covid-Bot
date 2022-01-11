@@ -160,7 +160,7 @@ def pic_new(date=None, today_confirmed=None, today_domestic=None, today_imported
     if domestic_length == 0:
         original.paste(imported_tag, (590+domestic_length, 470), imported_tag)
     else:
-        original.paste(imported_tag, (590+domestic_length-40, 470), imported_tag)
+        original.paste(imported_tag, (590+domestic_length-60, 470), imported_tag)
     
 
     if(int(today_confirmed) == 0):
@@ -186,4 +186,4 @@ def pic_new(date=None, today_confirmed=None, today_domestic=None, today_imported
     return date
 
 
-pic_new("0110", "0", "5", "5", "1")
+pic_new("0110", "70", "12", "49", "0")
