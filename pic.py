@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from PIL import ImageFont, ImageDraw, Image
+import textwrap
 import api
 import datetime
 from web_crawler import TodayConfirmed
@@ -93,7 +94,10 @@ def pic_new(date=None, today_confirmed=None, today_domestic=None, today_imported
     if today_death == None:
         today_death = str(today.today_deaths)
     if text == "(・∀・)":
-        pass
+        text = str(today.additional_text)
+
+    text = textwrap.fill(text, width=40, fix_sentence_endings=True, subsequent_indent=" ")
+
 
 
     confirmed_length = 2154
@@ -182,4 +186,4 @@ def pic_new(date=None, today_confirmed=None, today_domestic=None, today_imported
     return date
 
 
-#pic_new("0110", "0", "5", "5", "1")
+pic_new("0110", "0", "5", "5", "1")
