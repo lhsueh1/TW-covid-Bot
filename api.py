@@ -8,7 +8,7 @@ from datetime import datetime
 import pytz
 import web_crawler
 from requests.packages import urllib3
-import pic
+#import pic
 
 import certifi
 

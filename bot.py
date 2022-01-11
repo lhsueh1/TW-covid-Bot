@@ -275,6 +275,44 @@ def search(update, context):
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": empty search")
 
 @send_upload_photo_action
+def image_new(update, context):
+
+    if len(context.args) == 1:
+        if context.args[0] == "-h":
+
+            update.message.reply_text("Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [total deaths] [text]`", parse_mode='MarkdownV2')
+            return
+
+    #processingMessage = update.message.reply_text("Processing...", disable_notification=True)
+    cap = "pic"
+    if len(context.args) != 0:
+        if len(context.args) < 6:
+            update.message.reply_text("手動輸入格式錯誤\n格式：[日期] [今日確診] [今日本土] [今日境外] [今日死亡] [總死亡] [資訊]\n例如：/image 0101 10 6 4 1 15 資訊")
+            return
+        date = context.args[0]
+        today_confirmed = context.args[1]
+        today_domestic = context.args[2]
+        today_imported = context.args[3]
+        today_death = context.args[4]
+        text = context.args[5]
+        pic.pic_new(date, today_confirmed, today_domestic, today_imported, today_death, text)
+    else:
+        the_date = pic.pic_new()
+        if str(datetime.datetime.now().strftime("%m%d")) != the_date:
+            cap = "這是 " + the_date + " 的資料，今日尚未更新，或沒新增"
+
+
+    context.bot.sendPhoto(chat_id=update.message.chat_id, photo=open("src/out.png", "rb"), caption=cap, timeout=20)
+
+    # if processingMessage is not None:
+    #     context.bot.deleteMessage(chat_id=update.message.chat_id, message_id=processingMessage['message_id'])
+
+    print()
+    userName = update.message.from_user.username
+    if update.message.chat.username != "E36_bb079f22":
+        context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + " : " + str(update.message.text))
+
+@send_upload_photo_action
 def image(update, context):
 
     if len(context.args) == 1:
@@ -699,6 +737,7 @@ def main():
     dp.add_handler(CommandHandler("today_info", today_info))
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(CommandHandler("image", image))
+    dp.add_handler(CommandHandler("image_new", image_new))
     dp.add_handler(CommandHandler(["stop", "quit", "exit"], stop))
     dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
