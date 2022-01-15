@@ -275,7 +275,7 @@ def search(update, context):
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + ": empty search")
 
 @send_upload_photo_action
-def image_new(update, context):
+def image(update, context):
 
     if len(context.args) == 1:
         if context.args[0] == "-h":
@@ -313,7 +313,7 @@ def image_new(update, context):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) + " @" + str(userName) + " : " + str(update.message.text))
 
 @send_upload_photo_action
-def image(update, context):
+def image_old(update, context):
 
     if len(context.args) == 1:
         if context.args[0] == "-h":
@@ -737,7 +737,7 @@ def main():
     dp.add_handler(CommandHandler("today_info", today_info))
     dp.add_handler(CommandHandler("search", search))
     dp.add_handler(CommandHandler("image", image))
-    dp.add_handler(CommandHandler("image_new", image_new))
+    dp.add_handler(CommandHandler("image_old", image_old))
     dp.add_handler(CommandHandler(["stop", "quit", "exit"], stop))
     dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
