@@ -280,14 +280,14 @@ def image_new(update, context):
     if len(context.args) == 1:
         if context.args[0] == "-h":
 
-            update.message.reply_text("Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [total deaths] [text]`", parse_mode='MarkdownV2')
+            update.message.reply_text("Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [text]`", parse_mode='MarkdownV2')
             return
 
     #processingMessage = update.message.reply_text("Processing...", disable_notification=True)
     cap = "pic"
     if len(context.args) != 0:
         if len(context.args) < 6:
-            update.message.reply_text("手動輸入格式錯誤\n格式：[日期] [今日確診] [今日本土] [今日境外] [今日死亡] [總死亡] [資訊]\n例如：/image 0101 10 6 4 1 15 資訊")
+            update.message.reply_text("手動輸入格式錯誤\n格式：[日期] [今日確診] [今日本土] [今日境外] [今日死亡] [資訊]\n例如：/image 0101 10 6 4 1 資訊")
             return
         date = context.args[0]
         today_confirmed = context.args[1]
@@ -529,14 +529,14 @@ def today_info_everyday(context, **chat_ids):
 def image_everyday(context, **chat_ids):
     cap = "pic"
 
-    the_date = pic.pic()
+    the_date = pic.pic_new()
     if str(datetime.datetime.now().strftime("%m%d")) == the_date:
         if "chat_ids" in chat_ids:
             for id in chat_ids["chat_ids"]:
-                context.bot.sendPhoto(chat_id=id, photo=open("out.png", "rb"), timeout=20)
+                context.bot.sendPhoto(chat_id=id, photo=open("src/out.png", "rb"), timeout=20)
         else:
             group = "@hfjdkg93yreljkghre34"
-            context.bot.sendPhoto(chat_id=group, photo=open("out.png", "rb"), timeout=20)
+            context.bot.sendPhoto(chat_id=group, photo=open("src/out.png", "rb"), timeout=20)
 
     else:
         cap = "這是 " + the_date + " 的資料，今日尚未更新，或沒新增"
@@ -544,7 +544,7 @@ def image_everyday(context, **chat_ids):
         group = "@WeaRetRYiNgtOMakEaBot"
 
         chat = group
-        context.bot.sendPhoto(chat_id=chat, photo=open("out.png", "rb"), caption=cap, timeout=20)
+        context.bot.sendPhoto(chat_id=chat, photo=open("src/out.png", "rb"), caption=cap, timeout=20)
 
 def everyday(update, context):
     userName = update.message.from_user.username

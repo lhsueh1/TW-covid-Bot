@@ -96,8 +96,10 @@ def pic_new(date=None, today_confirmed=None, today_domestic=None, today_imported
     if text == "(・∀・)":
         text = str(today.additional_text)
 
-    text = textwrap.fill(text, width=40, fix_sentence_endings=True, subsequent_indent=" ")
 
+    text = textwrap.fill(text, width=40, fix_sentence_endings=True, subsequent_indent=" ")
+    # if int(today_domestic) != 0:
+    #     text.replace("今", "\n\n今")
 
 
     confirmed_length = 2154
@@ -186,4 +188,4 @@ def pic_new(date=None, today_confirmed=None, today_domestic=None, today_imported
     return date
 
 
-pic_new("0110", "70", "12", "49", "0")
+pic_new("0110", "70", "12", "58", "0", "今日新增本土個案為6例男性、6例女性，年齡介於未滿5歲至60多歲。今日新增境外移入個案為27例男性、31例女性，年齡介於未滿5歲至70多歲，分別自美國(27例)、英國(4例)、印尼、菲律賓及澳大利亞(各3例)、阿拉伯聯合大公國、比利時及加拿大(各2例)、卡達、德國、柬埔寨、泰國、哥斯大黎加、中國、愛爾蘭、越南、西班牙及巴西(各1例)移入，另2例調查中。入境日介於去(2021)年12月9日至今(2022)年1月10日。")
