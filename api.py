@@ -259,7 +259,7 @@ class TaiwanEpidemic(object):
             # t.add_row(data_list[1])
             for row in data_list_transpose:
                 for data in row:
-                    text += str(data+"　")
+                    text += str(data+" ")
                 text += "\n"
             #text += str(t)
             text += "```"

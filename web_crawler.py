@@ -81,6 +81,10 @@ class TodayConfirmed(object):
         else:
             self.web_crawler(url)
 
+
+
+
+
     def web_crawler(self, url, **kwargs):
         self.today_confirmed = 0
         self.today_domestic = 0
@@ -299,6 +303,7 @@ class MyException(Exception):
     pass
 
 
+
 if __name__ == '__main__':
-    TodayConfirmed()
+    TodayConfirmed("https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
     # TotalTestsConducted()
