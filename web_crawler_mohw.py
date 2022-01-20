@@ -8,10 +8,10 @@ import pytz
 import traceback
 import json
 import os.path
-from web_crawler import MyException
+from my_exception import MyException
 
 
-class WebCrawlerMohw:
+class WebCrawlerMohw(MyException):
     ENTRY_LINK = "np-16-1.html"
     URL = "https://www.mohw.gov.tw"
 

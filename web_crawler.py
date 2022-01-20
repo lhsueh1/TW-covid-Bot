@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+from audioop import add
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -11,6 +12,143 @@ import pytz
 import traceback
 import json
 import os.path
+import logging
+
+from article_analyzer import ArticleAnalyzer
+from web_crawler_mohw import WebCrawlerMohw
+
+class TodayInfo(WebCrawlerMohw):
+    """
+    本日疫情資訊的物件
+
+    Attributes
+    ----------
+    today_confirmed : int or str
+        今日確診人數
+    today_imported : int or str
+        今日境外移入確診人數
+    today_domestic : int or str
+        今日本土確診人數
+    today_deaths : int or str
+        今日死亡人數
+    additional_text : str
+        顯示於資訊中的額外文字描述
+    article : str
+        爬蟲下來的文章全文
+    article_link : str
+        透過爬蟲取得的文章連結
+    is_same_date : bool
+        文章發布日期是否是今天
+    date : str
+        文章發布日期
+    error : bool or str
+        是否有錯誤、錯誤訊息
+    __is_generated : bool
+        確診人數等資料是否以填入
+
+    Methods
+    -------
+    (examples)
+    deposit(amount=0)
+        addas amount to balance
+    withdraw(amount=0)
+        subtracts amount from balance
+    from_csv(filepath)
+        returns class instance from csv file
+    
+    """
+
+    """
+    Python 只能有一個 constructor
+    如果沒有要一次把所有資訊初始化，可以透過下面的 clssmethod。例如：
+    today = TodayInfo.from_article(article)
+    或
+    today = TodayInfo.create_empty()
+    之後再生成文章
+    """
+    def __init__(self, today_confirmed, today_imported, today_domestic, today_deaths=0, additional_text="", article_link = "", error = False, article = None, is_generate = True) -> None:
+        self.today_confirmed = today_confirmed
+        self.today_imported = today_imported
+        self.today_domestic = today_domestic
+        self.today_deaths = today_deaths
+        self.additional_text = additional_text
+        self.article = article
+        self.article_link = article_link
+        # To identify if today is the same day as this press release
+        self.is_same_date = True
+        self.date = datetime.date.today()
+        self.error = error
+        self.__is_generated = is_generate
+
+    @classmethod
+    def from_article(cls, article: str) -> None:
+        error = "Object initialized by article only."
+        return cls(today_confirmed = None, today_imported = None, today_domestic = None, article = article, is_generate = False, error = error)
+    
+    @classmethod
+    def create_empty(cls) -> None:
+        error = "Object not initialized."
+        return cls(today_confirmed = None, today_imported = None, today_domestic = None, is_generate = False, error = error)
+    
+    @classmethod
+    def from_json(cls, filepath = None):
+        if filepath is None:
+            filepath = 'TodayConfirmed.json'
+        if os.path.isfile(filepath):
+            try:
+                with open(filepath, 'r', encoding='utf8') as openfile:
+                    today_dict = json.load(openfile)
+                    today_confirmed = today_dict["today_confirmed"]
+                    today_domestic = today_dict["today_domestic"]
+                    today_imported = today_dict["today_imported"]
+                    today_deaths = today_dict["today_deaths"]
+                    additional_text = today_dict["additional_text"]
+                    json_datetime = today_dict["date"]
+                    date = datetime.date.fromisoformat(json_datetime)
+                    article_link = today_dict["article_link"]
+                    error = today_dict["error"]
+                    is_same_date = ArticleAnalyzer.date_compare(date)
+
+                    if error is not False:
+                        logging.warning("Error info in today confirmed info json is not false. Initialize from json failed.")
+                        return cls()
+                    elif is_same_date is not True:
+                        logging.warning("Today is a new day. Initialize from json failed.")
+                        #self.web_crawler(url)
+                        return cls()
+                    else:
+                        logging.info("Extracted today confirmed info from json.")
+                        return cls(today_confirmed, today_imported, today_domestic, today_deaths, additional_text, article_link, error)
+
+            except Exception as e:
+                logging.error("Unable to extract today confirmed info from json. Trying web crawler.")
+                print(e)
+                tb_msg = traceback.format_tb(e.__traceback__)
+                print(*tb_msg, sep='\n')
+                #self.web_crawler(url)
+
+    
+
+    def __str__(self) -> str:
+        if self.__is_generated:
+            str = f"""
+TodayInfo:
+today_confirmed = {self.today_confirmed}
+today_imported = {self.today_imported}
+today_domestic = {self.today_domestic}
+today_deaths = {self.today_deaths}
+is_same_date = {self.is_same_date}
+date = {self.date}
+additional_text = {self.additional_text}
+error = {self.error}
+"""
+        else:
+            str = f"""
+Today info not generated.
+Error message:
+{self.error}
+"""
+        return str
 
 class TodayConfirmed(object):
     """
@@ -298,12 +436,13 @@ today_deaths = {self.today_deaths}
         else:
             self.is_same_date = True
 
-class MyException(Exception):
 
-    pass
 
 
 
 if __name__ == '__main__':
-    TodayConfirmed("https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
+    logging.basicConfig(level=logging.INFO)
+    #TodayConfirmed("https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
     # TotalTestsConducted()
+    today = TodayInfo.from_json()
+    print("today:", today)

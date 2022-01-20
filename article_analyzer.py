@@ -1,6 +1,6 @@
 import re
 import datetime
-from web_crawler import TodayConfirmed
+#from web_crawler import TodayConfirmed, TodayInfo
 
 
 class ArticleAnalyzer():
@@ -113,12 +113,13 @@ today_deaths = {self.today_deaths}
         return None
 
 
-    def date_compare(self, article_date):
+    @staticmethod
+    def date_compare(article_date):
         """如果新聞稿發布日期<今日日期-12小時，會發出錯誤"""
 
         d2 = datetime.date.today()
         if article_date < d2:
             print(f"日期錯誤:{article_date}")
-            self.is_same_date = False
+            return False
         else:
-            self.is_same_date = True
+            return True
