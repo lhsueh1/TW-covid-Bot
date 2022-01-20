@@ -10,15 +10,12 @@ import json
 import os.path
 import logging
 from my_exception import MyException
-from web_crawler import TodayInfo
 
 
-class WebCrawlerMohw(TodayInfo):
+class WebCrawlerMohw():
     ENTRY_LINK = "np-16-1.html"
     URL = "https://www.mohw.gov.tw"
 
-    def __init__(self) -> None:
-        super()
 
     def __get_news_page_link_from_latest_month_or_year(self, *more_url):
 
@@ -41,7 +38,7 @@ class WebCrawlerMohw(TodayInfo):
 
         target_url = soup.select_one("section.nplist a")["href"]
 
-        print("get_news_page_link_from_latest_month_or_year result url", local_url)
+        logging.info("get_news_page_link_from_latest_month_or_year result url"+ target_url)
         return target_url
 
     def __get_news_page_link(self, more_url):
@@ -53,8 +50,6 @@ class WebCrawlerMohw(TodayInfo):
         # 衛福部最新消息
         response = session.get(local_url)
 
-        print("get_news_page_link local url", local_url)
-
         if response.status_code != requests.codes.ok:
             raise MyException("衛福部本站最新消息 Status code not OK: ",
                               response.status_code)
@@ -65,11 +60,11 @@ class WebCrawlerMohw(TodayInfo):
         i = 0
         while not re.match(r'新增\d+例COVID-19\w*病例，分別為\d+例本土\w*及\d+例境外', target[i].text):
             i += 1
-        print("get_news_page_link result url", target[0]["href"])
+        logging.info("get_news_page_link result url" + target[0]["href"])
 
         return target[i]["href"]
     
-    def __get_news_article(self, url):
+    def __get_news(self, url):
         session = requests.Session()
 
         local_url = url
@@ -83,14 +78,11 @@ class WebCrawlerMohw(TodayInfo):
 
         soup = BeautifulSoup(response.text, "lxml")
         content = soup.select_one("section#ContentPage")
-        title = content.select_one("h2")
+        title = content.select_one("h2").text
         article_date = content.select("ul.info li")[1].select_one("em").text
         article = content.select_one("article p").text
-        print(title)
-        print()
-        print(article_date)
-        print()
-        print(article)
+
+        return (title, article_date, article)
 
     def crawl(self):
         this_year_url = self.__get_news_page_link_from_latest_month_or_year(
@@ -107,9 +99,12 @@ class WebCrawlerMohw(TodayInfo):
 
         if article_url is None:
             raise MyException("MOHW This article url is None")
-        article = self.__get_news_article(article_url)
-        logging.info(article)
-
+        (self.title, self.article_date, self.article) = self.__get_news(article_url)
+        self.article_url = article_url
+        logging.info(self.article_url)
+        logging.info(self.title)
+        logging.info(self.article_date)
+        logging.info(self.article)
 
 if __name__ == '__main__':
     crawler = WebCrawlerMohw()

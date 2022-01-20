@@ -1,7 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 
-from audioop import add
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
@@ -14,11 +11,9 @@ import json
 import os.path
 import logging
 
-from article_analyzer import ArticleAnalyzer
 from my_exception import MyException
-from web_crawler_mohw import WebCrawlerMohw
 
-class TodayInfo(ArticleAnalyzer):
+class TodayInfo():
     """
     本日疫情資訊的物件
 
@@ -32,6 +27,8 @@ class TodayInfo(ArticleAnalyzer):
         今日本土確診人數
     today_deaths : int or str
         今日死亡人數
+    article_title : str
+        文章標題
     additional_text : str
         顯示於資訊中的額外文字描述
     article : str
@@ -49,18 +46,12 @@ class TodayInfo(ArticleAnalyzer):
 
     Methods
     -------
-    (examples)
-    deposit(amount=0)
-        addas amount to balance
-    withdraw(amount=0)
-        subtracts amount from balance
-    from_csv(filepath)
-        returns class instance from csv file
-    
+    check_generate_status()
+        確認並更新 is_generated 的狀態
     """
 
 
-    def __init__(self, today_confirmed, today_imported, today_domestic, today_deaths=0, additional_text="", article_link = "", error = False, article = None, is_generate = True) -> None:
+    def __init__(self, today_confirmed, today_imported, today_domestic, today_deaths=0, additional_text="", article_link = "", error = False, article_title = "", article = None, is_generate = True) -> None:
         """
         Python 只能有一個 constructor
         如果沒有要一次把所有資訊初始化，可以透過下面的 clssmethod。例如：
@@ -87,6 +78,8 @@ class TodayInfo(ArticleAnalyzer):
             文章發布日期是否是今天
         error : bool or str
             是否有錯誤、錯誤訊息
+        article_title : str, optional
+            文章標題
         article : str, optional
             爬蟲下來的文章全文
         is_generated : bool, optional
@@ -102,6 +95,7 @@ class TodayInfo(ArticleAnalyzer):
         self.today_deaths = today_deaths
         self.additional_text = additional_text
         self.article = article
+        self.article_title = article_title
         self.article_link = article_link
         # To identify if today is the same day as this press release
         self.is_same_date = True
@@ -110,12 +104,12 @@ class TodayInfo(ArticleAnalyzer):
         self.__is_generated = is_generate
 
     @classmethod
-    def from_article(cls, article: str):
+    def from_article(cls, article_title: str, article: str):
         """
         輸入文章，需要再呼叫 function 透過文章分析資料
         """
         error = "Object initialized by article only."
-        return cls(today_confirmed = None, today_imported = None, today_domestic = None, article = article, is_generate = False, error = error)
+        return cls(today_confirmed = None, today_imported = None, today_domestic = None, article_title = article_title, article = article, is_generate = False, error = error)
     
     @classmethod
     def create_empty(cls):
@@ -145,7 +139,7 @@ class TodayInfo(ArticleAnalyzer):
                     date = datetime.date.fromisoformat(json_datetime)
                     article_link = today_dict["article_link"]
                     error = today_dict["error"]
-                    is_same_date = ArticleAnalyzer.date_compare(date)
+                    is_same_date = cls.__date_compare(date)
 
                     if error is not False:
                         logging.warning("Error info in today confirmed info json is not false. Initialize from json failed.")
@@ -165,15 +159,25 @@ class TodayInfo(ArticleAnalyzer):
                 #self.web_crawler(url)
                 return cls.create_empty()
 
-    def crawl_from_cdc(self):
-        pass
 
-    def crawl_from_mohw(self):
-        crawler = WebCrawlerMohw()
-        crawler.crawl()
-        self.article_link = crawler.article_url
-        self.article = crawler.article
-        self.date = crawler.article_date
+    def check_generate_status(self):
+        if self.today_confirmed is not None and self.today_imported is not None and self.today_domestic is not None:
+            self.__is_generated = True
+            return True
+        else:
+            self.__is_generated = False
+            return False
+
+    @staticmethod
+    def __date_compare(article_date):
+        """如果新聞稿發布日期<今日日期-12小時，會發出錯誤"""
+
+        d2 = datetime.date.today()
+        if article_date < d2:
+            print(f"日期錯誤:{article_date}")
+            return False
+        else:
+            return True
 
     def __str__(self) -> str:
         """
@@ -488,12 +492,5 @@ today_deaths = {self.today_deaths}
 
 
 
-
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-    #TodayConfirmed("https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
-    # TotalTestsConducted()
-    today = TodayInfo.create_empty()
-    print("today:", today)
-
-    #help(TodayInfo)
+    pass
