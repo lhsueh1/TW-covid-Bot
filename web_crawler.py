@@ -240,7 +240,7 @@ today_deaths = {self.today_deaths}
 
         texts = article_content.split()
 
-        self.additional_text = texts[1]
+        self.additional_text = texts[1] + texts[2]
         self.additional_text = self.additional_text.replace("；", "。\n")
         self.additional_text = self.additional_text.replace("指揮中心表示，", "")
         self.additional_text = self.additional_text.replace("指揮中心說明，", "")
@@ -305,5 +305,5 @@ class MyException(Exception):
 
 
 if __name__ == '__main__':
-    TodayConfirmed("https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
+    TodayConfirmed("https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A",recrawl="recrawl")
     # TotalTestsConducted()
