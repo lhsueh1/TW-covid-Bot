@@ -15,9 +15,10 @@ import os.path
 import logging
 
 from article_analyzer import ArticleAnalyzer
+from my_exception import MyException
 from web_crawler_mohw import WebCrawlerMohw
 
-class TodayInfo(WebCrawlerMohw):
+class TodayInfo(ArticleAnalyzer):
     """
     本日疫情資訊的物件
 
@@ -109,7 +110,7 @@ class TodayInfo(WebCrawlerMohw):
         self.__is_generated = is_generate
 
     @classmethod
-    def from_article(cls, article: str) -> None:
+    def from_article(cls, article: str):
         """
         輸入文章，需要再呼叫 function 透過文章分析資料
         """
@@ -117,7 +118,7 @@ class TodayInfo(WebCrawlerMohw):
         return cls(today_confirmed = None, today_imported = None, today_domestic = None, article = article, is_generate = False, error = error)
     
     @classmethod
-    def create_empty(cls) -> None:
+    def create_empty(cls):
         """
         先init object，需要再呼叫 function 爬蟲來取得資料
         """
@@ -151,23 +152,33 @@ class TodayInfo(WebCrawlerMohw):
                         return cls.create_empty()
                     elif is_same_date is not True:
                         logging.warning("Today is a new day. Initialize from json failed.")
-                        #self.web_crawler(url)
                         return cls.create_empty()
                     else:
                         logging.info("Extracted today confirmed info from json.")
                         return cls(today_confirmed, today_imported, today_domestic, today_deaths, additional_text, article_link, error)
 
             except Exception as e:
-                logging.error("Unable to extract today confirmed info from json. Trying web crawler.")
+                logging.error("Unable to extract today confirmed info from json. Initialize from json failed.")
                 print(e)
                 tb_msg = traceback.format_tb(e.__traceback__)
                 print(*tb_msg, sep='\n')
                 #self.web_crawler(url)
                 return cls.create_empty()
 
-    
+    def crawl_from_cdc(self):
+        pass
+
+    def crawl_from_mohw(self):
+        crawler = WebCrawlerMohw()
+        crawler.crawl()
+        self.article_link = crawler.article_url
+        self.article = crawler.article
+        self.date = crawler.article_date
 
     def __str__(self) -> str:
+        """
+        印出 TodayInfo 的資訊
+        """
         if self.__is_generated:
             str = f"""
 TodayInfo:
@@ -482,7 +493,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     #TodayConfirmed("https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
     # TotalTestsConducted()
-    today = TodayInfo.from_json()
+    today = TodayInfo.create_empty()
     print("today:", today)
 
-    help(TodayInfo)
+    #help(TodayInfo)

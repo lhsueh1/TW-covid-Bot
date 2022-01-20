@@ -1,6 +1,6 @@
 import re
 import datetime
-#from web_crawler import TodayConfirmed, TodayInfo
+#from web_crawler import TodayInfo
 
 
 class ArticleAnalyzer():
