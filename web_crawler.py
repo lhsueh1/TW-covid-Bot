@@ -58,15 +58,43 @@ class TodayInfo(WebCrawlerMohw):
     
     """
 
-    """
-    Python 只能有一個 constructor
-    如果沒有要一次把所有資訊初始化，可以透過下面的 clssmethod。例如：
-    today = TodayInfo.from_article(article)
-    或
-    today = TodayInfo.create_empty()
-    之後再生成文章
-    """
+
     def __init__(self, today_confirmed, today_imported, today_domestic, today_deaths=0, additional_text="", article_link = "", error = False, article = None, is_generate = True) -> None:
+        """
+        Python 只能有一個 constructor
+        如果沒有要一次把所有資訊初始化，可以透過下面的 clssmethod。例如：
+        today = TodayInfo.from_article(article)
+        或
+        today = TodayInfo.create_empty()
+        之後再生成文章
+
+        Parameters
+        ----------
+        today_confirmed : int or str
+            今日確診人數
+        today_imported : int or str
+            今日境外移入確診人數
+        today_domestic : int or str
+            今日本土確診人數
+        today_deaths : int or str
+            今日死亡人數
+        additional_text : str, optional
+            顯示於資訊中的額外文字描述
+        article_link : str, optional
+            透過爬蟲取得的文章連結
+        is_same_date : bool, optional
+            文章發布日期是否是今天
+        error : bool or str
+            是否有錯誤、錯誤訊息
+        article : str, optional
+            爬蟲下來的文章全文
+        is_generated : bool, optional
+            確診人數等資料是否以填入
+        
+        Returns
+        -------
+        None
+        """
         self.today_confirmed = today_confirmed
         self.today_imported = today_imported
         self.today_domestic = today_domestic
@@ -82,16 +110,25 @@ class TodayInfo(WebCrawlerMohw):
 
     @classmethod
     def from_article(cls, article: str) -> None:
+        """
+        輸入文章，需要再呼叫 function 透過文章分析資料
+        """
         error = "Object initialized by article only."
         return cls(today_confirmed = None, today_imported = None, today_domestic = None, article = article, is_generate = False, error = error)
     
     @classmethod
     def create_empty(cls) -> None:
+        """
+        先init object，需要再呼叫 function 爬蟲來取得資料
+        """
         error = "Object not initialized."
         return cls(today_confirmed = None, today_imported = None, today_domestic = None, is_generate = False, error = error)
     
     @classmethod
     def from_json(cls, filepath = None):
+        """
+        透過本地json取得資料。若讀取失敗會呼叫 create_empty()
+        """
         if filepath is None:
             filepath = 'TodayConfirmed.json'
         if os.path.isfile(filepath):
@@ -111,11 +148,11 @@ class TodayInfo(WebCrawlerMohw):
 
                     if error is not False:
                         logging.warning("Error info in today confirmed info json is not false. Initialize from json failed.")
-                        return cls()
+                        return cls.create_empty()
                     elif is_same_date is not True:
                         logging.warning("Today is a new day. Initialize from json failed.")
                         #self.web_crawler(url)
-                        return cls()
+                        return cls.create_empty()
                     else:
                         logging.info("Extracted today confirmed info from json.")
                         return cls(today_confirmed, today_imported, today_domestic, today_deaths, additional_text, article_link, error)
@@ -126,6 +163,7 @@ class TodayInfo(WebCrawlerMohw):
                 tb_msg = traceback.format_tb(e.__traceback__)
                 print(*tb_msg, sep='\n')
                 #self.web_crawler(url)
+                return cls.create_empty()
 
     
 
@@ -446,3 +484,5 @@ if __name__ == '__main__':
     # TotalTestsConducted()
     today = TodayInfo.from_json()
     print("today:", today)
+
+    help(TodayInfo)
