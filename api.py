@@ -21,6 +21,7 @@ ERROR_NOT_SAME_DATE = "ERROR_NOT_SAME_DATE"
 
 CDC_NEWS_URL = "https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A"
 
+
 def get_taiwan_epidemic_status():
     url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
     with requests.Session() as s:
@@ -45,7 +46,14 @@ def get_taiwan_epidemic_status():
         return text
     return False
 
-def get_taiwan_outbreak_information(*arg: str):
+
+def get_taiwan_outbreak_information(
+    force: bool = False, 
+    ignoreSSL: bool = False, 
+    manual: bool = False, 
+    save_to_json: bool = False, 
+    recrawl: bool = False,
+    article:str=None):
     '''
     產生回傳臺灣疫情資訊站的標準格式文章。
 
@@ -60,58 +68,29 @@ def get_taiwan_outbreak_information(*arg: str):
     '''
 
     # force 只能通過CDC，如果API接不到一樣會出現錯誤
-    print(f"args:{arg}")
 
-    force_texts = ["force", "f", "-f", "-force"]
-    if any(x in force_texts for x in arg):
-        print("Force mode")
-        isForce = True
-    else:
-        isForce = False
-
-    ignoressl_texts = ["IgnoreSSL", "ignoressl", "ignoreSSL", "Ignoressl"]
-    if any(x in ignoressl_texts for x in arg):
-        print("IgnoreSSL")
-        isSSLVerify = False
-    else:
-        isSSLVerify = True
-
-    manual_texts = ["manual", "manaual"]
-    if any(x in manual_texts for x in arg):
-        print("ismanual")
-        ismanual = True
-        article = arg[0]
-    else:
-        ismanual = False
-        article = None
-
-    if "save" in arg:
-        print("save to json in manual mode")
-        save_to_json_in_maual_mode = True
-    else:
-        save_to_json_in_maual_mode = False
-
-    isrecrawl = ("recrawl" in arg)
-
-    api_status = get_API_status(isSSLVerify)
+    api_status = get_API_status(ignoreSSL)
 
     if not api_status[0]:
         text = "ERROR: 網路錯誤\n" + api_status[0]
-        status = ERROR_INTERNET_CONNECTION + "\nUnable to get status from Taiwan CDC Open Data Service\n" + api_status[0] + "\n" + api_status[1]
+        status = ERROR_INTERNET_CONNECTION + \
+            "\nUnable to get status from Taiwan CDC Open Data Service\n" + \
+            api_status[0] + "\n" + api_status[1]
         return (text, status, "")
     elif api_status[0] == "success":
         print("Taiwan CDC Open Data Service, connection succeed.")
         status = 0
     else:
         text = "ERROR: 政府資料開放平台無法連接\n訊息：" + api_status[0]
-        status = ERROR_OPEN_DATA_SERVICE + "\n訊息：" + api_status[0] + "\n" + api_status[1]
+        status = ERROR_OPEN_DATA_SERVICE + "\n訊息：" + \
+            api_status[0] + "\n" + api_status[1]
         return (text, status, "")
 
     mmdd = "(????)"
     yyyymmdd = "(????/??/??)"
 
-    epidemic = TaiwanEpidemic(SSLVerify=isSSLVerify)
-    global_stats = GlobalStats(SSLVerify=isSSLVerify)
+    epidemic = TaiwanEpidemic(SSLVerify=ignoreSSL)
+    global_stats = GlobalStats(SSLVerify=ignoreSSL)
 
     # today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual, article = article, save = save_to_json_in_maual_mode)
 
@@ -123,18 +102,18 @@ def get_taiwan_outbreak_information(*arg: str):
 
     # 有錯誤出現時會 early return
     # 錯誤訊息會回傳至主控
-    if today.error is not False and not isForce:
+    if today.error is not False and not force:
         text = "無法連上CDC官網或是爬蟲出現錯誤"
         status = ERROR_CDC_WEBPAGE
         return (text, f"ERROR_CDC_WEBPAGE\n{today}", "")
 
-    if not today.is_same_date and not isForce:
+    if not today.is_same_date and not force:
         text = "ERROR: 日期錯誤。本日衛福部新聞稿尚未更新？"
         status = ERROR_NOT_SAME_DATE
         return (text, ERROR_NOT_SAME_DATE + str(today), "")
 
     # 強制執行，且 today 無法取得時的處理
-    if isForce and (today.error or not today.is_same_date):
+    if force and (today.error or not today.is_same_date):
         # 製作一個沒有爬蟲的TodayConfirmed object，讓文章的資料被填入None
         today = web_crawler.TodayConfirmed(0)
         yyyymmdd = "ERROR: 無法取得衛福部的新聞稿資訊"
@@ -143,7 +122,8 @@ def get_taiwan_outbreak_information(*arg: str):
         mmdd = today.date.strftime("%m%d")
         yyyymmdd = today.date.strftime("%Y/%m/%d")
 
-    death_rate = (int(epidemic.deaths.replace(",", "")) / int(epidemic.confirmed.replace(",", ""))) * 100
+    death_rate = (int(epidemic.deaths.replace(",", "")) /
+                  int(epidemic.confirmed.replace(",", ""))) * 100
     death_rate = "{:.2f}".format(death_rate)
 
     text = f"""《臺灣疫情資訊站{mmdd}資訊報》
@@ -182,6 +162,7 @@ Taiwan Outbreak Information
 """
     return (text, status, today.article_link)
 
+
 def get_epidemic_status_by_country(country: str):
     with requests.Session() as s:
         url = "https://od.cdc.gov.tw/eic/covid19/covid19_global_cases_and_deaths.csv"
@@ -212,13 +193,13 @@ Deaths: {row[3]}"""
             today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
             return "{:.2f}%".format(float(int(str(today.today_deaths).replace(",", "")) / int(str(today.today_confirmed).replace(",", "")) * 100))
 
-
         if country.lower() == "rate_death_today" or country.lower() == "ratedeathtoday":
             today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
             return "{:.2f}% lol".format(float(int(str(today.today_confirmed).replace(",", "")) / int(str(today.today_deaths).replace(",", "")) * 100))
     return None
 
-def get_API_status(SSLVerify = True):
+
+def get_API_status(SSLVerify=True):
     try:
         url = "https://od.cdc.gov.tw/"
         s = requests.get(url, verify=SSLVerify)
@@ -230,6 +211,7 @@ def get_API_status(SSLVerify = True):
         return ("SSL錯誤", str(e))
     except Exception as e:
         return (False, str(e))
+
 
 class TaiwanEpidemic(object):
     """docstring for TaiwanEpidemic."""
@@ -243,11 +225,11 @@ class TaiwanEpidemic(object):
 
     full_text = None
 
-    def __init__(self, SSLVerify = True):
+    def __init__(self, SSLVerify=True):
         with requests.Session() as s:
             url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
 
-            download = s.get(url, verify = SSLVerify)
+            download = s.get(url, verify=SSLVerify)
 
             decoded_content = download.content.decode('utf-8')
 
@@ -281,6 +263,7 @@ class TaiwanEpidemic(object):
         else:
             return "ERROR: TaiwanEpidemic init failed"
 
+
 class GlobalStats(object):
     confirmed = None
     deaths = None
@@ -289,7 +272,7 @@ class GlobalStats(object):
 
     full_text = None
 
-    def __init__(self, SSLVerify = True):
+    def __init__(self, SSLVerify=True):
         with requests.Session() as s:
             url = "https://od.cdc.gov.tw/eic/covid19/covid19_global_stats.csv"
 
@@ -324,6 +307,7 @@ class GlobalStats(object):
         else:
             return "ERROR: GlobalStats init failed"
 
+
 def crawl_from_mohw(today: TodayInfo):
     crawler = WebCrawlerMohw()
     crawler.crawl()
@@ -333,8 +317,10 @@ def crawl_from_mohw(today: TodayInfo):
     today.article_title = crawler.title
     today.date_str_to_datetime()
 
+
 def crawl_from_cdc(self):
     pass
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
@@ -352,4 +338,4 @@ if __name__ == '__main__':
 # death {today.today_deaths}
 # """)
 
-    #help(TodayInfo)
+    # help(TodayInfo)
