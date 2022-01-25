@@ -27,7 +27,7 @@ class ArticleAnalyzer():
         if today.article is None or today.article == "":
             MyException("ArticleAnalyzer: today.article is empty")
         today.error = False
-        logging.info("extracting info from today.article")
+        logging.info("ArticleAnalyzer: extracting info from today.article")
 
         # 文章標題的確診病例、本土、境外處理
         if re.search(r'新增\d+例COVID-19\w{0,2}病例，分別為\d+例本土\w{0,2}及\d+例境外', today.article_title):
@@ -129,6 +129,8 @@ today_deaths = {today.today_deaths}
             # 刪除多餘的換行
             # only remove trailing newline characters.
             today.additional_text = today.additional_text.rstrip()
+        
+        today.check_generate_status()
 
     @staticmethod
     def __extract_number(regex: str, text: str):

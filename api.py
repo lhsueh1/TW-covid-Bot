@@ -113,17 +113,23 @@ def get_taiwan_outbreak_information(*arg: str):
     epidemic = TaiwanEpidemic(SSLVerify=isSSLVerify)
     global_stats = GlobalStats(SSLVerify=isSSLVerify)
 
-    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual, article = article, save = save_to_json_in_maual_mode)
+    # today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual, article = article, save = save_to_json_in_maual_mode)
+
+    today = TodayInfo.create_empty()
+    crawl_from_mohw(today)
+
+    ArticleAnalyzer().data_extractor(today)
+    logging.info(f"today: {today}")
 
     if today.error is not False and not isForce:
         text = "無法連上CDC官網或是爬蟲出現錯誤"
         status = ERROR_CDC_WEBPAGE
-        return (text, f"ERROR_CDC_WEBPAGE\n{today.error}", "")
+        return (text, f"ERROR_CDC_WEBPAGE\n{today}", "")
 
     if not today.is_same_date and not isForce:
         text = "ERROR: 日期錯誤。本日衛福部新聞稿尚未更新？"
         status = ERROR_NOT_SAME_DATE
-        return (text, ERROR_NOT_SAME_DATE + str(today.date), "")
+        return (text, ERROR_NOT_SAME_DATE + str(today), "")
 
     # 強制執行，且 today 無法取得時的處理
     if isForce and (today.error or not today.is_same_date):
@@ -323,23 +329,25 @@ def crawl_from_mohw(today: TodayInfo):
     today.article = crawler.article
     today.date = crawler.article_date
     today.article_title = crawler.title
+    today.date_str_to_datetime()
 
 def crawl_from_cdc(self):
     pass
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    #TodayConfirmed("https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A")
+    s = get_taiwan_outbreak_information("recrawl")
+    print(s)
     # TotalTestsConducted()
-    today = TodayInfo.create_empty()
-    crawl_from_mohw(today)
+#     today = TodayInfo.create_empty()
+#     crawl_from_mohw(today)
 
 
-    logging.info(f"today: {today}")
-    ArticleAnalyzer().data_extractor(today)
-    logging.info(f"""
-confirmed {today.today_confirmed}
-death {today.today_deaths}
-""")
+#     logging.info(f"today: {today}")
+#     ArticleAnalyzer().data_extractor(today)
+#     logging.info(f"""
+# confirmed {today.today_confirmed}
+# death {today.today_deaths}
+# """)
 
     #help(TodayInfo)

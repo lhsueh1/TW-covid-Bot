@@ -203,6 +203,29 @@ Error message:
 """
         return str
 
+    def date_str_to_datetime(self):
+        if isinstance(self.date, str):
+            date_text_match = re.search(r'\d{3,4}[-/]\d{1,2}[-/]\d{1,2}', self.date)
+            if date_text_match is not None:
+                date_text = re.findall(r'\d+', date_text_match.group(0))
+                date_year = int(date_text[0])
+
+                # 中華民國還沒死透
+                if date_year < 2000:
+                    date_year = date_year + 1911
+
+                date_month = int(date_text[1])
+
+                date_day = int(date_text[2])
+                self.date = datetime.date(date_year, date_month, date_day)
+            else:
+                self.date = datetime.date.today()
+        elif isinstance(self.date, datetime):
+            logging.info("TodayInfo.date_str_to_datetime: Already datetime.")
+        else:
+            logging.error("TodayInfo.date_str_to_datetime: Type self.date error.")
+            
+
 class TodayConfirmed(object):
     """
     透過爬蟲找尋衛福部的最新消息中，
