@@ -76,7 +76,7 @@ def get_taiwan_outbreak_information(*arg: str):
     else:
         isSSLVerify = True
 
-    manual_texts = ["manual", "manual"]
+    manual_texts = ["manual", "manaual"]
     if any(x in manual_texts for x in arg):
         print("ismanual")
         ismanual = True
@@ -121,6 +121,8 @@ def get_taiwan_outbreak_information(*arg: str):
     ArticleAnalyzer().data_extractor(today)
     logging.info(f"today: {today}")
 
+    # 有錯誤出現時會 early return
+    # 錯誤訊息會回傳至主控
     if today.error is not False and not isForce:
         text = "無法連上CDC官網或是爬蟲出現錯誤"
         status = ERROR_CDC_WEBPAGE

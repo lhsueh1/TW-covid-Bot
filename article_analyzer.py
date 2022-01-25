@@ -1,6 +1,8 @@
 import logging
 import re
 import datetime
+
+from bitarray import test
 from my_exception import MyException
 from web_crawler import TodayInfo
 
@@ -106,22 +108,8 @@ today_deaths = {today.today_deaths}
 """
             return
 
-        texts = today.article.split()
-
-        today.additional_text = texts[1]
-        today.additional_text = today.additional_text.replace("；", "。\n")
-        today.additional_text = today.additional_text.replace("指揮中心表示，", "")
-        today.additional_text = today.additional_text.replace("指揮中心說明，", "")
-        today.additional_text = today.additional_text.replace("，個案分佈", "\n個案分佈")
-        today.additional_text = today.additional_text.replace("，個案分布", "。\n個案分布")
-        today.additional_text = today.additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
-        today.additional_text = today.additional_text.replace("，衛生單位刻正進行相關疫調及接觸者匡列", "")
-        today.additional_text = today.additional_text.replace("。衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
-        today.additional_text = today.additional_text.replace("，衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
-        today.additional_text = today.additional_text.replace("將持續進行疫情調查及防治，以釐清感染源。", "")
-        today.additional_text = today.additional_text.replace("衛生單位持續進行疫情調查及防治，接觸者匡列中。", "")
-        today.additional_text = today.additional_text.replace("詳如新聞稿附件。", "")
-
+        ArticleAnalyzer.__additional_text_handler(today.article)
+        
         # 因應文章格式加入換行
         if today.additional_text is not None and today.additional_text != "":
             today.additional_text = "\n" + today.additional_text
@@ -132,6 +120,41 @@ today_deaths = {today.today_deaths}
         
         today.check_generate_status()
 
+    def additional_text_handler(article: str):
+        texts = article.split()
+
+        # ref https://www.runoob.com/python/python-func-filter.html
+        texts = filter(ArticleAnalyzer.__get_wanted_addtional_text, texts)
+
+        additional_text = "".join(texts)
+
+        # Without using loops: 
+        # * symbol is use to print the list elements in a single line with space. 
+        # To print all elements in new lines or separated by space use sep=”\n” or sep=”, ” respectively.
+        # print(*list(test_text), sep="\n")
+        # ref: https://www.geeksforgeeks.org/print-lists-in-python-4-different-ways/
+
+        additional_text = additional_text.replace("；", "。\n")
+        additional_text = additional_text.replace("指揮中心表示，", "")
+        additional_text = additional_text.replace("指揮中心說明，", "")
+        additional_text = additional_text.replace("指揮中心指出，", "")
+        additional_text = additional_text.replace("，個案分佈", "\n個案分佈")
+        additional_text = additional_text.replace("，個案分布", "。\n個案分布")
+        additional_text = additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
+        additional_text = additional_text.replace("，衛生單位刻正進行相關疫調及接觸者匡列", "")
+        additional_text = additional_text.replace("。衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
+        additional_text = additional_text.replace("，衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
+        additional_text = additional_text.replace("將持續進行疫情調查及防治，以釐清感染源。", "")
+        additional_text = additional_text.replace("衛生單位持續進行疫情調查及防治，接觸者匡列中。", "")
+        additional_text = additional_text.replace("詳如新聞稿附件。", "")
+        print(additional_text)
+
+    def __get_wanted_addtional_text(paragraph: str):
+        if re.search(r'指揮中心\w{2}，*\w{0,4}新增\w{2,10}(\(案\d+\))*，*為', paragraph):
+            return paragraph
+        else:
+            return None 
+
     @staticmethod
     def __extract_number(regex: str, text: str):
         text_matched = re.search(regex, text)
@@ -139,5 +162,3 @@ today_deaths = {today.today_deaths}
             num_match = re.search(r'\d+', text_matched.group(0))
             return int(num_match.group(0))
         return None
-
-
