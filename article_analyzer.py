@@ -31,6 +31,13 @@ class ArticleAnalyzer():
         today.error = False
         logging.info("ArticleAnalyzer: extracting info from today.article")
 
+        if today.article_title is None:
+            today.article_title = today.article.split('\n', 1)[0]
+        
+        texts = filter(ArticleAnalyzer.__unwanted_text, today.article.split())
+
+        today.article = "\n".join(texts)
+
         # 文章標題的確診病例、本土、境外處理
         if re.search(r'新增\d+例COVID-19\w{0,2}病例，分別為\d+例本土\w{0,2}及\d+例境外', today.article_title):
             nums = re.findall(r'\d+', today.article_title)
@@ -58,6 +65,7 @@ class ArticleAnalyzer():
             if today.today_imported is None and today.today_confirmed is not None and today.today_domestic is not None:
                 today.today_imported = int(today.today_confirmed) - int(today.today_domestic)
         else:
+            # 如果標題完全找不到就只能從文章找
             today.today_confirmed = ArticleAnalyzer.__extract_number(r'新增\d+例COVID-19\w*病例', today.article)
             today.today_imported = ArticleAnalyzer.__extract_number(r'\w?\d+例境外', today.article)
             today.today_domestic = ArticleAnalyzer.__extract_number(r'\w?\d+例本土', today.article)
@@ -108,7 +116,7 @@ today_deaths = {today.today_deaths}
 """
             return
 
-        ArticleAnalyzer.__additional_text_handler(today.article)
+        today.additional_text = ArticleAnalyzer.__additional_text_handler(today.article)
         
         # 因應文章格式加入換行
         if today.additional_text is not None and today.additional_text != "":
@@ -120,11 +128,12 @@ today_deaths = {today.today_deaths}
         
         today.check_generate_status()
 
-    def additional_text_handler(article: str):
-        texts = article.split()
+    @staticmethod
+    def __additional_text_handler(article: str):
+        texts = article.split()[1:]
 
         # ref https://www.runoob.com/python/python-func-filter.html
-        texts = filter(ArticleAnalyzer.__get_wanted_addtional_text, texts)
+        texts = filter(ArticleAnalyzer.__wanted_addtional_text, texts)
 
         additional_text = "".join(texts)
 
@@ -147,13 +156,20 @@ today_deaths = {today.today_deaths}
         additional_text = additional_text.replace("將持續進行疫情調查及防治，以釐清感染源。", "")
         additional_text = additional_text.replace("衛生單位持續進行疫情調查及防治，接觸者匡列中。", "")
         additional_text = additional_text.replace("詳如新聞稿附件。", "")
-        print(additional_text)
+        return additional_text
 
-    def __get_wanted_addtional_text(paragraph: str):
+    def __wanted_addtional_text(paragraph: str):
+
         if re.search(r'指揮中心\w{2}，*\w{0,4}新增\w{2,10}(\(案\d+\))*，*為', paragraph):
             return paragraph
         else:
             return None 
+    
+    def __unwanted_text(paragraph: str):
+        if re.search(r"敦睦艦隊", paragraph):
+            return None
+        else:
+            return paragraph
 
     @staticmethod
     def __extract_number(regex: str, text: str):
