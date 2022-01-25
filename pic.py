@@ -51,7 +51,7 @@ def plot_stats():
 
     plt.savefig('plot.png', dpi=500)
 
-    return avg_list[-1], sum(weeks_data[:7])
+    return avg_list[-1], sum(weeks_data[7:])
 
 def add_to_json_queue(date="1313", today_confirmed=0):
     with open(r"history_data.json", "r") as jsonFile1:
