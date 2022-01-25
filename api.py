@@ -96,40 +96,28 @@ def get_taiwan_outbreak_information(
 
     # today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual, article = article, save = save_to_json_in_maual_mode)
 
-    # 創造空的 TodayInfo Object
-    today = TodayInfo.create_empty()
-
-    # 如果手動模式有開，則直接透過手動模式獲得資料
-    if manual is True:
-        logging.info("get_taiwan_outbreak_information(): 手動模式 is True, 啟動手動模式")
-        if article is not None:
-            logging.info("get_taiwan_outbreak_information(): 透過文章取得資料")
-            # 透過 article 取得資料（最好要有標題）
-            today.article = article
-            ArticleAnalyzer.data_extractor(today)
-        elif today_dict is not None:
-            # 透過 today dict 取得資料
-            logging.info(
-                "get_taiwan_outbreak_information(): 透過 today dict 取得資料")
-            today.today_confirmed = today_dict["confirmed"]
-            today.today_domestic = today_dict["domestic"]
-            today.today_imported = today_dict["imported"]
-            today.today_deaths = today_dict["deaths"]
-            today.additional_text = today_dict["additional_text"]
-            pass
-        else:
-            logging.info(
-                "get_taiwan_outbreak_information(): 手動模式必須提供文章或本日疫情資訊")
-            logging.error(
-                "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.")
-            return ("手動模式必須提供文章或本日疫情資訊", "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.", "")
+    # 預設從 json 讀取資料
+    if recrawl is not True:
+        today = TodayInfo.from_json()
     else:
-        # 啟動衛福部新聞的爬蟲
-        try:
-            crawl_from_mohw(today)
-        except Exception as e:
-            return ("衛福部爬蟲錯誤，請詢問開發者", "crawl_from_mohw(today) "+str(e), "")
+        # 創造空的 TodayInfo Object
+        today = TodayInfo.create_empty()
 
+    # 若尚未從json取得資料(失敗或是是recrawl)，執行取得資料的步驟
+    if not today.check_generate_status():
+        # 如果手動模式有開，則直接透過手動模式獲得資料
+        if manual is True:
+            __manual_generate_data(
+                today=today, article=article, today_dict=today_dict)
+        else:
+            # 啟動衛福部新聞的爬蟲
+            try:
+                crawl_from_mohw(today)
+            except Exception as e:
+                return ("衛福部爬蟲錯誤，請詢問開發者", "crawl_from_mohw(today) "+str(e), "")
+
+    # 若尚未從json取得資料(衛福部新聞的爬蟲失敗)，執行取得資料的步驟
+    if not today.check_generate_status():
         # 啟動疾管暑新聞爬蟲
         # todo
         try:
@@ -203,6 +191,32 @@ Taiwan Outbreak Information
 {yyyymmdd}
 """
     return (text, status, today.article_link)
+
+
+def __manual_generate_data(today: TodayInfo, article: str, today_dict: dict):
+    logging.info("get_taiwan_outbreak_information(): 手動模式 is True, 啟動手動模式")
+    if article is not None:
+        logging.info("get_taiwan_outbreak_information(): 透過文章取得資料")
+        # 透過 article 取得資料（最好要有標題）
+        today.article = article
+        ArticleAnalyzer.data_extractor(today)
+    elif today_dict is not None:
+        # 透過 today dict 取得資料
+        logging.info(
+            "get_taiwan_outbreak_information(): 透過 today dict 取得資料")
+        today.today_confirmed = today_dict["confirmed"]
+        today.today_domestic = today_dict["domestic"]
+        today.today_imported = today_dict["imported"]
+        today.today_deaths = today_dict["deaths"]
+        today.additional_text = today_dict["additional_text"]
+        today.date = datetime.date.today()
+        pass
+    else:
+        logging.info(
+            "get_taiwan_outbreak_information(): 手動模式必須提供文章或本日疫情資訊")
+        logging.error(
+            "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.")
+        return ("手動模式必須提供文章或本日疫情資訊", "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.", "")
 
 
 def get_epidemic_status_by_country(country: str):
@@ -376,7 +390,7 @@ def crawl_from_cdc(self):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    article = """
+    test_article = """
 中央流行疫情指揮中心今(25)日公布國內新增38例COVID-19確定病例，分別為13例本土個案及25例境外移入；另確診個案中無新增死亡。
 
 指揮中心表示，今日新增本土個案為4例男性、9例女性，年齡介於未滿5歲至70多歲；詳如新聞稿附件。
@@ -387,5 +401,5 @@ if __name__ == '__main__':
 
 指揮中心再次呼籲，民眾應落實手部衛生、咳嗽禮節及佩戴口罩等個人防護措施，減少不必要移動、活動或集會，避免出入人多擁擠的場所，或高感染傳播風險場域，並主動積極配合各項防疫措施，共同嚴守社區防線。
     """
-    list = get_taiwan_outbreak_information(manual=True, article=article)
+    list = get_taiwan_outbreak_information()
     print(*list, sep="\n")
