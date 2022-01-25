@@ -14,13 +14,14 @@ import json
 import requests
 import re
 import random
-import api
-import pic
 import urllib3
 import threading
 import pytz
 import datetime
 import git
+
+import api
+import pic
 
 # Enable logging
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
@@ -569,7 +570,7 @@ def today_info_everyday(context, **chat_ids):
 def image_everyday(context, **chat_ids):
     cap = "pic"
 
-    the_date = pic.pic_new()
+    the_date = pic.pic_stat()
     if str(datetime.datetime.now().strftime("%m%d")) == the_date:
         if "chat_ids" in chat_ids:
             for id in chat_ids["chat_ids"]:

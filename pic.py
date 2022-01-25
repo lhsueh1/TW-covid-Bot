@@ -28,10 +28,14 @@ def plot_stats():
 
 
     weeks_data = history["confirmed"]
+    avg_list = history["average"]
+
+    jsonFile1.close()
+    
     weeks_data.reverse()
     ypoints = np.array(weeks_data)
 
-    avg_list = history["average"]
+    
     avg_list.reverse()
     yavg = np.array(avg_list)
 
