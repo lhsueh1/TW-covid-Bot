@@ -33,7 +33,7 @@ class ArticleAnalyzer():
 
         if today.article_title is None:
             today.article_title = today.article.split('\n', 1)[0]
-        
+
         texts = filter(ArticleAnalyzer.__unwanted_text, today.article.split())
 
         today.article = "\n".join(texts)
@@ -54,24 +54,33 @@ class ArticleAnalyzer():
         # 如果標題找不到境外移入、本土的病例數量的話，透過文章分析
         # 利用today.article_title找到 新增\d+例境外移入 並判斷本土數量
         elif re.search(r'新增\d+例COVID-19\w*病例', today.article_title):
-            today.today_confirmed = ArticleAnalyzer.__extract_number(r'新增\d+例COVID-19\w*病例', today.article_title)
+            today.today_confirmed = ArticleAnalyzer.__extract_number(
+                r'新增\d+例COVID-19\w*病例', today.article_title)
 
-            today.today_imported = ArticleAnalyzer.__extract_number(r'新增\w?\d+例境外', today.article)
-            today.today_domestic = ArticleAnalyzer.__extract_number(r'新增\w?\d+例本土', today.article)
+            today.today_imported = ArticleAnalyzer.__extract_number(
+                r'新增\w?\d+例境外', today.article)
+            today.today_domestic = ArticleAnalyzer.__extract_number(
+                r'新增\w?\d+例本土', today.article)
 
             if today.today_domestic is None and today.today_confirmed is not None and today.today_imported is not None:
-                today.today_domestic = int(today.today_confirmed) - int(today.today_imported)
+                today.today_domestic = int(
+                    today.today_confirmed) - int(today.today_imported)
 
             if today.today_imported is None and today.today_confirmed is not None and today.today_domestic is not None:
-                today.today_imported = int(today.today_confirmed) - int(today.today_domestic)
+                today.today_imported = int(
+                    today.today_confirmed) - int(today.today_domestic)
         else:
             # 如果標題完全找不到就只能從文章找
-            today.today_confirmed = ArticleAnalyzer.__extract_number(r'新增\d+例COVID-19\w*病例', today.article)
-            today.today_imported = ArticleAnalyzer.__extract_number(r'\w?\d+例境外', today.article)
-            today.today_domestic = ArticleAnalyzer.__extract_number(r'\w?\d+例本土', today.article)
+            today.today_confirmed = ArticleAnalyzer.__extract_number(
+                r'新增\d+例COVID-19\w*病例', today.article)
+            today.today_imported = ArticleAnalyzer.__extract_number(
+                r'\w?\d+例境外', today.article)
+            today.today_domestic = ArticleAnalyzer.__extract_number(
+                r'\w?\d+例本土', today.article)
 
             # 抓日期
-            date_text_match = re.search(r'\d{3,4}[-/]\d{1,2}[-/]\d{1,2}', today.article)
+            date_text_match = re.search(
+                r'\d{3,4}[-/]\d{1,2}[-/]\d{1,2}', today.article)
             if date_text_match is not None:
                 date_text = re.findall(r'\d+', date_text_match.group(0))
                 date_year = int(date_text[0])
@@ -89,13 +98,13 @@ class ArticleAnalyzer():
 
         # 如果境內確診沒有值，而總確診跟境外移入有值，則計算境內確診
         if today.today_domestic is None and today.today_confirmed is not None and today.today_imported is not None:
-            today.today_domestic = int(today.today_confirmed) - int(today.today_imported)
+            today.today_domestic = int(
+                today.today_confirmed) - int(today.today_imported)
 
         # 如果境外確診沒有值，而總確診跟境內有值，則計算境外確診
         if today.today_imported is None and today.today_confirmed is not None and today.today_domestic is not None:
-            today.today_imported = int(today.today_confirmed) - int(today.today_domestic)
-
-
+            today.today_imported = int(
+                today.today_confirmed) - int(today.today_domestic)
 
         # 死亡分析
         regex_death = re.compile(r"新增(\d+-*\d*)例死亡")
@@ -116,8 +125,9 @@ today_deaths = {today.today_deaths}
 """
             return
 
-        today.additional_text = ArticleAnalyzer.__additional_text_handler(today.article)
-        
+        today.additional_text = ArticleAnalyzer.__additional_text_handler(
+            today.article)
+
         # 因應文章格式加入換行
         if today.additional_text is not None and today.additional_text != "":
             today.additional_text = "\n" + today.additional_text
@@ -125,7 +135,7 @@ today_deaths = {today.today_deaths}
             # 刪除多餘的換行
             # only remove trailing newline characters.
             today.additional_text = today.additional_text.rstrip()
-        
+
         today.check_generate_status()
 
     @staticmethod
@@ -137,8 +147,8 @@ today_deaths = {today.today_deaths}
 
         additional_text = "".join(texts)
 
-        # Without using loops: 
-        # * symbol is use to print the list elements in a single line with space. 
+        # Without using loops:
+        # * symbol is use to print the list elements in a single line with space.
         # To print all elements in new lines or separated by space use sep=”\n” or sep=”, ” respectively.
         # print(*list(test_text), sep="\n")
         # ref: https://www.geeksforgeeks.org/print-lists-in-python-4-different-ways/
@@ -151,10 +161,13 @@ today_deaths = {today.today_deaths}
         additional_text = additional_text.replace("，個案分布", "。\n個案分布")
         additional_text = additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
         additional_text = additional_text.replace("，衛生單位刻正進行相關疫調及接觸者匡列", "")
-        additional_text = additional_text.replace("。衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
-        additional_text = additional_text.replace("，衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
+        additional_text = additional_text.replace(
+            "。衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
+        additional_text = additional_text.replace(
+            "，衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
         additional_text = additional_text.replace("將持續進行疫情調查及防治，以釐清感染源。", "")
-        additional_text = additional_text.replace("衛生單位持續進行疫情調查及防治，接觸者匡列中。", "")
+        additional_text = additional_text.replace(
+            "衛生單位持續進行疫情調查及防治，接觸者匡列中。", "")
         additional_text = additional_text.replace("詳如新聞稿附件。", "")
         return additional_text
 
@@ -163,8 +176,8 @@ today_deaths = {today.today_deaths}
         if re.search(r'指揮中心\w{2}，*\w{0,4}新增\w{2,10}(\(案\d+\))*，*為', paragraph):
             return paragraph
         else:
-            return None 
-    
+            return None
+
     def __unwanted_text(paragraph: str):
         if re.search(r"敦睦艦隊", paragraph):
             return None

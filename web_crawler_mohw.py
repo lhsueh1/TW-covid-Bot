@@ -16,7 +16,6 @@ class WebCrawlerMohw():
     ENTRY_LINK = "np-16-1.html"
     URL = "https://www.mohw.gov.tw"
 
-
     def __get_news_page_link_from_latest_month_or_year(self, *more_url):
 
         session = requests.Session()
@@ -38,7 +37,8 @@ class WebCrawlerMohw():
 
         target_url = soup.select_one("section.nplist a")["href"]
 
-        logging.info("WebCrawlerMohw(): get_news_page_link result url "+ target_url)
+        logging.info(
+            "WebCrawlerMohw(): get_news_page_link result url " + target_url)
         return target_url
 
     def __get_news_page_link(self, more_url):
@@ -60,10 +60,11 @@ class WebCrawlerMohw():
         i = 0
         while not re.match(r'新增\d+例COVID-19\w*病例，分別為\d+例本土\w*及\d+例境外', target[i].text):
             i += 1
-        logging.info("WebCrawlerMohw(): get_news_page_link result url " + target[0]["href"])
+        logging.info(
+            "WebCrawlerMohw(): get_news_page_link result url " + target[0]["href"])
 
         return target[i]["href"]
-    
+
     def __get_news(self, url):
         session = requests.Session()
 
@@ -105,6 +106,7 @@ class WebCrawlerMohw():
         logging.info("article title: "+self.title)
         logging.info("article date: "+self.article_date)
         logging.info("article: "+self.article)
+
 
 if __name__ == '__main__':
     crawler = WebCrawlerMohw()

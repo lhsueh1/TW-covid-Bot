@@ -109,7 +109,8 @@ def get_taiwan_outbreak_information(
             ArticleAnalyzer.data_extractor(today)
         elif today_dict is not None:
             # 透過 today dict 取得資料
-            logging.info("get_taiwan_outbreak_information(): 透過 today dict 取得資料")
+            logging.info(
+                "get_taiwan_outbreak_information(): 透過 today dict 取得資料")
             today.today_confirmed = today_dict["confirmed"]
             today.today_domestic = today_dict["domestic"]
             today.today_imported = today_dict["imported"]
@@ -117,9 +118,11 @@ def get_taiwan_outbreak_information(
             today.additional_text = today_dict["additional_text"]
             pass
         else:
-            logging.info("get_taiwan_outbreak_information(): 手動模式必須提供文章或本日疫情資訊")
-            logging.error("get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.")
-            return ("手動模式必須提供文章或本日疫情資訊","get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.", "")
+            logging.info(
+                "get_taiwan_outbreak_information(): 手動模式必須提供文章或本日疫情資訊")
+            logging.error(
+                "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.")
+            return ("手動模式必須提供文章或本日疫情資訊", "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.", "")
     else:
         # 啟動衛福部新聞的爬蟲
         try:
@@ -136,7 +139,7 @@ def get_taiwan_outbreak_information(
 
         # 爬蟲成功後資料分析
         ArticleAnalyzer().data_extractor(today)
-    
+
     logging.info(f"today: {today}")
 
     # 有錯誤出現時會 early return
@@ -373,7 +376,7 @@ def crawl_from_cdc(self):
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    article="""
+    article = """
 中央流行疫情指揮中心今(25)日公布國內新增38例COVID-19確定病例，分別為13例本土個案及25例境外移入；另確診個案中無新增死亡。
 
 指揮中心表示，今日新增本土個案為4例男性、9例女性，年齡介於未滿5歲至70多歲；詳如新聞稿附件。
@@ -384,5 +387,5 @@ if __name__ == '__main__':
 
 指揮中心再次呼籲，民眾應落實手部衛生、咳嗽禮節及佩戴口罩等個人防護措施，減少不必要移動、活動或集會，避免出入人多擁擠的場所，或高感染傳播風險場域，並主動積極配合各項防疫措施，共同嚴守社區防線。
     """
-    list = get_taiwan_outbreak_information(manual=True,article=article)
+    list = get_taiwan_outbreak_information(manual=True, article=article)
     print(*list, sep="\n")
