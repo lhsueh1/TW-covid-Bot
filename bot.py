@@ -209,6 +209,7 @@ def error(update, context):
 def today_info(update, context):
     #processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...", disable_notification=True)
 
+    # todo 處理使用者輸入的arg，必須為正確的才放行，不然報錯
     if len(context.args) != 0:
         get = api.get_taiwan_outbreak_information(*context.args)
     else:
@@ -420,7 +421,8 @@ def manual_article(update: Update, context: CallbackContext):
 
     global user_input_article
     user_input_article = update.message.text
-    get = api.get_taiwan_outbreak_information(update.message.text, "manual")
+    
+    get = api.get_taiwan_outbreak_information(article=update.message.text, manual=True)
 
     text = get[0]
 
