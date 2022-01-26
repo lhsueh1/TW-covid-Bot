@@ -1,5 +1,6 @@
 import logging
 import api
+import re
 
 
 def testAssert():
@@ -58,13 +59,18 @@ def testAssert():
     assert result[1] == False , "result_3 not false"
 
 def rANdomTEsT():
-    str = "recarwl"
-    if str not in ["force","SSLVerify","recrawl"]:
-        print("1")
-    else:
-        print("2")
+    text= "recrawasdfl"
+    text = text.lower()
+    regex = "(force)|(sslverify)|(recrawl)"
+    if not re.search(regex, text):
+        print("arg not found")
+    
+    force = "force" in text
+    SSLVerify = "SSLVerify" in text
+    recrawl = "recrawl" in text
 
-    pass
+    print(force, SSLVerify, recrawl)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

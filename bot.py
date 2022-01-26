@@ -229,7 +229,7 @@ def today_info(update, context):
 
     # todo 處理使用者輸入的arg，必須為正確的才放行，不然報錯
     if len(context.args) != 0:
-        get = api.get_taiwan_outbreak_information(*context.args)
+        get = taiwan_outbreak_information(*context.args)
     else:
         get = api.get_taiwan_outbreak_information()
 
