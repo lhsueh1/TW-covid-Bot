@@ -2,9 +2,7 @@ import logging
 import api
 
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-
+def testAssert():
     article="""
 中央流行疫情指揮中心今(27)日公布國內新增9例COVID-19確定病例，均為境外移入；另確診個案中新增1例死亡。
 
@@ -58,5 +56,19 @@ if __name__ == '__main__':
 今日新增：38例（13本土,25境外）
 今日死亡：0例""" in result[0], "result_3 fail"
     assert result[1] == False , "result_3 not false"
+
+def rANdomTEsT():
+    str = "recarwl"
+    if str not in ["force","SSLVerify","recrawl"]:
+        print("1")
+    else:
+        print("2")
+
+    pass
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+
+    rANdomTEsT()
 
     logging.info("test passed")
