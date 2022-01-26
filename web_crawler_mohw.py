@@ -81,7 +81,7 @@ class WebCrawlerMohw():
         content = soup.select_one("section#ContentPage")
         title = content.select_one("h2").text
         article_date = content.select("ul.info li")[1].select_one("em").text
-        article = content.select_one("article p").text
+        article = content.select_one("article").text
 
         return (title, article_date, article)
 
@@ -109,5 +109,6 @@ class WebCrawlerMohw():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     crawler = WebCrawlerMohw()
     crawler.crawl()

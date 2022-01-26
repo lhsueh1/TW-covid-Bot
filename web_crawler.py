@@ -229,6 +229,26 @@ Error message:
         else:
             logging.error(
                 "TodayInfo.date_str_to_datetime: Type self.date error.")
+    
+    def save_to_json(self):
+        formatted_datetime = self.date.isoformat()
+
+        dict = {
+            "today_confirmed": self.today_confirmed,
+            "today_domestic": self.today_domestic,
+            "today_imported": self.today_imported,
+            "today_deaths": self.today_deaths,
+            "additional_text": self.additional_text,
+            "date": formatted_datetime,
+            "article_link": self.article_link,
+            "error": self.error,
+        }
+
+        json_object = json.dumps(dict, indent=4, ensure_ascii=False)
+
+        with open("TodayConfirmed.json", "w", encoding='utf8') as outfile:
+            outfile.write(json_object)
+
 
 
 class TodayConfirmed(object):

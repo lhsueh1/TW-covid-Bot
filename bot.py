@@ -266,12 +266,14 @@ def today_info(update, context):
 
 
 def taiwan_outbreak_information(*arg):
-    str_arg = str(*arg)
-    if str_arg not in ["force", "SSLVerify", "recrawl"]:
-        return ("Arg invalid", "參數無效", "")
+    str_arg = str(*arg).lower()
+    regex = "(force)|(sslverify)|(recrawl)"
+    if not re.search(regex, str_arg):
+        logging.error("bot today_info: Arg invalid")
+        return ("參數無效", "bot today_info: Arg invalid", "")
 
     force = "force" in str_arg
-    SSLVerify = "SSLVerify" in str_arg
+    SSLVerify = not "SSLVerify" in str_arg
     recrawl = "recrawl" in str_arg
 
     return api.get_taiwan_outbreak_information(force=force, SSLVerify=SSLVerify, recrawl=recrawl)
