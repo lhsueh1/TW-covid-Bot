@@ -1,13 +1,7 @@
 import requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
 from bs4 import BeautifulSoup
 import re
-import datetime
-import pytz
-import traceback
-import json
-import os.path
+
 import logging
 from my_exception import MyException
 

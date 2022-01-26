@@ -2,7 +2,6 @@ import logging
 import re
 import datetime
 
-from bitarray import test
 from my_exception import MyException
 from web_crawler import TodayInfo
 
