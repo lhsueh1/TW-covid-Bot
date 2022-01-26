@@ -50,7 +50,7 @@ def get_taiwan_outbreak_information(
         SSLVerify: bool = True,
         recrawl: bool = False,
         manual: bool = False,
-        save_to_json: bool = False,
+        save_to_json: bool = True,
         article: str = None,
         today_dict: dict = None):
     '''
@@ -194,7 +194,8 @@ Taiwan Outbreak Information
 {yyyymmdd}
 """
     # 能走到這步應該意味著(除了強制以外)已經成功取得資料可以儲存了吧
-    today.save_to_json()
+    if save_to_json:
+        today.save_to_json()
 
     return (text, status, today.article_link)
 

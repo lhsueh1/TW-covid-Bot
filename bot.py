@@ -539,7 +539,7 @@ def manual_end(update: Update, context: CallbackContext) -> int:
     if text == "儲存":
         # do 儲存
         get = api.get_taiwan_outbreak_information(
-            user_input_article, "manual", "save")
+            article=user_input_article, manual=True, save_to_json=True)
         if get[1] == 0:
             update.message.reply_text(
                 "文章已儲存", reply_markup=ReplyKeyboardRemove())
