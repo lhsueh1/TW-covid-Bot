@@ -100,37 +100,39 @@ def get_taiwan_outbreak_information(
         today = __manual_generate_data(
             article=article, today_dict=today_dict)
 
-    # 預設從 json 讀取資料
-    # 如果沒有要重新爬蟲，就從json讀取
-    if recrawl is not True:
-        today = TodayInfo.from_json()
+    # 若非手動
     else:
-        # 創造空的 TodayInfo Object
-        today = TodayInfo.create_empty()
+        # 預設從 json 讀取資料
+        # 如果沒有要重新爬蟲，就從json讀取
+        if recrawl is not True:
+            today = TodayInfo.from_json()
+        else:
+            # 創造空的 TodayInfo Object
+            today = TodayInfo.create_empty()
 
-    # 若尚未從json取得資料(失敗或是是recrawl)，執行取得資料的步驟
-    if not today.check_generate_status():
-       
-        # 啟動衛福部新聞的爬蟲
-        try:
-            crawl_from_mohw(today)
-        except Exception as e:
-            return ("衛福部爬蟲錯誤，請詢問開發者", "crawl_from_mohw(today) "+str(e), "")
+        # 若尚未從json取得資料(手動失敗失敗或是是recrawl)，執行取得資料的步驟
+        if not today.check_generate_status():
+        
+            # 啟動衛福部新聞的爬蟲
+            try:
+                crawl_from_mohw(today)
+            except Exception as e:
+                return ("衛福部爬蟲錯誤，請詢問開發者", "crawl_from_mohw(today) "+str(e), "")
 
-         # 爬蟲成功後資料分析
-        ArticleAnalyzer().data_extractor(today)
+            # 爬蟲成功後資料分析
+            ArticleAnalyzer().data_extractor(today)
 
-    # 若尚未從json取得資料(衛福部新聞的爬蟲失敗)，執行取得資料的步驟
-    if not today.check_generate_status():
-        # 啟動疾管暑新聞爬蟲
-        # todo
-        try:
-            pass
-        except Exception as e:
-            return ("疾管暑爬蟲錯誤，請詢問開發者", "crawl_from_cdc(today) "+str(e), "")
+        # 若尚未從json取得資料(衛福部新聞的爬蟲失敗)，執行取得資料的步驟
+        if not today.check_generate_status():
+            # 啟動疾管暑新聞爬蟲
+            # todo
+            try:
+                pass
+            except Exception as e:
+                return ("疾管暑爬蟲錯誤，請詢問開發者", "crawl_from_cdc(today) "+str(e), "")
 
-        # 爬蟲成功後資料分析
-        ArticleAnalyzer().data_extractor(today)
+            # 爬蟲成功後資料分析
+            ArticleAnalyzer().data_extractor(today)
 
     logging.info(f"today: {today}")
 
