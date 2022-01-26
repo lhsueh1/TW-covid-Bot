@@ -204,18 +204,17 @@ Taiwan Outbreak Information
 
 
 def __manual_generate_data(article: str, today_dict: dict):
-    logging.info("get_taiwan_outbreak_information(): 手動模式 is True, 啟動手動模式")
+    logging.info("get_taiwan_outbreak_information(): 手動模式 Manual mode is True, 啟動手動模式 activating manual mode.")
     if article is not None:
-        logging.info("get_taiwan_outbreak_information(): 透過文章取得資料")
+        logging.info("get_taiwan_outbreak_information(): 透過文章取得資料 Getting data from article")
         # 透過 article 取得資料（最好要有標題）
-        today = TodayInfo.create_empty()
-        today.article = article
+        today = TodayInfo.from_article(article=article)
         ArticleAnalyzer.data_extractor(today)
         return today
     elif today_dict is not None:
         # 透過 today dict 取得資料
         logging.info(
-            "get_taiwan_outbreak_information(): 透過 today dict 取得資料")
+            "get_taiwan_outbreak_information(): 透過 today dict 取得資料 Getting data from today_dict")
         today = TodayInfo(
             today_confirmed=today_dict["confirmed"],
             today_domestic=today_dict["domestic"],
@@ -226,7 +225,7 @@ def __manual_generate_data(article: str, today_dict: dict):
         return today
     else:
         logging.info(
-            "get_taiwan_outbreak_information(): 手動模式必須提供文章或本日疫情資訊")
+            "get_taiwan_outbreak_information(): 手動模式必須提供文章或本日疫情資訊 Manual mode requires article or today_dict")
         logging.error(
             "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.")
         return ("手動模式必須提供文章或本日疫情資訊", "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.", "")

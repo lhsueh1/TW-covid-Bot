@@ -104,18 +104,20 @@ class TodayInfo():
         self.__is_generated = is_generate
 
     @classmethod
-    def from_article(cls, article_title: str, article: str):
+    def from_article(cls, article: str):
         """
         輸入文章，需要再呼叫 function 透過文章分析資料
         """
+        logging.info("TodayInfo: from article")
         error = "Object initialized by article only."
-        return cls(today_confirmed=None, today_imported=None, today_domestic=None, article_title=article_title, article=article, is_generate=False, error=error)
+        return cls(today_confirmed=None, today_imported=None, today_domestic=None, article=article, is_generate=False, error=error)
 
     @classmethod
     def create_empty(cls):
         """
         先init object，需要再呼叫 function 爬蟲來取得資料
         """
+        logging.info("TodayInfo: create_empty")
         error = "Object not initialized."
         return cls(today_confirmed=None, today_imported=None, today_domestic=None, is_generate=False, error=error)
 
@@ -124,6 +126,7 @@ class TodayInfo():
         """
         透過本地json取得資料。若讀取失敗會呼叫 create_empty()
         """
+        logging.info("TodayInfo: init from json")
         if filepath is None:
             filepath = 'TodayConfirmed.json'
         if os.path.isfile(filepath):
@@ -250,7 +253,7 @@ Error message:
             outfile.write(json_object)
 
 
-
+# Deprecated
 class TodayConfirmed(object):
     """
     透過爬蟲找尋衛福部的最新消息中，
