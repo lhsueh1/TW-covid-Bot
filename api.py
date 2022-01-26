@@ -94,9 +94,14 @@ def get_taiwan_outbreak_information(
     epidemic = TaiwanEpidemic(SSLVerify=SSLVerify)
     global_stats = GlobalStats(SSLVerify=SSLVerify)
 
-    # today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual, article = article, save = save_to_json_in_maual_mode)
+    # 手動 > json > 衛福部 > CDC
+    # 如果手動模式有開，則直接透過手動模式獲得資料
+    if manual is True:
+        today = __manual_generate_data(
+            article=article, today_dict=today_dict)
 
     # 預設從 json 讀取資料
+    # 如果沒有要重新爬蟲，就從json讀取
     if recrawl is not True:
         today = TodayInfo.from_json()
     else:
@@ -105,17 +110,13 @@ def get_taiwan_outbreak_information(
 
     # 若尚未從json取得資料(失敗或是是recrawl)，執行取得資料的步驟
     if not today.check_generate_status():
-        # 如果手動模式有開，則直接透過手動模式獲得資料
-        if manual is True:
-            __manual_generate_data(
-                today=today, article=article, today_dict=today_dict)
-        else:
-            # 啟動衛福部新聞的爬蟲
-            try:
-                crawl_from_mohw(today)
-            except Exception as e:
-                return ("衛福部爬蟲錯誤，請詢問開發者", "crawl_from_mohw(today) "+str(e), "")
-        
+       
+        # 啟動衛福部新聞的爬蟲
+        try:
+            crawl_from_mohw(today)
+        except Exception as e:
+            return ("衛福部爬蟲錯誤，請詢問開發者", "crawl_from_mohw(today) "+str(e), "")
+
          # 爬蟲成功後資料分析
         ArticleAnalyzer().data_extractor(today)
 
@@ -200,24 +201,27 @@ Taiwan Outbreak Information
     return (text, status, today.article_link)
 
 
-def __manual_generate_data(today: TodayInfo, article: str, today_dict: dict):
+def __manual_generate_data(article: str, today_dict: dict):
     logging.info("get_taiwan_outbreak_information(): 手動模式 is True, 啟動手動模式")
     if article is not None:
         logging.info("get_taiwan_outbreak_information(): 透過文章取得資料")
         # 透過 article 取得資料（最好要有標題）
+        today = TodayInfo.create_empty()
         today.article = article
         ArticleAnalyzer.data_extractor(today)
+        return today
     elif today_dict is not None:
         # 透過 today dict 取得資料
         logging.info(
             "get_taiwan_outbreak_information(): 透過 today dict 取得資料")
-        today.today_confirmed = today_dict["confirmed"]
-        today.today_domestic = today_dict["domestic"]
-        today.today_imported = today_dict["imported"]
-        today.today_deaths = today_dict["deaths"]
-        today.additional_text = today_dict["additional_text"]
-        today.date = datetime.date.today()
-        pass
+        today = TodayInfo(
+            today_confirmed=today_dict["confirmed"],
+            today_domestic=today_dict["domestic"],
+            today_imported=today_dict["imported"],
+            today_deaths=today_dict["deaths"],
+            additional_text=today_dict["additional_text"],
+            date=datetime.date.today())
+        return today
     else:
         logging.info(
             "get_taiwan_outbreak_information(): 手動模式必須提供文章或本日疫情資訊")
