@@ -1,5 +1,6 @@
 
 import logging
+from git import Object
 import requests
 import csv
 import json
@@ -8,6 +9,7 @@ import pytz
 from article_analyzer import ArticleAnalyzer
 from TodayInfo import TodayInfo
 from requests.packages import urllib3
+from web_crawler_cdc import WebCrawlerCDC
 
 from web_crawler_mohw import WebCrawlerMohw
 #import pic
@@ -116,7 +118,7 @@ def get_taiwan_outbreak_information(
             today = TodayInfo.create_empty()
 
         # 若尚未從json取得資料(手動失敗失敗或是是recrawl)，執行取得資料的步驟
-        if not today.check_generate_status():
+        if not today.check_generate_status() and cdc is False:
 
             # 啟動衛福部新聞的爬蟲
             try:
@@ -128,11 +130,11 @@ def get_taiwan_outbreak_information(
             ArticleAnalyzer().data_extractor(today)
 
         # 若尚未從json取得資料(衛福部新聞的爬蟲失敗)，執行取得資料的步驟
-        if not today.check_generate_status():
+        if not today.check_generate_status() and mohw is False:
             # 啟動疾管暑新聞爬蟲
             # todo
             try:
-                pass
+                crawl_from_cdc(today)
             except Exception as e:
                 return ("疾管暑爬蟲錯誤，請詢問開發者", "crawl_from_cdc(today) "+str(e), "")
 
@@ -389,6 +391,15 @@ def crawl_from_mohw(today: TodayInfo):
     # 創造 crawler 爬蟲物件
     crawler = WebCrawlerMohw()
 
+    crawl(crawler=crawler,today=today)
+
+def crawl_from_cdc(today: TodayInfo):
+    # 創造 crawler 爬蟲物件
+    crawler = WebCrawlerCDC()
+
+    crawl(crawler=crawler,today=today)
+
+def crawl(crawler: Object, today: TodayInfo):
     # 啟動爬蟲
     # 爬蟲如果出錯會直接用炸的 (raise exception)
     crawler.crawl()
@@ -402,9 +413,6 @@ def crawl_from_mohw(today: TodayInfo):
     # 將爬蟲下來的 date string 轉換為 datetime 物件
     today.date_str_to_datetime()
 
-
-def crawl_from_cdc(self):
-    pass
 
 
 # For testing purpose
@@ -421,5 +429,5 @@ if __name__ == '__main__':
 
 指揮中心再次呼籲，民眾應落實手部衛生、咳嗽禮節及佩戴口罩等個人防護措施，減少不必要移動、活動或集會，避免出入人多擁擠的場所，或高感染傳播風險場域，並主動積極配合各項防疫措施，共同嚴守社區防線。
     """
-    list = get_taiwan_outbreak_information()
+    list = get_taiwan_outbreak_information(recrawl=True,mohw=True)
     print(*list, sep="\n")
