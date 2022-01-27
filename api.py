@@ -52,7 +52,9 @@ def get_taiwan_outbreak_information(
         manual: bool = False,
         save_to_json: bool = True,
         article: str = None,
-        today_dict: dict = None):
+        today_dict: dict = None,
+        mohw: bool = False,
+        cdc: bool = False):
     '''
     產生回傳臺灣疫情資訊站的標準格式文章。
 
@@ -63,6 +65,9 @@ def get_taiwan_outbreak_information(
             manual: 手動模式，必須要填入 article
             save_to_json: 手動模式，儲存至 json，可能會 deprecated
             article: 手動模式的文章，必須要 manual = True
+            today_dict: 今天的資訊的 dict
+            mohw: 指定以衛福部新聞稿爬蟲
+            cdc: 指定以疾管暑新聞稿爬蟲
 
         Returns:
             text (str): 臺灣疫情資訊站的標準格式文章或用戶可讀的錯誤訊息
@@ -112,7 +117,7 @@ def get_taiwan_outbreak_information(
 
         # 若尚未從json取得資料(手動失敗失敗或是是recrawl)，執行取得資料的步驟
         if not today.check_generate_status():
-        
+
             # 啟動衛福部新聞的爬蟲
             try:
                 crawl_from_mohw(today)
@@ -204,9 +209,11 @@ Taiwan Outbreak Information
 
 
 def __manual_generate_data(article: str, today_dict: dict):
-    logging.info("get_taiwan_outbreak_information(): 手動模式 Manual mode is True, 啟動手動模式 activating manual mode.")
+    logging.info(
+        "get_taiwan_outbreak_information(): 手動模式 Manual mode is True, 啟動手動模式 activating manual mode.")
     if article is not None:
-        logging.info("get_taiwan_outbreak_information(): 透過文章取得資料 Getting data from article")
+        logging.info(
+            "get_taiwan_outbreak_information(): 透過文章取得資料 Getting data from article")
         # 透過 article 取得資料（最好要有標題）
         today = TodayInfo.from_article(article=article)
         ArticleAnalyzer.data_extractor(today)

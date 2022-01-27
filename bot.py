@@ -268,7 +268,7 @@ def today_info(update, context):
 
 def taiwan_outbreak_information(*arg):
     str_arg = str(*arg).lower()
-    regex = "(force)|(sslverify)|(recrawl)"
+    regex = "(force)|(sslverify)|(recrawl)|(cdc)|(mohw)"
     if not re.search(regex, str_arg):
         logging.error("bot today_info: Arg invalid")
         return ("參數無效", "bot today_info: Arg invalid", "")

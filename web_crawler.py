@@ -167,12 +167,18 @@ class TodayInfo():
                 return cls.create_empty()
 
     def check_generate_status(self):
-        if self.today_confirmed is not None and self.today_imported is not None and self.today_domestic is not None:
+        if self.today_confirmed is None or self.today_imported is None or self.today_domestic is None:
+            self.__is_generated = False
+            return False
+        if TodayInfo.__date_compare(self.date):
+            self.is_same_date = True
             self.__is_generated = True
             return True
         else:
+            self.is_same_date = False
             self.__is_generated = False
             return False
+            
 
     @staticmethod
     def __date_compare(article_date):
