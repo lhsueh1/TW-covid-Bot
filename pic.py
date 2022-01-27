@@ -10,7 +10,7 @@ import statistics
 
 import api
 import datetime
-from web_crawler import TodayConfirmed
+from TodayInfo import TodayConfirmed
 
 
 def center_text(img, font, text, background_w, background_h, color=(0,0,0)):

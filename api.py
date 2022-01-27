@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 import pytz
 from article_analyzer import ArticleAnalyzer
-from web_crawler import TodayInfo
+from TodayInfo import TodayInfo
 from requests.packages import urllib3
 
 from web_crawler_mohw import WebCrawlerMohw
@@ -407,6 +407,7 @@ def crawl_from_cdc(self):
     pass
 
 
+# For testing purpose
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     test_article = """

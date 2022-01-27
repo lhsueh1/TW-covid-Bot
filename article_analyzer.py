@@ -3,7 +3,7 @@ import re
 import datetime
 
 from my_exception import MyException
-from web_crawler import TodayInfo
+from TodayInfo import TodayInfo
 
 
 class ArticleAnalyzer():

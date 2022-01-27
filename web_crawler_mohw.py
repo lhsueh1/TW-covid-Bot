@@ -101,7 +101,7 @@ class WebCrawlerMohw():
         logging.info("article date: "+self.article_date)
         logging.info("article: "+self.article)
 
-
+# For testing purpose
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
     crawler = WebCrawlerMohw()

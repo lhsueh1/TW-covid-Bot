@@ -563,6 +563,7 @@ today_deaths = {self.today_deaths}
             self.is_same_date = True
 
 
+# for testing purpose
 if __name__ == '__main__':
     TodayConfirmed(
         "https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A", recrawl="recrawl")
