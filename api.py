@@ -8,6 +8,7 @@ from datetime import datetime
 import pytz
 from article_analyzer import ArticleAnalyzer
 from TodayInfo import TodayInfo
+from TodayInfo import TodayConfirmed
 from requests.packages import urllib3
 from web_crawler_cdc import WebCrawlerCDC
 
@@ -158,7 +159,7 @@ def get_taiwan_outbreak_information(
     # 強制執行，且 today 無法取得時的處理
     if force and (today.error or not today.is_same_date):
         # 製作一個沒有爬蟲的TodayConfirmed object，讓文章的資料被填入None
-        today = web_crawler.TodayConfirmed(0)
+        today = TodayConfirmed(0)
         yyyymmdd = "ERROR: 無法取得衛福部的新聞稿資訊"
 
     if today.date is not None:
@@ -267,11 +268,11 @@ Deaths: {row[3]}"""
 
         # for fun
         if country.lower() == "today_death_rate" or country.lower() == "todaydeathrate":
-            today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
+            today = TodayConfirmed(CDC_NEWS_URL)
             return "{:.2f}%".format(float(int(str(today.today_deaths).replace(",", "")) / int(str(today.today_confirmed).replace(",", "")) * 100))
 
         if country.lower() == "rate_death_today" or country.lower() == "ratedeathtoday":
-            today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
+            today = TodayConfirmed(CDC_NEWS_URL)
             return "{:.2f}% lol".format(float(int(str(today.today_confirmed).replace(",", "")) / int(str(today.today_deaths).replace(",", "")) * 100))
     return None
 
