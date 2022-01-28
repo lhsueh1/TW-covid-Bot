@@ -131,3 +131,6 @@ dmypy.json
 TodayConfirmed.json
 src/out.png
 api-token
+
+TodayConfirmed_.json
+moderators
