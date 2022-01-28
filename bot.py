@@ -218,10 +218,10 @@ def error(update, context):
         context.bot.sendMessage(
             chat_id="@E36_bb079f22", text=text_adjustment(message), parse_mode='MarkdownV2')
     else:
-        if update.message.chat.username != None and update.message.chat.username != "E36_bb079f22":
+        if update.effective_message.chat.username != None and update.effective_message.chat.username != "E36_bb079f22":
             context.bot.sendMessage(
                 chat_id="@E36_bb079f22", text=text_adjustment(message), parse_mode='MarkdownV2')
-        update.message.reply_text("Error. Contact moderator.錯誤")
+        update.effective_message.reply_text("Error. Contact moderator.錯誤")
 
 
 @send_typing_action
@@ -586,21 +586,21 @@ COUNT = 0
 
 
 def chat(update, context):
-    userName = update.message.from_user.username
-    ID = update.message.chat.id
+    userName = update.effective_message.from_user.username
+    ID = update.effective_message.chat.id
     global COUNT
     # record user
-    if (update.message.chat.username != "E36_bb079f22") and (update.message.chat.type == "private"):
+    if (update.effective_message.chat.username != "E36_bb079f22") and (update.effective_message.chat.type == "private"):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" +
-                                str(userName) + "\t" + str(ID) + "\n" + str(update.message.text))
+                                str(userName) + "\t" + str(ID) + "\n" + str(update.effective_message.text))
         #context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update))
 
         if COUNT < 2:
-            update.message.reply_text("I'm not a chat bot.")
+            update.effective_message.reply_text("I'm not a chat bot.")
             COUNT += 1
     # talk to user
     else:
-        message = str(update.message.text)
+        message = str(update.effective_message.text)
         try:
             recipient = int(message.split()[0])
 
