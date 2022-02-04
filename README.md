@@ -3,10 +3,9 @@
 
 with [@jerry960331](https://github.com/jerry960331)
 
-
-
-- Displays covid-19 data from different countries.
-- Generate picture showing daily cases
+- Displays covid-19 data from 200 countries.
+- Automatically graphing daily Covid-19 cases
+![gui](src/README/img1.png)
 
 ---
 data from: 

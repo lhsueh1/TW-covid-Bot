@@ -390,5 +390,5 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
     return date
 
 
-# pic_stat("0110", "70", "13", "10", "0", "今日新增本土個案為6例男性、6例女性，年齡介於未滿5歲至60多歲。今日新增境外移入個案為27例男性、31例女性，年齡介於未滿5歲至70多歲，分別自美國(27例)、英國(4例)、印尼、菲律賓及澳大利亞(各3例)、阿拉伯聯合大公國、比利時及加拿大(各2例)、卡達、德國、柬埔寨、泰國、哥斯大黎加、中國、愛爾蘭、越南、西班牙及巴西(各1例)移入，另2例調查中。入境日介於去(2021)年12月9日至今(2022)年1月10日。")
+# pic_stat("0204", "71", "25", "46", "0", "Regarding the domestic cases, they are 14 men and 11 women, aged between under five and 79 years.Regarding the 46 new imported cases, they are 26 men and 20 women, aged between under ten and 79. 29 of them arrived in Taiwan from the US (seven cases), the Philippines (three cases), Australia (three cases), the Netherlands (two cases), India (two cases), Peru (two cases), Vietnam (two cases), Thailand (two cases), Japan, Nigeria, Canada, Israel, Hong Kong, and China; the areas where the remaining 17 cases arrived are being investigated. They arrived between January 15 and February 4, 2022.")
 # pic_stat()
