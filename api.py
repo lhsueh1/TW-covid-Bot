@@ -1,16 +1,19 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
 
+import logging
+from git import Object
 import requests
 import csv
 import json
 from datetime import datetime
 import pytz
-import web_crawler
+from article_analyzer import ArticleAnalyzer
+from TodayInfo import TodayInfo
+from TodayInfo import TodayConfirmed
 from requests.packages import urllib3
-#import pic
+from web_crawler_cdc import WebCrawlerCDC
 
-import certifi
+from web_crawler_mohw import WebCrawlerMohw
+#import pic
 
 ERROR_INTERNET_CONNECTION = "ERROR_INTERNET_CONNECTION"
 ERROR_OPEN_DATA_SERVICE = "ERROR_OPEN_DATA_SERVICE "
@@ -18,6 +21,7 @@ ERROR_CDC_WEBPAGE = "ERROR_CDC_WEBPAGE"
 ERROR_NOT_SAME_DATE = "ERROR_NOT_SAME_DATE"
 
 CDC_NEWS_URL = "https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A"
+
 
 def get_taiwan_epidemic_status():
     url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
@@ -43,13 +47,30 @@ def get_taiwan_epidemic_status():
         return text
     return False
 
-def get_taiwan_outbreak_information(*arg: str):
+
+def get_taiwan_outbreak_information(
+        force: bool = False,
+        SSLVerify: bool = True,
+        recrawl: bool = False,
+        manual: bool = False,
+        save_to_json: bool = True,
+        article: str = None,
+        today_dict: dict = None,
+        mohw: bool = False,
+        cdc: bool = False):
     '''
     產生回傳臺灣疫情資訊站的標準格式文章。
 
         Arguments:
-            force: 跳過衛福部官網的爬蟲，產生其他API提供的資料
+            force: 跳過疾管暑官網的爬蟲，產生其他API提供的資料，如果API接不到一樣會出現錯誤
             IgnoreSSL: 忽略SSL安全性認證
+            recrawl: 重新爬蟲並取得資料（預設讀取 json 儲存的資料）
+            manual: 手動模式，必須要填入 article
+            save_to_json: 手動模式，儲存至 json，可能會 deprecated
+            article: 手動模式的文章，必須要 manual = True
+            today_dict: 今天的資訊的 dict
+            mohw: 指定以衛福部新聞稿爬蟲
+            cdc: 指定以疾管暑新聞稿爬蟲
 
         Returns:
             text (str): 臺灣疫情資訊站的標準格式文章或用戶可讀的錯誤訊息
@@ -57,83 +78,96 @@ def get_taiwan_outbreak_information(*arg: str):
             today.article_link (str): 文章連結
     '''
 
-    # force 只能通過CDC，如果API接不到一樣會出現錯誤
-    print(f"args:{arg}")
-
-    force_texts = ["force", "f", "-f", "-force"]
-    if any(x in force_texts for x in arg):
-        print("Force mode")
-        isForce = True
-    else:
-        isForce = False
-
-    ignoressl_texts = ["IgnoreSSL", "ignoressl", "ignoreSSL", "Ignoressl"]
-    if any(x in ignoressl_texts for x in arg):
-        print("IgnoreSSL")
-        isSSLVerify = False
-    else:
-        isSSLVerify = True
-
-    manual_texts = ["manual", "manual"]
-    if any(x in manual_texts for x in arg):
-        print("ismanual")
-        ismanual = True
-        article = arg[0]
-    else:
-        ismanual = False
-        article = None
-
-    if "save" in arg:
-        print("save to json in manual mode")
-        save_to_json_in_maual_mode = True
-    else:
-        save_to_json_in_maual_mode = False
-
-    isrecrawl = ("recrawl" in arg)
-
-    api_status = get_API_status(isSSLVerify)
+    # 取得並判斷網路狀態，若出現錯誤會 early return
+    api_status = get_API_status(SSLVerify)
 
     if not api_status[0]:
         text = "ERROR: 網路錯誤\n" + api_status[0]
-        status = ERROR_INTERNET_CONNECTION + "\nUnable to get status from Taiwan CDC Open Data Service\n" + api_status[0] + "\n" + api_status[1]
+        status = ERROR_INTERNET_CONNECTION + \
+            "\nUnable to get status from Taiwan CDC Open Data Service\n" + \
+            api_status[0] + "\n" + api_status[1]
         return (text, status, "")
     elif api_status[0] == "success":
         print("Taiwan CDC Open Data Service, connection succeed.")
         status = 0
     else:
         text = "ERROR: 政府資料開放平台無法連接\n訊息：" + api_status[0]
-        status = ERROR_OPEN_DATA_SERVICE + "\n訊息：" + api_status[0] + "\n" + api_status[1]
+        status = ERROR_OPEN_DATA_SERVICE + "\n訊息：" + \
+            api_status[0] + "\n" + api_status[1]
         return (text, status, "")
 
     mmdd = "(????)"
     yyyymmdd = "(????/??/??)"
 
-    epidemic = TaiwanEpidemic(SSLVerify=isSSLVerify)
-    global_stats = GlobalStats(SSLVerify=isSSLVerify)
+    epidemic = TaiwanEpidemic(SSLVerify=SSLVerify)
+    global_stats = GlobalStats(SSLVerify=SSLVerify)
 
-    today = web_crawler.TodayConfirmed(CDC_NEWS_URL, SSLVerify=isSSLVerify, recrawl = isrecrawl, ismanual = ismanual, article = article, save = save_to_json_in_maual_mode)
+    # 手動 > json > 衛福部 > CDC
+    # 如果手動模式有開，則直接透過手動模式獲得資料
+    if manual is True:
+        today = __manual_generate_data(
+            article=article, today_dict=today_dict)
 
-    if today.error is not False and not isForce:
+    # 若非手動
+    else:
+        # 預設從 json 讀取資料
+        # 如果沒有要重新爬蟲，就從json讀取
+        if recrawl is not True:
+            today = TodayInfo.from_json()
+        else:
+            # 創造空的 TodayInfo Object
+            today = TodayInfo.create_empty()
+
+        # 若尚未從json取得資料(手動失敗失敗或是是recrawl)，執行取得資料的步驟
+        if not today.check_generate_status() and cdc is False:
+
+            # 啟動衛福部新聞的爬蟲
+            try:
+                crawl_from_mohw(today)
+            except Exception as e:
+                return ("衛福部爬蟲錯誤，請詢問開發者", "crawl_from_mohw(today) "+str(e), "")
+
+            # 爬蟲成功後資料分析
+            ArticleAnalyzer().data_extractor(today)
+
+        # 若尚未從json取得資料(衛福部新聞的爬蟲失敗)，執行取得資料的步驟
+        if not today.check_generate_status() and mohw is False:
+            # 啟動疾管暑新聞爬蟲
+            # todo
+            try:
+                crawl_from_cdc(today)
+            except Exception as e:
+                return ("疾管暑爬蟲錯誤，請詢問開發者", "crawl_from_cdc(today) "+str(e), "")
+
+            # 爬蟲成功後資料分析
+            ArticleAnalyzer().data_extractor(today)
+
+    logging.info(f"today: {today}")
+
+    # 有錯誤出現時會 early return
+    # 錯誤訊息會回傳至主控
+    if today.error is not False and not force:
         text = "無法連上CDC官網或是爬蟲出現錯誤"
         status = ERROR_CDC_WEBPAGE
-        return (text, f"ERROR_CDC_WEBPAGE\n{today.error}", "")
+        return (text, f"ERROR_CDC_WEBPAGE\n{today}", "")
 
-    if not today.is_same_date and not isForce:
+    if not today.is_same_date and not force:
         text = "ERROR: 日期錯誤。本日衛福部新聞稿尚未更新？"
         status = ERROR_NOT_SAME_DATE
-        return (text, ERROR_NOT_SAME_DATE + str(today.date), "")
+        return (text, ERROR_NOT_SAME_DATE + str(today), "")
 
     # 強制執行，且 today 無法取得時的處理
-    if isForce and (today.error or not today.is_same_date):
+    if force and (today.error or not today.is_same_date):
         # 製作一個沒有爬蟲的TodayConfirmed object，讓文章的資料被填入None
-        today = web_crawler.TodayConfirmed(0)
+        today = TodayConfirmed(0)
         yyyymmdd = "ERROR: 無法取得衛福部的新聞稿資訊"
 
     if today.date is not None:
         mmdd = today.date.strftime("%m%d")
         yyyymmdd = today.date.strftime("%Y/%m/%d")
 
-    death_rate = (int(epidemic.deaths.replace(",", "")) / int(epidemic.confirmed.replace(",", ""))) * 100
+    death_rate = (int(epidemic.deaths.replace(",", "")) /
+                  int(epidemic.confirmed.replace(",", ""))) * 100
     death_rate = "{:.2f}".format(death_rate)
 
     text = f"""《臺灣疫情資訊站{mmdd}資訊報》
@@ -170,7 +204,42 @@ Taiwan Outbreak Information
 
 {yyyymmdd}
 """
+    # 能走到這步應該意味著(除了強制以外)已經成功取得資料可以儲存了吧
+    if save_to_json:
+        today.save_to_json()
+
     return (text, status, today.article_link)
+
+
+def __manual_generate_data(article: str, today_dict: dict):
+    logging.info(
+        "get_taiwan_outbreak_information(): 手動模式 Manual mode is True, 啟動手動模式 activating manual mode.")
+    if article is not None:
+        logging.info(
+            "get_taiwan_outbreak_information(): 透過文章取得資料 Getting data from article")
+        # 透過 article 取得資料（最好要有標題）
+        today = TodayInfo.from_article(article=article)
+        ArticleAnalyzer.data_extractor(today)
+        return today
+    elif today_dict is not None:
+        # 透過 today dict 取得資料
+        logging.info(
+            "get_taiwan_outbreak_information(): 透過 today dict 取得資料 Getting data from today_dict")
+        today = TodayInfo(
+            today_confirmed=today_dict["confirmed"],
+            today_domestic=today_dict["domestic"],
+            today_imported=today_dict["imported"],
+            today_deaths=today_dict["deaths"],
+            additional_text=today_dict["additional_text"],
+            date=datetime.date.today())
+        return today
+    else:
+        logging.info(
+            "get_taiwan_outbreak_information(): 手動模式必須提供文章或本日疫情資訊 Manual mode requires article or today_dict")
+        logging.error(
+            "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.")
+        return ("手動模式必須提供文章或本日疫情資訊", "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.", "")
+
 
 def get_epidemic_status_by_country(country: str):
     with requests.Session() as s:
@@ -199,16 +268,16 @@ Deaths: {row[3]}"""
 
         # for fun
         if country.lower() == "today_death_rate" or country.lower() == "todaydeathrate":
-            today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
+            today = TodayConfirmed(CDC_NEWS_URL)
             return "{:.2f}%".format(float(int(str(today.today_deaths).replace(",", "")) / int(str(today.today_confirmed).replace(",", "")) * 100))
 
-
         if country.lower() == "rate_death_today" or country.lower() == "ratedeathtoday":
-            today = web_crawler.TodayConfirmed(CDC_NEWS_URL)
+            today = TodayConfirmed(CDC_NEWS_URL)
             return "{:.2f}% lol".format(float(int(str(today.today_confirmed).replace(",", "")) / int(str(today.today_deaths).replace(",", "")) * 100))
     return None
 
-def get_API_status(SSLVerify = True):
+
+def get_API_status(SSLVerify=True):
     try:
         url = "https://od.cdc.gov.tw/"
         s = requests.get(url, verify=SSLVerify)
@@ -221,8 +290,9 @@ def get_API_status(SSLVerify = True):
     except Exception as e:
         return (False, str(e))
 
+
 class TaiwanEpidemic(object):
-    """docstring for TaiwanEpidemic."""
+    """透過政府資料公開API取得台灣統計的疫情資訊"""
     confirmed = None
     deaths = None
     reported = None
@@ -233,11 +303,11 @@ class TaiwanEpidemic(object):
 
     full_text = None
 
-    def __init__(self, SSLVerify = True):
+    def __init__(self, SSLVerify=True):
         with requests.Session() as s:
             url = "https://od.cdc.gov.tw/eic/covid19/covid19_tw_stats.csv"
 
-            download = s.get(url, verify = SSLVerify)
+            download = s.get(url, verify=SSLVerify)
 
             decoded_content = download.content.decode('utf-8')
 
@@ -271,7 +341,9 @@ class TaiwanEpidemic(object):
         else:
             return "ERROR: TaiwanEpidemic init failed"
 
+
 class GlobalStats(object):
+    """透過政府資料公開API取得全球疫情統計資訊"""
     confirmed = None
     deaths = None
     cfr = None
@@ -279,7 +351,7 @@ class GlobalStats(object):
 
     full_text = None
 
-    def __init__(self, SSLVerify = True):
+    def __init__(self, SSLVerify=True):
         with requests.Session() as s:
             url = "https://od.cdc.gov.tw/eic/covid19/covid19_global_stats.csv"
 
@@ -315,23 +387,48 @@ class GlobalStats(object):
             return "ERROR: GlobalStats init failed"
 
 
+def crawl_from_mohw(today: TodayInfo):
+
+    # 創造 crawler 爬蟲物件
+    crawler = WebCrawlerMohw()
+
+    crawl(crawler=crawler,today=today)
+
+def crawl_from_cdc(today: TodayInfo):
+    # 創造 crawler 爬蟲物件
+    crawler = WebCrawlerCDC()
+
+    crawl(crawler=crawler,today=today)
+
+def crawl(crawler: Object, today: TodayInfo):
+    # 啟動爬蟲
+    # 爬蟲如果出錯會直接用炸的 (raise exception)
+    crawler.crawl()
+
+    # 存入資料
+    today.article_link = crawler.article_url
+    today.article = crawler.article
+    today.date = crawler.article_date
+    today.article_title = crawler.title
+
+    # 將爬蟲下來的 date string 轉換為 datetime 物件
+    today.date_str_to_datetime()
+
+
+
+# For testing purpose
 if __name__ == '__main__':
-    # t=get_epidemic_status_by_country("Canada")
-    # print(t)
-    s = """
-    新增5例境外移入COVID-19確定病例
-  資料來源：疾病管制署
-  建檔日期：110-10-01
-  更新時間：110-10-01
-中央流行疫情指揮中心今(6)日公佈國內新增5例COVID-19確定病例，均為境外移入；另確診個案中無新增死亡。
+    logging.basicConfig(level=logging.INFO)
+    test_article = """
+中央流行疫情指揮中心今(25)日公布國內新增38例COVID-19確定病例，分別為13例本土個案及25例境外移入；另確診個案中無新增死亡。
 
-指揮中心說明，今日新增5例境外移入個案，為1例男性、4例女性，年齡介於20多歲至40多歲，其中4例分別自美國(3例，案16373、案16374、案16376)、南非(案16375)入境，餘1例調查中(案16377)，入境日介於今(2021)年9月14日至9月26日；詳如新聞稿附件。
+指揮中心表示，今日新增本土個案為4例男性、9例女性，年齡介於未滿5歲至70多歲；詳如新聞稿附件。
 
-指揮中心統計，截至目前國內累計3,507,972例新型冠狀病毒肺炎相關通報(含3,490,728例排除)，其中16,267例確診，分別為1,632例境外移入，14,581例本土病例，36例敦睦艦隊、3例航空器感染、1例不明及14例調查中；另累計110例移除為空號。2020年起累計844例COVID-19死亡病例，其中832例本土，個案居住縣市分佈為新北市412例、臺北市319例、基隆市29例、桃園市26例、彰化縣15例、新竹縣13例、臺中市5例、苗栗縣3例、宜蘭縣及花蓮縣各2例，臺東縣、雲林縣、臺南市、南投縣、高雄市及屏東縣各1例；另12例為境外移入。
+指揮中心說明，今日新增境外移入個案為8例男性、17例女性，年齡介於10多歲至70多歲，分別自加拿大(5例)、美國、泰國及印度(各3例)、日本(2例)、奈及利亞、瑞典及中國(各1例)移入；另6例調查中。入境日介於今(2022)年1月11日至1月24日；詳如新聞稿附件。
+
+指揮中心統計，截至目前國內累計5,501,288例新型冠狀病毒肺炎相關通報(含5,482,563例排除)，其中18,411例確診，分別為3,429例境外移入，14,928例本土病例，36例敦睦艦隊、3例航空器感染、1例不明及14例調查中；新增3例空號病例(案18216-18218，再次採檢為陰性，改判排除)，累計122例移除為空號。2020年起累計851例COVID-19死亡病例，其中838例本土，個案居住縣市分布為新北市413例、臺北市322例、基隆市29例、桃園市27例、彰化縣15例、新竹縣13例、臺中市5例、苗栗縣3例、宜蘭縣及花蓮縣各2例，新竹市、南投縣、雲林縣、臺南市、高雄市、屏東縣及臺東縣各1例；另13例為境外移入。
 
 指揮中心再次呼籲，民眾應落實手部衛生、咳嗽禮節及佩戴口罩等個人防護措施，減少不必要移動、活動或集會，避免出入人多擁擠的場所，或高感染傳播風險場域，並主動積極配合各項防疫措施，共同嚴守社區防線。
-"""
-    text = get_taiwan_outbreak_information("manual", s)
-    for t in text:
-        print(str(t)+"\n")
-    #pic.pic("0904", "1", "0", "1", "0", "16013", "837")
+    """
+    list = get_taiwan_outbreak_information(recrawl=True,mohw=True)
+    print(*list, sep="\n")
