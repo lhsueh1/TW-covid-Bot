@@ -120,7 +120,7 @@ def get_taiwan_outbreak_information(
 
         # 若尚未從json取得資料(手動失敗失敗或是是recrawl)，執行取得資料的步驟
         if not today.check_generate_status() and cdc is False:
-
+            logging.info("api.get_taiwan_outbreak_information: TodayInfo.from_json not generated. Starting crawl_from_mohw")
             # 啟動衛福部新聞的爬蟲
             try:
                 crawl_from_mohw(today)
@@ -133,7 +133,7 @@ def get_taiwan_outbreak_information(
         # 若尚未從json取得資料(衛福部新聞的爬蟲失敗)，執行取得資料的步驟
         if not today.check_generate_status() and mohw is False:
             # 啟動疾管暑新聞爬蟲
-            # todo
+            logging.info("api.get_taiwan_outbreak_information: mohw no data. Starting crawl_from_cdc.")
             try:
                 crawl_from_cdc(today)
             except Exception as e:
