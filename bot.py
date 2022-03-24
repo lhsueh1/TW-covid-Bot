@@ -373,7 +373,7 @@ def image_stat(update, context):
         if context.args[0] == "-h":
 
             update.message.reply_text(
-                "Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [text]`", parse_mode='MarkdownV2')
+                "Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [text]\nWARNING IF　YOU FUCKING BROKE ANYTHING, FIX IT`", parse_mode='MarkdownV2')
             return
 
     #processingMessage = update.message.reply_text("Processing...", disable_notification=True)
@@ -381,7 +381,7 @@ def image_stat(update, context):
     if len(context.args) != 0:
         if len(context.args) < 6:
             update.message.reply_text(
-                "手動輸入格式錯誤\n格式：[日期] [今日確診] [今日本土] [今日境外] [今日死亡] [資訊]\n例如：/image 0101 10 6 4 1 資訊")
+                "手動輸入格式錯誤\n格式：[日期] [今日確診] [今日本土] [今日境外] [今日死亡] [資訊]\n例如：/image 0101 10 6 4 1 資訊\nWARNING 他媽的不要亂玩，日期會跑掉，玩壞自己修")
             return
         date = context.args[0]
         today_confirmed = context.args[1]
