@@ -116,6 +116,7 @@ def pic(date=None, today_confirmed=None, today_domestic=None, today_imported=Non
     font = ImageFont.truetype("DejaVuSans.ttf", 80)
     date_word = center_text(background, font, date, background_w, background_h, (255, 255, 255))
 
+
     font = ImageFont.truetype("DejaVuSans.ttf", 60)
     background_w = 240
     background_h = 70
@@ -292,11 +293,14 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
         domestic_length = int((int(today_domestic) / int(today_confirmed)) * confirmed_length)
 
     if domestic_length < 300 and domestic_length != 0:
-        domestic_length = 300
+        if int(today_domestic) >= 100:
+            domestic_length = 450
+        else:
+            domestic_length = 300
     elif domestic_length > 1854:
         domestic_length = 1854
     imported_length = confirmed_length - domestic_length
-    print(domestic_length, imported_length)
+    # print(domestic_length, imported_length)
 
     # date
     background_w = 400
@@ -307,7 +311,13 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
 
     background_w = 420
     background_h = 250
-    font = ImageFont.truetype("NotoSansTC-Regular.otf", 190)
+
+    font_size = 190;
+    # print(int(today_confirmed))
+    if int(today_confirmed) >= 1000:
+         font_size = 150;
+
+    font = ImageFont.truetype("NotoSansTC-Regular.otf", font_size)
     # today_confirmed
     background = Image.new("RGBA",(background_w,background_h),(0,50,0,00))
     today_confirmed_word = center_text(background, font, today_confirmed, background_w, background_h)
