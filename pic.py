@@ -280,6 +280,10 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
     if text == "(・∀・)":
         text = str(today.additional_text)
 
+    list_text = textwrap.wrap(text, width=40, fix_sentence_endings=True, subsequent_indent=" ")
+    if(len(list_text) > 8):
+        s2 = "今日新增境外移入"
+        text = text.split(s2)[0]
 
     text = textwrap.fill(text, width=40, fix_sentence_endings=True, subsequent_indent=" ")
 
