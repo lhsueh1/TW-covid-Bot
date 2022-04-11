@@ -4,7 +4,8 @@
 import os
 import sys
 import logging
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler, Job, JobQueue
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler, Job, \
+    JobQueue
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ParseMode, ChatAction
 import telegram
 from functools import wraps
@@ -102,6 +103,7 @@ def restricted(func):
             update.message.reply_text('Authority needed.')
             return
         return func(update, context, *args, **kwargs)
+
     return wrapped
 
 
@@ -113,7 +115,8 @@ def send_action(action):
         def command_func(update, context, *args, **kwargs):
             context.bot.send_chat_action(
                 chat_id=update.effective_message.chat_id, action=action)
-            return func(update, context,  *args, **kwargs)
+            return func(update, context, *args, **kwargs)
+
         return command_func
 
     return decorator
@@ -147,6 +150,12 @@ def stop(bot, update):
 
 
 @restricted
+def send_log(update, context):
+    document = open("bot.log", "rb")
+    context.bot.send_document(chat_id="@E36_bb079f22", document=document)
+
+
+@restricted
 def restart_and_upgrade(update, context):
     g = git.cmd.Git()
     g.fetch()
@@ -154,7 +163,7 @@ def restart_and_upgrade(update, context):
     status = g.log('HEAD..origin/main')
     if status != "":
         g.pull()
-        text = 'Bot is restarting...\n\nUpdate info:\n'+status
+        text = 'Bot is restarting...\n\nUpdate info:\n' + status
         update.message.reply_text(text)
         threading.Thread(target=stop_and_restart).start()
 
@@ -192,7 +201,8 @@ def help(update, context):
     else:
         if update.message.chat.username != "E36_bb079f22":
             context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update.message.from_user.first_name) +
-                                    " @" + str(userName) + "\t" + str(ID) + "\n" + str(update.message.text))
+                                                                  " @" + str(userName) + "\t" + str(ID) + "\n" + str(
+                update.message.text))
 
 
 def error(update, context):
@@ -207,10 +217,10 @@ def error(update, context):
 
     # Build the message with some markup and additional information about what happened.
     # You might need to add some logic to deal with messages longer than the 4096 character limit.
-    #update_str = update.to_dict() if isinstance(update, Update) else str(update)
+    # update_str = update.to_dict() if isinstance(update, Update) else str(update)
     message = (
         f'An exception was raised while handling an update\n'
-        #f'<pre>update = {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}'
+        # f'<pre>update = {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}'
         f'{str(update)}\n\n{tb_string}'
     )
 
@@ -226,7 +236,7 @@ def error(update, context):
 
 @send_typing_action
 def today_info(update, context):
-    #processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...", disable_notification=True)
+    # processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...", disable_notification=True)
 
     # todo 處理使用者輸入的arg，必須為正確的才放行，不然報錯
     if len(context.args) != 0:
@@ -294,7 +304,7 @@ def search(update, context):
             update.message.reply_text("@nullExistenceException 出來打架")
         else:
             country = update.message.text[len(
-                update.message.text.split()[0])+1:]
+                update.message.text.split()[0]) + 1:]
             processingMessage = context.bot.sendMessage(chat_id=str(
                 update.message.chat.id), text="Searching for " + str(country), disable_notification=True)
 
@@ -307,7 +317,7 @@ def search(update, context):
                         update.message.from_user.first_name) + " @" + str(userName) + ": search " + country)
 
             else:
-                update.message.reply_text("Where is "+str(country)+"?")
+                update.message.reply_text("Where is " + str(country) + "?")
                 if update.message.chat.username != "E36_bb079f22":
                     context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(
                         update.message.from_user.first_name) + " @" + str(userName) + ": BAD search " + country)
@@ -325,15 +335,14 @@ def search(update, context):
 
 @send_upload_photo_action
 def image(update, context):
-
     if len(context.args) == 1:
         if context.args[0] == "-h":
-
             update.message.reply_text(
-                "Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [text]\nWARNING IF　YOU FUCKING BROKE ANYTHING, FIX IT`", parse_mode='MarkdownV2')
+                "Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [text]\nWARNING IF　YOU FUCKING BROKE ANYTHING, FIX IT`",
+                parse_mode='MarkdownV2')
             return
 
-    #processingMessage = update.message.reply_text("Processing...", disable_notification=True)
+    # processingMessage = update.message.reply_text("Processing...", disable_notification=True)
     cap = "pic"
     if len(context.args) != 0:
         if len(context.args) < 6:
@@ -368,15 +377,14 @@ def image(update, context):
 
 @send_upload_photo_action
 def image_stat(update, context):
-
     if len(context.args) == 1:
         if context.args[0] == "-h":
-
             update.message.reply_text(
-                "Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [text]\nWARNING IF　YOU FUCKING BROKE ANYTHING, FIX IT`", parse_mode='MarkdownV2')
+                "Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [text]\nWARNING IF　YOU FUCKING BROKE ANYTHING, FIX IT`",
+                parse_mode='MarkdownV2')
             return
 
-    #processingMessage = update.message.reply_text("Processing...", disable_notification=True)
+    # processingMessage = update.message.reply_text("Processing...", disable_notification=True)
     cap = "pic"
     if len(context.args) != 0:
         if len(context.args) < 6:
@@ -411,15 +419,14 @@ def image_stat(update, context):
 
 @send_upload_photo_action
 def image_old(update, context):
-
     if len(context.args) == 1:
         if context.args[0] == "-h":
-
             update.message.reply_text(
-                "Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [total confirmed] [total deaths]`", parse_mode='MarkdownV2')
+                "Usage: `/image [date] [today confirmed] [today domestic] [today imported] [today death] [total confirmed] [total deaths]`",
+                parse_mode='MarkdownV2')
             return
 
-    #processingMessage = update.message.reply_text("Processing...", disable_notification=True)
+    # processingMessage = update.message.reply_text("Processing...", disable_notification=True)
     cap = "pic"
     if len(context.args) != 0:
         if len(context.args) < 7:
@@ -468,7 +475,6 @@ def unknown_command(update, context):
 
 @restricted
 def manual_article_entry(update: Update, context: CallbackContext) -> int:
-
     update.message.reply_text(
         '請輸入文章全文'
     )
@@ -592,8 +598,9 @@ def chat(update, context):
     # record user
     if (update.effective_message.chat.username != "E36_bb079f22") and (update.effective_message.chat.type == "private"):
         context.bot.sendMessage(chat_id="@E36_bb079f22", text="@" +
-                                str(userName) + "\t" + str(ID) + "\n" + str(update.effective_message.text))
-        #context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update))
+                                                              str(userName) + "\t" + str(ID) + "\n" + str(
+            update.effective_message.text))
+        # context.bot.sendMessage(chat_id="@E36_bb079f22", text=str(update))
 
         if COUNT < 2:
             update.effective_message.reply_text("I'm not a chat bot.")
@@ -615,14 +622,15 @@ def sticker(update, context):
     # reply sticker to user
     if update.message.chat.username == "nullExistenceException" and (update.message.chat.type == "private"):
         stickerCute = random.choice(["src/cute.tgs", "src/cute2.tgs", "src/cute3.tgs",
-                                    "src/cute4.webp", "src/cute5.webp", "src/cute6.tgs", "src/cute7.tgs"])
+                                     "src/cute4.webp", "src/cute5.webp", "src/cute6.tgs", "src/cute7.tgs"])
         context.bot.sendSticker(
             chat_id=update.message.chat_id, sticker=open(stickerCute, "rb"))
 
     if update.message.chat.username != "E36_bb079f22" and (update.message.chat.type == "private"):
         if update.message.chat.username != "nullExistenceException":
             stickerUgly = random.choice(["src/sticker.tgs", "src/sticker2.tgs", "src/sticker3.tgs", "src/sticker4.tgs",
-                                        "src/sticker5.tgs", "src/sticker6.tgs", "src/sticker7.tgs", "src/sticker8.tgs", "src/sticker9.tgs"])
+                                         "src/sticker5.tgs", "src/sticker6.tgs", "src/sticker7.tgs", "src/sticker8.tgs",
+                                         "src/sticker9.tgs"])
             context.bot.sendSticker(
                 chat_id=update.message.chat_id, sticker=open(stickerUgly, "rb"))
 
@@ -633,7 +641,6 @@ def sticker(update, context):
 
 
 def today_info_everyday(context, **chat_ids):
-
     get = api.get_taiwan_outbreak_information()
     text = get[0]
     if get[1] == 0:
@@ -716,7 +723,7 @@ Specify name: `/everyday MyName`
 Specify name and time: `/everyday MyName 10 20`
 Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
 '''
-            #text = text_adjustment(text)
+            # text = text_adjustment(text)
             update.message.reply_text(text, parse_mode='MarkdownV2')
             return
 
@@ -823,8 +830,8 @@ Specify all: `/everyday MyName 10 20 0 1 2 3 4 7`
                         minute=minute, days=days, name=name, chat_ids=chat_ids)
 
             msg = name + " at " + \
-                str(hour) + str(minute) + " on days " + ','.join(str(d)
-                                                                 for d in days) + " added\!"
+                  str(hour) + str(minute) + " on days " + ','.join(str(d)
+                                                                   for d in days) + " added\!"
             context.bot.sendMessage(
                 chat_id=chat, text=msg, parse_mode='MarkdownV2', disable_web_page_preview=True)
 
@@ -841,7 +848,6 @@ def queue_daily(context,
                 days: tuple = range(7),
                 name='1420_Default_today_info',
                 chat_ids: list = ['@WeaRetRYiNgtOMakEaBot']):
-
     if chat_ids is None:
         chat_ids = ['@WeaRetRYiNgtOMakEaBot']
 
@@ -912,6 +918,7 @@ def main():
     dp.add_handler(CommandHandler("image_old", image_old))
     dp.add_handler(CommandHandler(["stop", "quit", "exit"], stop))
     dp.add_handler(CommandHandler('restart_and_upgrade', restart_and_upgrade))
+    dp.add_handler(CommandHandler('send_log', send_log))
     dp.add_handler(CommandHandler("everyday", everyday, pass_job_queue=True))
     dp.add_handler(CommandHandler("manual_url", manual_url))
 
