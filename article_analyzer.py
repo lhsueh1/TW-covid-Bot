@@ -39,13 +39,13 @@ class ArticleAnalyzer():
 
         # 文章標題的確診病例、本土、境外處理
         if re.search(r'新增\d+例COVID-19\w{0,2}病例，分別為\d+例本土\w{0,2}及\d+例境外', today.article_title.replace(",", "")):
-            nums = re.findall(r'\d+', today.article_title)
+            nums = re.findall(r'\d+', today.article_title.replace(",", ""))
             today.today_confirmed = int(nums[0])
             today.today_domestic = int(nums[2])
             today.today_imported = int(nums[3])
 
         elif re.search(r'新增\d+例境外\w*移入COVID-19\w*病例', today.article_title.replace(",", "")):
-            nums = re.findall(r'\d+', today.article_title)
+            nums = re.findall(r'\d+', today.article_title.replace(",", ""))
             today.today_confirmed = int(nums[0])
             today.today_domestic = 0
             today.today_imported = int(nums[0])
@@ -54,7 +54,7 @@ class ArticleAnalyzer():
         # 利用today.article_title找到 新增\d+例境外移入 並判斷本土數量
         elif re.search(r'新增\d+例COVID-19\w*病例', today.article_title.replace(",", "")):
             today.today_confirmed = ArticleAnalyzer.__extract_number(
-                r'新增\d+例COVID-19\w*病例', today.article_title)
+                r'新增\d+例COVID-19\w*病例', today.article_title.replace(",", ""))
 
             today.today_imported = ArticleAnalyzer.__extract_number(
                 r'新增\w?\d+例境外', today.article)
@@ -142,7 +142,7 @@ today_deaths = {today.today_deaths}
         texts = article.split()[1:]
 
         # ref https://www.runoob.com/python/python-func-filter.html
-        texts = filter(ArticleAnalyzer.__wanted_addtional_text, texts)
+        texts = filter(ArticleAnalyzer.__wanted_additional_text, texts)
 
         additional_text = "".join(texts)
 
@@ -170,9 +170,9 @@ today_deaths = {today.today_deaths}
         additional_text = additional_text.replace("詳如新聞稿附件。", "")
         return additional_text
 
-    def __wanted_addtional_text(paragraph: str):
+    def __wanted_additional_text(paragraph: str):
 
-        if re.search(r'指揮中心\w{2}，*\w{0,4}新增\w{2,10}(\(案\d+\))*，*為', paragraph):
+        if re.search(r'指揮中心\w{2}，*\w{0,4}新增\w{2,10}(\(案\d+\))*，*為', paragraph.replace(",", "")):
             return paragraph
         else:
             return None
