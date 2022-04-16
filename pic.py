@@ -66,6 +66,13 @@ def add_to_json_queue(date="1313", today_confirmed=0):
     dates_history_list = history["dates"]
 
     if(dates_history_list[0] == date):
+        confirmed_history_list[0] = today_confirmed
+        today_average = int(statistics.mean(confirmed_history_list[:7]))
+        average_history_list[0] = today_average
+        with open("history_data.json", "w", encoding='utf-8') as jsonFile2:
+            json.dump(history, jsonFile2, indent=4)
+        jsonFile1.close()
+        jsonFile2.close()
         return
 
     confirmed_history_list.pop()
