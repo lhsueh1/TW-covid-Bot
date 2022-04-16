@@ -38,13 +38,13 @@ class ArticleAnalyzer():
         today.article = "\n".join(texts)
 
         # 文章標題的確診病例、本土、境外處理
-        if re.search(r'新增\d+例COVID-19\w{0,2}病例，分別為\d+例本土\w{0,2}及\d+例境外', today.article_title):
+        if re.search(r'新增\d+例COVID-19\w{0,2}病例，分別為\d+例本土\w{0,2}及\d+例境外', today.article_title.replace(",", "")):
             nums = re.findall(r'\d+', today.article_title)
             today.today_confirmed = int(nums[0])
             today.today_domestic = int(nums[2])
             today.today_imported = int(nums[3])
 
-        elif re.search(r'新增\d+例境外\w*移入COVID-19\w*病例', today.article_title):
+        elif re.search(r'新增\d+例境外\w*移入COVID-19\w*病例', today.article_title.replace(",", "")):
             nums = re.findall(r'\d+', today.article_title)
             today.today_confirmed = int(nums[0])
             today.today_domestic = 0
@@ -52,7 +52,7 @@ class ArticleAnalyzer():
 
         # 如果標題找不到境外移入、本土的病例數量的話，透過文章分析
         # 利用today.article_title找到 新增\d+例境外移入 並判斷本土數量
-        elif re.search(r'新增\d+例COVID-19\w*病例', today.article_title):
+        elif re.search(r'新增\d+例COVID-19\w*病例', today.article_title.replace(",", "")):
             today.today_confirmed = ArticleAnalyzer.__extract_number(
                 r'新增\d+例COVID-19\w*病例', today.article_title)
 
@@ -71,11 +71,11 @@ class ArticleAnalyzer():
         else:
             # 如果標題完全找不到就只能從文章找
             today.today_confirmed = ArticleAnalyzer.__extract_number(
-                r'新增\d+例COVID-19\w*病例', today.article)
+                r'新增\d+例COVID-19\w*病例', today.article.replace(",", ""))
             today.today_imported = ArticleAnalyzer.__extract_number(
-                r'\w?\d+例境外', today.article)
+                r'\w?\d+例境外', today.article.replace(",", ""))
             today.today_domestic = ArticleAnalyzer.__extract_number(
-                r'\w?\d+例本土', today.article)
+                r'\w?\d+例本土', today.article.replace(",", ""))
 
             # 抓日期
             date_text_match = re.search(
