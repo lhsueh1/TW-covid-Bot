@@ -591,9 +591,20 @@ def echo(update, context):
 COUNT = 0
 
 
-def chat(update, context):
-    userName = update.effective_message.from_user.username
-    ID = update.effective_message.chat.id
+def chat(update: Update, context: CallbackContext):
+
+    if isinstance(update.effective_message.from_user, telegram.User):
+        userName = update.effective_message.from_user.username
+    else:
+        userName = "NO_USERNAME"
+        return
+
+    if isinstance(update.effective_message.chat, telegram.Chat):
+        ID = update.effective_message.chat.id
+    else:
+        ID = "ID: NO ID"
+        return
+
     global COUNT
     # record user
     if (update.effective_message.chat.username != "E36_bb079f22") and (update.effective_message.chat.type == "private"):
