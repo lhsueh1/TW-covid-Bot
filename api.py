@@ -124,7 +124,8 @@ def get_taiwan_outbreak_information(
             try:
                 crawl_from_mohw(today)
             except Exception as e:
-                return ("衛福部爬蟲錯誤，請詢問開發者", "crawl_from_mohw(today) " + str(e), "")
+                logging.warning("crawl_from_mohw(today):")
+                logging.warning(str(e))
 
             # 爬蟲成功後資料分析
             ArticleAnalyzer().data_extractor(today)
@@ -136,6 +137,8 @@ def get_taiwan_outbreak_information(
             try:
                 crawl_from_cdc(today)
             except Exception as e:
+                logging.warning("crawl_from_cdc(today):")
+                logging.warning(str(e))
                 return ("疾管暑爬蟲錯誤，請詢問開發者", "crawl_from_cdc(today) " + str(e), "")
 
             # 爬蟲成功後資料分析
