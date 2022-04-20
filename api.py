@@ -54,7 +54,7 @@ def get_taiwan_outbreak_information(
         article: str = None,
         today_dict: dict = None,
         mohw: bool = False,
-        cdc: bool = False):
+        cdc: bool = False) -> (str, str, TodayInfo):
     """
     產生回傳臺灣疫情資訊站的標準格式文章。
 
@@ -72,7 +72,7 @@ def get_taiwan_outbreak_information(
         Returns:
             text (str): 臺灣疫情資訊站的標準格式文章或用戶可讀的錯誤訊息
             status (str): 狀態訊息以及debug用錯誤訊息，回傳"0"表示成功
-            today.article_link (str): 文章連結
+            today (TodayInfo): TodayInfo Object
     """
 
     # 取得並判斷網路狀態，若出現錯誤會 early return
@@ -206,7 +206,7 @@ Taiwan Outbreak Information
     if save_to_json:
         today.save_to_json()
 
-    return text, status, today.article_link
+    return text, status, today
 
 
 def __manual_generate_data(article: str, today_dict: dict):

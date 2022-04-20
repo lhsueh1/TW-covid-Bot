@@ -25,7 +25,7 @@ class WebCrawlerMohw():
 
         if response.status_code != requests.codes.ok:
             raise MyException("衛福部本站最新消息 Status code not OK: ",
-                              response.status_code)
+                              str(response.status_code))
 
         soup = BeautifulSoup(response.text, "lxml")
 
@@ -46,7 +46,7 @@ class WebCrawlerMohw():
 
         if response.status_code != requests.codes.ok:
             raise MyException("衛福部本站最新消息 Status code not OK: ",
-                              response.status_code)
+                              str(response.status_code))
 
         soup = BeautifulSoup(response.text, "lxml")
 
@@ -69,7 +69,7 @@ class WebCrawlerMohw():
 
         if response.status_code != requests.codes.ok:
             raise MyException("衛福部本站最新消息 Status code not OK: ",
-                              response.status_code)
+                              str(response.status_code))
 
         soup = BeautifulSoup(response.text, "lxml")
         content = soup.select_one("section#ContentPage")
