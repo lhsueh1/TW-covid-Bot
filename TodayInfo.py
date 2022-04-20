@@ -14,7 +14,7 @@ import logging
 from my_exception import MyException
 
 
-class TodayInfo():
+class TodayInfo:
     """
     本日疫情資訊的物件
 
@@ -51,7 +51,17 @@ class TodayInfo():
         確認並更新 is_generated 的狀態
     """
 
-    def __init__(self, today_confirmed, today_imported, today_domestic, today_deaths=0, additional_text="", article_link="", error=False, article_title="", article=None, is_generate=True) -> None:
+    def __init__(self,
+                 today_confirmed,
+                 today_imported,
+                 today_domestic,
+                 today_deaths=0,
+                 additional_text="",
+                 article_link="",
+                 error=False,
+                 article_title="",
+                 article=None,
+                 is_generate=True):
         """
         Python 只能有一個 constructor
         如果沒有要一次把所有資訊初始化，可以透過下面的 clssmethod。例如：
