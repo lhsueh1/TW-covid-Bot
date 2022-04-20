@@ -1,4 +1,5 @@
 import logging
+from logging.handlers import RotatingFileHandler
 from git import Object
 import requests
 import csv
@@ -418,8 +419,13 @@ def crawl(crawler: Object, today: TodayInfo):
 
 # For testing purpose
 if __name__ == '__main__':
+
+    #logging.basicConfig(format='%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s',
+    #                    level=logging.INFO, handlers=[RotatingFileHandler("bot_test.log", maxBytes=1 * 1024 * 1024, backupCount=5, encoding="utf-8")])
+
     logging.basicConfig(filename="bot_test.log", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                         level=logging.INFO)
+
     test_article = """
 中央流行疫情指揮中心今(25)日公布國內新增38例COVID-19確定病例，分別為13例本土個案及25例境外移入；另確診個案中無新增死亡。
 

@@ -4,6 +4,7 @@
 import os
 import sys
 import logging
+from logging.handlers import RotatingFileHandler
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler, Job, \
     JobQueue
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ParseMode, ChatAction
@@ -25,10 +26,18 @@ import api
 import pic
 
 # Enable logging
-logging.basicConfig(
-    filename="bot.log", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
-
+# log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s')
+#
+# log_handler = RotatingFileHandler(filename="bot.log", mode='a', maxBytes=1 * 1024 * 1024, backupCount=5, encoding="utf-8")
+# log_handler.setFormatter(log_formatter)
+# log_handler.setLevel(logging.INFO)
+logging.basicConfig(filename="bot.log", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                    level=logging.INFO)
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.INFO)
+#
+# logger.addHandler(log_handler)
+
 
 '''
     {'update_id': 861268396,
