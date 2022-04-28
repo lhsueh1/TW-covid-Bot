@@ -326,7 +326,9 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
     font_size = 190;
     # print(int(today_confirmed))
     if int(today_confirmed) >= 1000:
-         font_size = 150;
+        font_size = 150;
+    if int(today_confirmed) >= 10000:
+        font_size = 110
 
     font = ImageFont.truetype("NotoSansTC-Regular.otf", font_size)
     # today_confirmed
