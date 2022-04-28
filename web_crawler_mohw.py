@@ -25,7 +25,7 @@ class WebCrawlerMohw():
 
         if response.status_code != requests.codes.ok:
             raise MyException("衛福部本站最新消息 Status code not OK: ",
-                              response.status_code)
+                              str(response.status_code))
 
         soup = BeautifulSoup(response.text, "lxml")
 
@@ -46,13 +46,13 @@ class WebCrawlerMohw():
 
         if response.status_code != requests.codes.ok:
             raise MyException("衛福部本站最新消息 Status code not OK: ",
-                              response.status_code)
+                              str(response.status_code))
 
         soup = BeautifulSoup(response.text, "lxml")
 
         target = soup.select("section.list01 a")
         i = 0
-        while not re.match(r'新增\d+例COVID-19\w*病例，分別為\d+例本土\w*及\d+例境外', target[i].text):
+        while not re.match(r'新增\d+例COVID-19\w*病例，分別為\d+例本土\w*及\d+例境外', target[i].text.replace(",", "")):
             i += 1
         logging.info(
             "WebCrawlerMohw(): get_news_page_link result url " + target[0]["href"])
@@ -69,7 +69,7 @@ class WebCrawlerMohw():
 
         if response.status_code != requests.codes.ok:
             raise MyException("衛福部本站最新消息 Status code not OK: ",
-                              response.status_code)
+                              str(response.status_code))
 
         soup = BeautifulSoup(response.text, "lxml")
         content = soup.select_one("section#ContentPage")

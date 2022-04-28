@@ -4,6 +4,7 @@
 import os
 import sys
 import logging
+from logging.handlers import RotatingFileHandler
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler, Job, \
     JobQueue
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, ParseMode, ChatAction
@@ -25,10 +26,18 @@ import api
 import pic
 
 # Enable logging
-logging.basicConfig(
-    filename="bot.log", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
-
+# log_formatter = logging.Formatter('%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s')
+#
+# log_handler = RotatingFileHandler(filename="bot.log", mode='a', maxBytes=1 * 1024 * 1024, backupCount=5, encoding="utf-8")
+# log_handler.setFormatter(log_formatter)
+# log_handler.setLevel(logging.INFO)
+logging.basicConfig(filename="bot.log", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                    level=logging.INFO)
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.INFO)
+#
+# logger.addHandler(log_handler)
+
 
 '''
     {'update_id': 861268396,
@@ -235,18 +244,14 @@ def error(update, context):
 
 
 @send_typing_action
-def today_info(update, context):
-    # processingMessage = context.bot.sendMessage(chat_id=update.message.chat.id, text="Processing...", disable_notification=True)
-
+def today_info(update: Update, context: CallbackContext):
     # todo 處理使用者輸入的arg，必須為正確的才放行，不然報錯
     if len(context.args) != 0:
-        get = taiwan_outbreak_information(*context.args)
+        (text, status, today) = taiwan_outbreak_information(*context.args)
     else:
-        get = api.get_taiwan_outbreak_information()
+        (text, status, today) = api.get_taiwan_outbreak_information()
 
-    text = get[0]
-
-    if get[1] == 0:
+    if status == 0:
         special = ['_', '*', '[', ']',
                    '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
         for i in special:
@@ -254,9 +259,9 @@ def today_info(update, context):
 
         text = text.replace(
             "統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`[群組](t.me/joinchat/VXSevGfKN560hTWH)`告知，我們會立刻更正，謝謝。`\n```")
-        if get[2] is not None:
+        if today.article_link is not None:
             text = text.replace("疾管署新聞稿及政府資料開放平臺",
-                                f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
+                                f"```[疾管署新聞稿]({today.article_link})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
         update.message.reply_text(
@@ -269,7 +274,7 @@ def today_info(update, context):
 
     else:
         context.bot.sendMessage(chat_id="@E36_bb079f22",
-                                text=str(update) + "\n\n" + text + "\n" + get[1])
+                                text=str(update) + "\n\n" + text + "\n" + status)
         update.message.reply_text(text)
 
     # if processingMessage is not None:
@@ -496,12 +501,10 @@ def manual_article(update: Update, context: CallbackContext):
     global user_input_article
     user_input_article = update.message.text
 
-    get = api.get_taiwan_outbreak_information(
+    (text, status, today) = api.get_taiwan_outbreak_information(
         article=update.message.text, manual=True)
 
-    text = get[0]
-
-    if get[1] == 0:
+    if status == 0:
         special = ['_', '*', '[', ']',
                    '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!']
         for i in special:
@@ -509,9 +512,9 @@ def manual_article(update: Update, context: CallbackContext):
 
         text = text.replace(
             "統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`[群組](t.me/joinchat/VXSevGfKN560hTWH)`告知，我們會立刻更正，謝謝。`\n```")
-        if get[2] is not None:
+        if today.article_link is not None:
             text = text.replace("疾管署新聞稿及政府資料開放平臺",
-                                f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
+                                f"```[疾管署新聞稿]({today.article_link})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
         update.message.reply_text(
@@ -534,7 +537,7 @@ def manual_article(update: Update, context: CallbackContext):
 
     else:
         context.bot.sendMessage(chat_id="@E36_bb079f22",
-                                text=str(update) + "\n\n" + text + "\n" + get[1])
+                                text=str(update) + "\n\n" + text + "\n" + status)
         update.message.reply_text(text)
         return ConversationHandler.END
 
@@ -545,16 +548,16 @@ def manual_end(update: Update, context: CallbackContext) -> int:
     text = update.message.text
     if text == "儲存":
         # do 儲存
-        get = api.get_taiwan_outbreak_information(
+        (text, status) = api.get_taiwan_outbreak_information(
             article=user_input_article, manual=True, save_to_json=True)
-        if get[1] == 0:
+        if status == 0:
             update.message.reply_text(
                 "文章已儲存", reply_markup=ReplyKeyboardRemove())
         else:
             context.bot.sendMessage(
-                chat_id="@E36_bb079f22", text=str(update) + "\n\n" + get[0] + "\n" + get[1])
+                chat_id="@E36_bb079f22", text=str(update) + "\n\n" + text + "\n" + status)
             update.message.reply_text(
-                "文章儲存失敗\n" + get[0], reply_markup=ReplyKeyboardRemove())
+                "文章儲存失敗\n" + text, reply_markup=ReplyKeyboardRemove())
     else:
         update.message.reply_text("文章不儲存", reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
@@ -592,7 +595,6 @@ COUNT = 0
 
 
 def chat(update: Update, context: CallbackContext):
-
     if isinstance(update.effective_message.from_user, telegram.User):
         userName = update.effective_message.from_user.username
     else:
@@ -652,16 +654,15 @@ def sticker(update, context):
 
 
 def today_info_everyday(context, **chat_ids):
-    get = api.get_taiwan_outbreak_information()
-    text = get[0]
-    if get[1] == 0:
+    (text, status, today) = api.get_taiwan_outbreak_information()
+    if status == 0:
         text = text_adjustment(text)
 
         text = text.replace(
             "統計數字如果有誤，請於群組", "````統計數字如果有誤，請於`[群組](t.me/joinchat/VXSevGfKN560hTWH)`告知，我們會立刻更正，謝謝。`\n```")
-        if get[2] is not None:
+        if today.article_link is not None:
             text = text.replace("疾管署新聞稿及政府資料開放平臺",
-                                f"```[疾管署新聞稿]({get[2]})````及政府資料開放平臺\n`")
+                                f"```[疾管署新聞稿]({today.article_link})````及政府資料開放平臺\n`")
         text = "```\n" + text + "\n```"
 
         print('chat_ids: ', chat_ids)
@@ -682,7 +683,7 @@ def today_info_everyday(context, **chat_ids):
     else:
         chat = "@WeaRetRYiNgtOMakEaBot"
         context.bot.sendMessage(
-            chat_id=chat, text="everyday fail" + "\n\n" + text + "\n" + get[1])
+            chat_id=chat, text="everyday fail" + "\n\n" + text + "\n" + status)
 
 
 def image_everyday(context, **chat_ids):

@@ -14,8 +14,6 @@ class WebCrawlerCDC():
 
     CDC_NEWS_URL = "https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A"
 
-    
-
     def crawl(self):
         session = requests.Session()
         retry = Retry(connect=3, backoff_factor=0.5)
@@ -40,7 +38,7 @@ class WebCrawlerCDC():
         for target in targets:
             title = target.get('title')
             print(f"找到的標題：{title}")
-            if re.search(r'COVID-19\w*病例', title):
+            if re.search(r'新增\d{1,6}例\w*COVID-19\w*病例', title.replace(",", "")):
                 target_title = title
                 target_href = target.get("href")
                 break
@@ -56,16 +54,16 @@ class WebCrawlerCDC():
             "p", class_="con-word").get_text()
         article_date = article_soup.find(
             "div", class_="date text-right").get_text().strip()[5:]
-        
 
         self.title = target_title
         self.article = article_content
         self.article_date = article_date
-        
-        logging.info("article url: "+self.article_url)
-        logging.info("article title: "+self.title)
-        logging.info("article date: "+self.article_date)
-        logging.info("article: "+self.article)
+
+        logging.info("article url: " + self.article_url)
+        logging.info("article title: " + self.title)
+        logging.info("article date: " + self.article_date)
+        logging.info("article: " + self.article)
+
 
 # For testing purpose
 if __name__ == '__main__':

@@ -160,6 +160,7 @@ today_deaths = {today.today_deaths}
         additional_text = additional_text.replace("，個案分布", "。\n個案分布")
         additional_text = additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
         additional_text = additional_text.replace("，衛生單位刻正進行相關疫調及接觸者匡列", "")
+        additional_text = additional_text.replace("。相關疫情調查持續進行中", "")
         additional_text = additional_text.replace(
             "。衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
         additional_text = additional_text.replace(

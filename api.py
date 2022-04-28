@@ -1,5 +1,5 @@
-
 import logging
+from logging.handlers import RotatingFileHandler
 from git import Object
 import requests
 import csv
@@ -9,11 +9,9 @@ import pytz
 from article_analyzer import ArticleAnalyzer
 from TodayInfo import TodayInfo
 from TodayInfo import TodayConfirmed
-from requests.packages import urllib3
 from web_crawler_cdc import WebCrawlerCDC
 
 from web_crawler_mohw import WebCrawlerMohw
-#import pic
 
 ERROR_INTERNET_CONNECTION = "ERROR_INTERNET_CONNECTION"
 ERROR_OPEN_DATA_SERVICE = "ERROR_OPEN_DATA_SERVICE "
@@ -38,9 +36,9 @@ def get_taiwan_epidemic_status():
         # t.add_row(data_list[1])
         for row in data_list:
             for data in row:
-                text += str(data+"　")
+                text += str(data + "　")
             text += "\n"
-        #text += str(t)
+        # text += str(t)
         text += "```"
         # return str(f"總確診數：{data_list[1][0]}")
         print(text)
@@ -57,13 +55,13 @@ def get_taiwan_outbreak_information(
         article: str = None,
         today_dict: dict = None,
         mohw: bool = False,
-        cdc: bool = False):
-    '''
+        cdc: bool = False) -> (str, str, TodayInfo):
+    """
     產生回傳臺灣疫情資訊站的標準格式文章。
 
         Arguments:
             force: 跳過疾管暑官網的爬蟲，產生其他API提供的資料，如果API接不到一樣會出現錯誤
-            IgnoreSSL: 忽略SSL安全性認證
+            SSLVerify: SSL安全性認證
             recrawl: 重新爬蟲並取得資料（預設讀取 json 儲存的資料）
             manual: 手動模式，必須要填入 article
             save_to_json: 手動模式，儲存至 json，可能會 deprecated
@@ -75,8 +73,8 @@ def get_taiwan_outbreak_information(
         Returns:
             text (str): 臺灣疫情資訊站的標準格式文章或用戶可讀的錯誤訊息
             status (str): 狀態訊息以及debug用錯誤訊息，回傳"0"表示成功
-            today.article_link (str): 文章連結
-    '''
+            today (TodayInfo): TodayInfo Object
+    """
 
     # 取得並判斷網路狀態，若出現錯誤會 early return
     api_status = get_API_status(SSLVerify)
@@ -84,8 +82,8 @@ def get_taiwan_outbreak_information(
     if not api_status[0]:
         text = "ERROR: 網路錯誤\n" + api_status[0]
         status = ERROR_INTERNET_CONNECTION + \
-            "\nUnable to get status from Taiwan CDC Open Data Service\n" + \
-            api_status[0] + "\n" + api_status[1]
+                 "\nUnable to get status from Taiwan CDC Open Data Service\n" + \
+                 api_status[0] + "\n" + api_status[1]
         return (text, status, "")
     elif api_status[0] == "success":
         print("Taiwan CDC Open Data Service, connection succeed.")
@@ -93,7 +91,7 @@ def get_taiwan_outbreak_information(
     else:
         text = "ERROR: 政府資料開放平台無法連接\n訊息：" + api_status[0]
         status = ERROR_OPEN_DATA_SERVICE + "\n訊息：" + \
-            api_status[0] + "\n" + api_status[1]
+                 api_status[0] + "\n" + api_status[1]
         return (text, status, "")
 
     mmdd = "(????)"
@@ -120,12 +118,14 @@ def get_taiwan_outbreak_information(
 
         # 若尚未從json取得資料(手動失敗失敗或是是recrawl)，執行取得資料的步驟
         if not today.check_generate_status() and cdc is False:
-            logging.info("api.get_taiwan_outbreak_information: TodayInfo.from_json not generated. Starting crawl_from_mohw")
+            logging.info(
+                "api.get_taiwan_outbreak_information: TodayInfo.from_json not generated. Starting crawl_from_mohw")
             # 啟動衛福部新聞的爬蟲
             try:
                 crawl_from_mohw(today)
             except Exception as e:
-                return ("衛福部爬蟲錯誤，請詢問開發者", "crawl_from_mohw(today) "+str(e), "")
+                logging.warning("crawl_from_mohw(today):")
+                logging.warning(str(e))
 
             # 爬蟲成功後資料分析
             ArticleAnalyzer().data_extractor(today)
@@ -137,7 +137,9 @@ def get_taiwan_outbreak_information(
             try:
                 crawl_from_cdc(today)
             except Exception as e:
-                return ("疾管暑爬蟲錯誤，請詢問開發者", "crawl_from_cdc(today) "+str(e), "")
+                logging.warning("crawl_from_cdc(today):")
+                logging.warning(str(e))
+                return ("疾管暑爬蟲錯誤，請詢問開發者", "crawl_from_cdc(today) " + str(e), "")
 
             # 爬蟲成功後資料分析
             ArticleAnalyzer().data_extractor(today)
@@ -208,7 +210,7 @@ Taiwan Outbreak Information
     if save_to_json:
         today.save_to_json()
 
-    return (text, status, today.article_link)
+    return text, status, today
 
 
 def __manual_generate_data(article: str, today_dict: dict):
@@ -230,15 +232,15 @@ def __manual_generate_data(article: str, today_dict: dict):
             today_domestic=today_dict["domestic"],
             today_imported=today_dict["imported"],
             today_deaths=today_dict["deaths"],
-            additional_text=today_dict["additional_text"],
-            date=datetime.date.today())
+            additional_text=today_dict["additional_text"])
         return today
     else:
         logging.info(
             "get_taiwan_outbreak_information(): 手動模式必須提供文章或本日疫情資訊 Manual mode requires article or today_dict")
         logging.error(
             "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.")
-        return ("手動模式必須提供文章或本日疫情資訊", "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.", "")
+        return ("手動模式必須提供文章或本日疫情資訊",
+                "get_taiwan_outbreak_information() manual is True, but article and today_dict are both None.", "")
 
 
 def get_epidemic_status_by_country(country: str):
@@ -269,11 +271,13 @@ Deaths: {row[3]}"""
         # for fun
         if country.lower() == "today_death_rate" or country.lower() == "todaydeathrate":
             today = TodayConfirmed(CDC_NEWS_URL)
-            return "{:.2f}%".format(float(int(str(today.today_deaths).replace(",", "")) / int(str(today.today_confirmed).replace(",", "")) * 100))
+            return "{:.2f}%".format(float(
+                int(str(today.today_deaths).replace(",", "")) / int(str(today.today_confirmed).replace(",", "")) * 100))
 
         if country.lower() == "rate_death_today" or country.lower() == "ratedeathtoday":
             today = TodayConfirmed(CDC_NEWS_URL)
-            return "{:.2f}% lol".format(float(int(str(today.today_confirmed).replace(",", "")) / int(str(today.today_deaths).replace(",", "")) * 100))
+            return "{:.2f}% lol".format(float(
+                int(str(today.today_confirmed).replace(",", "")) / int(str(today.today_deaths).replace(",", "")) * 100))
     return None
 
 
@@ -329,9 +333,9 @@ class TaiwanEpidemic(object):
             # t.add_row(data_list[1])
             for row in data_list_transpose:
                 for data in row:
-                    text += str(data+" ")
+                    text += str(data + " ")
                 text += "\n"
-            #text += str(t)
+            # text += str(t)
             text += "```"
             self.full_text = text
 
@@ -373,9 +377,9 @@ class GlobalStats(object):
             # t.add_row(data_list[1])
             for row in data_list_transpose:
                 for data in row:
-                    text += str(data+"　")
+                    text += str(data + "　")
                 text += "\n"
-            #text += str(t)
+            # text += str(t)
             text += "```"
             # return str(f"總確診數：{data_list[1][0]}")
             self.full_text = text
@@ -388,17 +392,18 @@ class GlobalStats(object):
 
 
 def crawl_from_mohw(today: TodayInfo):
-
     # 創造 crawler 爬蟲物件
     crawler = WebCrawlerMohw()
 
-    crawl(crawler=crawler,today=today)
+    crawl(crawler=crawler, today=today)
+
 
 def crawl_from_cdc(today: TodayInfo):
     # 創造 crawler 爬蟲物件
     crawler = WebCrawlerCDC()
 
-    crawl(crawler=crawler,today=today)
+    crawl(crawler=crawler, today=today)
+
 
 def crawl(crawler: Object, today: TodayInfo):
     # 啟動爬蟲
@@ -415,10 +420,15 @@ def crawl(crawler: Object, today: TodayInfo):
     today.date_str_to_datetime()
 
 
-
 # For testing purpose
 if __name__ == '__main__':
-    logging.basicConfig(filename="bot_test.log", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
+
+    #logging.basicConfig(format='%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s',
+    #                    level=logging.INFO, handlers=[RotatingFileHandler("bot_test.log", maxBytes=1 * 1024 * 1024, backupCount=5, encoding="utf-8")])
+
+    logging.basicConfig(filename="bot_test.log", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                        level=logging.INFO)
+
     test_article = """
 中央流行疫情指揮中心今(25)日公布國內新增38例COVID-19確定病例，分別為13例本土個案及25例境外移入；另確診個案中無新增死亡。
 
