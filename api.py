@@ -123,12 +123,11 @@ def get_taiwan_outbreak_information(
             # 啟動衛福部新聞的爬蟲
             try:
                 crawl_from_mohw(today)
+                # 爬蟲成功後資料分析
+                ArticleAnalyzer().data_extractor(today)
             except Exception as e:
                 logging.warning("crawl_from_mohw(today):")
                 logging.warning(str(e))
-
-            # 爬蟲成功後資料分析
-            ArticleAnalyzer().data_extractor(today)
 
         # 若尚未從json取得資料(衛福部新聞的爬蟲失敗)，執行取得資料的步驟
         if not today.check_generate_status() and mohw is False:
@@ -136,13 +135,12 @@ def get_taiwan_outbreak_information(
             logging.info("api.get_taiwan_outbreak_information: mohw no data. Starting crawl_from_cdc.")
             try:
                 crawl_from_cdc(today)
+                # 爬蟲成功後資料分析
+                ArticleAnalyzer().data_extractor(today)
             except Exception as e:
                 logging.warning("crawl_from_cdc(today):")
                 logging.warning(str(e))
                 return ("疾管暑爬蟲錯誤，請詢問開發者", "crawl_from_cdc(today) " + str(e), "")
-
-            # 爬蟲成功後資料分析
-            ArticleAnalyzer().data_extractor(today)
 
     logging.info(f"today: {today}")
 
