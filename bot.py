@@ -291,8 +291,10 @@ def taiwan_outbreak_information(*arg):
     force = "force" in str_arg
     SSLVerify = not "SSLVerify" in str_arg
     recrawl = "recrawl" in str_arg
+    cdc = "cdc" in str_arg
+    mohw = "mohw" in str_arg
 
-    return api.get_taiwan_outbreak_information(force=force, SSLVerify=SSLVerify, recrawl=recrawl)
+    return api.get_taiwan_outbreak_information(force=force, SSLVerify=SSLVerify, recrawl=recrawl, cdc=cdc, mohw=mohw)
 
 
 @send_typing_action
