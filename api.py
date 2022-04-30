@@ -140,7 +140,7 @@ def get_taiwan_outbreak_information(
             except Exception as e:
                 logging.warning("crawl_from_cdc(today):")
                 logging.warning(str(e))
-                return ("疾管暑爬蟲錯誤，請詢問開發者", "crawl_from_cdc(today) " + str(e), "")
+                return ("疾管暑爬蟲錯誤，請詢問開發者", "crawl_from_cdc(today) " + str(e), today)
 
     logging.info(f"today: {today}")
 
@@ -149,12 +149,12 @@ def get_taiwan_outbreak_information(
     if today.error is not False and not force:
         text = "無法連上CDC官網或是爬蟲出現錯誤"
         status = ERROR_CDC_WEBPAGE
-        return (text, f"ERROR_CDC_WEBPAGE\n{today}", "")
+        return (text, f"ERROR_CDC_WEBPAGE\n{today}", today)
 
     if not today.is_same_date and not force:
         text = "ERROR: 日期錯誤。本日衛福部新聞稿尚未更新？"
         status = ERROR_NOT_SAME_DATE
-        return (text, ERROR_NOT_SAME_DATE + str(today), "")
+        return (text, ERROR_NOT_SAME_DATE + str(today), today)
 
     # 強制執行，且 today 無法取得時的處理
     if force and (today.error or not today.is_same_date):
@@ -208,7 +208,7 @@ Taiwan Outbreak Information
     if save_to_json:
         today.save_to_json()
 
-    return text, status, today
+    return (text, status, today)
 
 
 def __manual_generate_data(article: str, today_dict: dict):
