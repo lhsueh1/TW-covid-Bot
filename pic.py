@@ -271,10 +271,10 @@ def pic_new(date=None, today_confirmed=None, today_domestic=None, today_imported
 
 
 def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_imported=None, today_death=None, text="(・∀・)"):
-    epidemic = api.TaiwanEpidemic()
-    cdc_url = api.CDC_NEWS_URL
-    (article, status, today) = api.get_taiwan_outbreak_information()
     if date == None:
+        epidemic = api.TaiwanEpidemic()
+        cdc_url = api.CDC_NEWS_URL
+        (article, status, today) = api.get_taiwan_outbreak_information()
         date = str(today.date.strftime("%m%d"))#str(datetime.datetime.now().strftime("%m")) + str(datetime.datetime.now().strftime("%d"))
     if today_confirmed == None:
         today_confirmed = str(today.today_confirmed)
