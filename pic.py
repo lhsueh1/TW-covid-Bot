@@ -288,11 +288,12 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
         text = str(today.additional_text)
 
     text_width = 40
-    list_text = textwrap.wrap(text, width=40, fix_sentence_endings=True, subsequent_indent=" ")
+    list_text = textwrap.wrap(text, width=40, fix_sentence_endings=False, subsequent_indent="")
+    # print(len(list_text))
     if(len(list_text) > 8):
         s2 = "今日新增境外移入"
         text = text.split(s2)[0]
-        text_width = 47
+        text_width = 50
 
     text = textwrap.fill(text, width=text_width, fix_sentence_endings=True, subsequent_indent=" ")
 
@@ -348,7 +349,7 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
     # text
     background_w = 2900
     background_h = 700
-    font = ImageFont.truetype("NotoSansTC-Regular.otf", 70)
+    font = ImageFont.truetype("NotoSansTC-Regular.otf", 60)
     background = Image.new("RGBA",(background_w,background_h),(0,50,0,00))
     text_word = center_text(background, font, text, background_w, background_h)
 
