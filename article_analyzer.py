@@ -26,7 +26,7 @@ class ArticleAnalyzer():
 
         # to check today.article available
         if today.article is None or today.article == "":
-            MyException("ArticleAnalyzer: today.article is empty")
+            raise MyException("ArticleAnalyzer: today.article is empty")
         today.error = False
         logging.info("ArticleAnalyzer: extracting info from today.article")
 
