@@ -173,7 +173,7 @@ def restart_and_upgrade(update, context):
     if status != "":
         g.pull()
         text = 'Bot is restarting...\n\nUpdate info:\n' + status
-        update.message.reply_text(text)
+        update.message.reply_text(text, disable_web_page_preview=True)
         threading.Thread(target=stop_and_restart).start()
 
     else:
