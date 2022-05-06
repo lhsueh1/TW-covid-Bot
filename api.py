@@ -169,6 +169,9 @@ def get_taiwan_outbreak_information(
     death_rate = (int(epidemic.deaths.replace(",", "")) /
                   int(epidemic.confirmed.replace(",", ""))) * 100
     death_rate = "{:.2f}".format(death_rate)
+    confirmed_rate = int(epidemic.yesterday_confirmed.replace(",", "")) / (int(epidemic.yesterday_confirmed.replace(",", "")) + int(epidemic.yesterday_excluded.replace(",", "")))
+    confirmed_rate = confirmed_rate * 100
+    confirmed_rate = "{:.2f}".format(confirmed_rate)
 
     text = f"""《臺灣疫情資訊站{mmdd}資訊報》
 
@@ -180,6 +183,7 @@ def get_taiwan_outbreak_information(
 昨日送檢：{epidemic.yesterday_reported}件
 昨日排除：{epidemic.yesterday_excluded}件
 昨日確診：{epidemic.yesterday_confirmed}人
+確診比率：{confirmed_rate}%
 ——————————————————————————
 【累計統計】
 已送檢：{epidemic.reported}人
@@ -208,7 +212,7 @@ Taiwan Outbreak Information
     if save_to_json:
         today.save_to_json()
 
-    return (text, status, today)
+    return text, status, today
 
 
 def __manual_generate_data(article: str, today_dict: dict):
@@ -438,5 +442,8 @@ if __name__ == '__main__':
 
 指揮中心再次呼籲，民眾應落實手部衛生、咳嗽禮節及佩戴口罩等個人防護措施，減少不必要移動、活動或集會，避免出入人多擁擠的場所，或高感染傳播風險場域，並主動積極配合各項防疫措施，共同嚴守社區防線。
     """
-    list = get_taiwan_outbreak_information(recrawl=True)
-    print(*list, sep="\n")
+    text, status, today = get_taiwan_outbreak_information(
+        article=test_article, manual=True, save_to_json=True)
+    print(text)
+    print(status)
+    #print(today)
