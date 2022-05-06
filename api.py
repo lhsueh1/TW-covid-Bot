@@ -169,7 +169,8 @@ def get_taiwan_outbreak_information(
     death_rate = (int(epidemic.deaths.replace(",", "")) /
                   int(epidemic.confirmed.replace(",", ""))) * 100
     death_rate = "{:.2f}".format(death_rate)
-    confirmed_rate = int(epidemic.yesterday_confirmed.replace(",", "")) / (int(epidemic.yesterday_confirmed.replace(",", "")) + int(epidemic.yesterday_excluded.replace(",", "")))
+    confirmed_rate = int(epidemic.yesterday_confirmed.replace(",", "")) / (
+                int(epidemic.yesterday_confirmed.replace(",", "")) + int(epidemic.yesterday_excluded.replace(",", "")))
     confirmed_rate = confirmed_rate * 100
     confirmed_rate = "{:.2f}".format(confirmed_rate)
 
@@ -424,8 +425,7 @@ def crawl(crawler: Object, today: TodayInfo):
 
 # For testing purpose
 if __name__ == '__main__':
-
-    #logging.basicConfig(format='%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s',
+    # logging.basicConfig(format='%(asctime)s %(levelname)s %(funcName)s(%(lineno)d) %(message)s',
     #                    level=logging.INFO, handlers=[RotatingFileHandler("bot_test.log", maxBytes=1 * 1024 * 1024, backupCount=5, encoding="utf-8")])
 
     logging.basicConfig(filename="bot_test.log", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -446,4 +446,4 @@ if __name__ == '__main__':
         article=test_article, manual=True, save_to_json=True)
     print(text)
     print(status)
-    #print(today)
+    # print(today)
