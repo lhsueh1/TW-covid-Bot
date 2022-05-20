@@ -442,8 +442,9 @@ if __name__ == '__main__':
 
 指揮中心再次呼籲，民眾應落實手部衛生、咳嗽禮節及佩戴口罩等個人防護措施，減少不必要移動、活動或集會，避免出入人多擁擠的場所，或高感染傳播風險場域，並主動積極配合各項防疫措施，共同嚴守社區防線。
     """
-    text, status, today = get_taiwan_outbreak_information(
-        article=test_article, manual=True, save_to_json=True)
+    # text, status, today = get_taiwan_outbreak_information(
+    #     article=test_article, manual=True, save_to_json=True)
+    text, status, today = get_taiwan_outbreak_information(recrawl=True)
     print(text)
     print(status)
     # print(today)

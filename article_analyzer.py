@@ -33,9 +33,13 @@ class ArticleAnalyzer():
         if today.article_title is None:
             today.article_title = today.article.split('\n', 1)[0]
 
+        today.article = today.article.replace(" ", "")
+
         texts = filter(ArticleAnalyzer.__unwanted_text, today.article.split())
 
+
         today.article = "\n".join(texts)
+
 
         # 文章標題的確診病例、本土、境外處理
         if re.search(r'新增\d+例COVID-19\w{0,2}病例，分別為\d+例本土\w{0,2}及\d+例境外', today.article_title.replace(",", "")):
@@ -144,7 +148,7 @@ today_deaths = {today.today_deaths}
         # ref https://www.runoob.com/python/python-func-filter.html
         texts = filter(ArticleAnalyzer.__wanted_additional_text, texts)
 
-        additional_text = "".join(texts)
+        additional_text = "\n".join(texts)
 
         # Without using loops:
         # * symbol is use to print the list elements in a single line with space.
@@ -161,6 +165,7 @@ today_deaths = {today.today_deaths}
         additional_text = additional_text.replace("，將持續進行疫情調查，以釐清感染源", "")
         additional_text = additional_text.replace("，衛生單位刻正進行相關疫調及接觸者匡列", "")
         additional_text = additional_text.replace("。相關疫情調查持續進行中", "")
+        additional_text = additional_text.replace("，相關疫情調查持續進行中", "")
         additional_text = additional_text.replace(
             "。衛生單位將持續進行疫情調查及防治，以釐清感染源", "")
         additional_text = additional_text.replace(
@@ -168,7 +173,9 @@ today_deaths = {today.today_deaths}
         additional_text = additional_text.replace("將持續進行疫情調查及防治，以釐清感染源。", "")
         additional_text = additional_text.replace(
             "衛生單位持續進行疫情調查及防治，接觸者匡列中。", "")
-        additional_text = additional_text.replace("詳如新聞稿附件。", "")
+        additional_text = additional_text.replace("，詳如新聞稿附件", "")
+        additional_text = additional_text.replace("。詳如新聞稿附件", "")
+        additional_text = additional_text.replace("，年齡介於未滿5歲至90歲以上", "")
         return additional_text
 
     def __wanted_additional_text(paragraph: str):
