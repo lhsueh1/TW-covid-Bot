@@ -174,23 +174,38 @@ def get_taiwan_outbreak_information(
     confirmed_rate = confirmed_rate * 100
     confirmed_rate = "{:.2f}".format(confirmed_rate)
 
+    if isinstance(today.today_confirmed, int):
+        show_today_confirmed = today.today_confirmed
+    else:
+        show_today_confirmed = int(today.today_confirmed.replace(",", ""))
+
+    if isinstance(today.today_domestic, int):
+        show_today_domestic = today.today_domestic
+    else:
+        show_today_domestic = int(today.today_domestic.replace(",", ""))
+
+    if isinstance(today.today_imported, int):
+        show_today_imported = today.today_imported
+    else:
+        show_today_imported = int(today.today_imported.replace(",", ""))
+
     text = f"""《臺灣疫情資訊站{mmdd}資訊報》
 
 【今日新增】
-今日新增：{today.today_confirmed}例（{today.today_domestic}本土,{today.today_imported}境外）
+今日新增：{show_today_confirmed:,}例（{show_today_domestic:,}本土，{show_today_imported:,}境外）
 今日死亡：{today.today_deaths}例{today.additional_text}
 ——————————————————————————
 【昨日更新】
-昨日送檢：{epidemic.yesterday_reported}件
-昨日排除：{epidemic.yesterday_excluded}件
-昨日確診：{epidemic.yesterday_confirmed}人
+昨日送檢：{int(epidemic.yesterday_reported.replace(",", "")):,}件
+昨日排除：{int(epidemic.yesterday_excluded.replace(",", "")):,}件
+昨日確診：{int(epidemic.yesterday_confirmed.replace(",", "")):,}人
 確診比率：{confirmed_rate}%
 ——————————————————————————
 【累計統計】
-已送檢：{epidemic.reported}人
-已排除：{epidemic.excluded}人
-已確診：{epidemic.confirmed}人
-已死亡：{epidemic.deaths}人
+已送檢：{int(epidemic.reported.replace(",", "")):,}人
+已排除：{int(epidemic.excluded.replace(",", "")):,}人
+已確診：{int(epidemic.confirmed.replace(",", "")):,}人
+已死亡：{int(epidemic.deaths.replace(",", "")):,}人
 死亡率：{death_rate}%
 ——————————————————————————
 【國際疫情狀況】
