@@ -8,4 +8,5 @@ with [@jerry960331](https://github.com/jerry960331)
 ![gui](src/README/img1.png)
 
 ---
-data from: [CDC Taiwan](https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A)
+data from: [CDC Taiwan](https://www.cdc.gov.tw/Category/NewsPage/EmXemht4IT-IRAPrAnyG9A), [COVID-19台灣最新病例、檢驗統計](https://data.gov.tw/dataset/120450)
+          

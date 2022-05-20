@@ -189,7 +189,8 @@ def stop_and_restart():
 def start(update, context):
     """Send a message when the command /start is issued."""
     user = update.effective_user
-    update.message.reply_text("Start.開始")
+    text = "歡迎使用!\n可以追蹤https://t.me/Taiwanepidemic 唷\n這個機器人可以看到確診趨勢、數字、與統計\n需要任何功能或其他問題都可以提出噢"
+    update.message.reply_text(text, disable_web_page_preview=True)
     print(user)
 
     userName = update.message.from_user.username
