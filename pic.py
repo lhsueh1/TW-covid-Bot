@@ -288,14 +288,16 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
         text = str(today.additional_text)
 
     text_width = 40
+    s2 = "個案分布為"
+    text = text.split(s2)[1]
+    s3 = "。"
+    text2 = (text.split(s3)[1]).split(s3)[0]
+    text = text.split(s3)[0] + "。" + text2
     list_text = textwrap.wrap(text, width=40, fix_sentence_endings=False, subsequent_indent="")
-    # print(len(list_text))
     if(len(list_text) > 8):
-        s2 = "今日新增境外移入"
-        text = text.split(s2)[0]
         text_width = 50
 
-    text = textwrap.fill(text, width=text_width, fix_sentence_endings=True, subsequent_indent=" ")
+    text = textwrap.fill(text, width=text_width, fix_sentence_endings=False, subsequent_indent=" ")
 
     add_to_json_queue(date, int(today_domestic))
 
@@ -332,6 +334,9 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
         font_size = 150;
     if int(today_confirmed) >= 10000:
         font_size = 130
+    if int(today_confirmed) >= 100000:
+        font_size = 110;
+
 
     font = ImageFont.truetype("NotoSansTC-Regular.otf", font_size)
     # today_confirmed

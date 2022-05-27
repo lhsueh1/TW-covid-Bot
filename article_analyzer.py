@@ -180,7 +180,7 @@ today_deaths = {today.today_deaths}
 
     def __wanted_additional_text(paragraph: str):
 
-        if re.search(r'指揮中心\w{2}，*\w{0,4}新增\w{2,13}(\(案\d+\))*，*為', paragraph.replace(",", "")):
+        if re.search(r'指揮中心\w{2}，*\w{0,4}新增\w{2,13}(\(案\d+\))*，*', paragraph.replace(",", "")):
             return paragraph
         else:
             return None
