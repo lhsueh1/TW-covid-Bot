@@ -288,10 +288,18 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
         text = str(today.additional_text)
 
     text_width = 40
+    
     s2 = "個案分布為"
-    text = text.split(s2)[1]
+    temp = text.split(s2)
+    if len(temp) > 1:
+        text = temp[1]
+
     s3 = "。"
-    text2 = (text.split(s3)[1]).split(s3)[0]
+    temp = text.split(s3)
+    text2 = ""
+    if len(temp) > 1:
+        text2 = (temp[1]).split(s3)[0]
+
     text = text.split(s3)[0] + "。" + text2
     list_text = textwrap.wrap(text, width=40, fix_sentence_endings=False, subsequent_indent="")
     if(len(list_text) > 8):
@@ -421,5 +429,5 @@ def pic_stat(date=None, today_confirmed=None, today_domestic=None, today_importe
     return date
 
 
-# pic_stat("0204", "71", "25", "46", "0", "Regarding the domestic cases, they are 14 men and 11 women, aged between under five and 79 years.Regarding the 46 new imported cases, they are 26 men and 20 women, aged between under ten and 79. 29 of them arrived in Taiwan from the US (seven cases), the Philippines (three cases), Australia (three cases), the Netherlands (two cases), India (two cases), Peru (two cases), Vietnam (two cases), Thailand (two cases), Japan, Nigeria, Canada, Israel, Hong Kong, and China; the areas where the remaining 17 cases arrived are being investigated. They arrived between January 15 and February 4, 2022.")
+# pic_stat("0204", "71", "25", "46", "0", "指揮中心表示，今日新增之16,524例本土病例，為7,443例男性、9,075例女性、6例調查中，年齡介於未滿5歲至90多歲以上，個案分布為新北市(3,377例)，臺中市(2,078例)，桃園市(1,821例)，高雄市(1,751例)，臺北市(1,655例)，臺南市(1,337例)，彰化縣(825例)，新竹縣(629例)，新竹市(472例)，苗栗縣(433例)，屏東縣(350例)，雲林縣(297例)，基隆市(286例)，嘉義縣(260例)，南投縣(240例)，宜蘭縣(213例)，嘉義市(161例)，花蓮縣(120例)，臺東縣(102例)，金門縣(72例)，澎湖縣(38例)，連江縣(7例)。")
 # pic_stat()
